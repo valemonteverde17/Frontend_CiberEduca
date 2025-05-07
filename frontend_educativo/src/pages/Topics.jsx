@@ -1,17 +1,22 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import {
+  Box, Button, Container, Heading, List, ListItem, Text,
+  Stack, useToast, Flex
+} from '@chakra-ui/react';
 
 export default function Topics() {
   const { user } = useAuth();
   const [topics, setTopics] = useState([]);
+  const toast = useToast();
 
   const fetchTopics = async () => {
     try {
       const res = await axios.get('/topics');
       setTopics(res.data);
     } catch (err) {
-      console.error('Error al cargar temas:', err);
+      toast({ title: 'Error', description: 'No se pudieron cargar los temas.', status: 'error' });
     }
   };
 
@@ -23,13 +28,14 @@ export default function Topics() {
     const topic_name = prompt('Nombre del tema:');
     if (!topic_name) return;
     const description = prompt('Descripción:');
-    if (!description || description.length < 10) return alert('Descripción demasiado corta');
+    if (!description || description.length < 10) return toast({ title: 'Descripción demasiado corta', status: 'warning' });
 
     try {
       await axios.post('/topics', { topic_name, description });
+      toast({ title: 'Tema agregado', status: 'success' });
       fetchTopics();
-    } catch (err) {
-      alert('Error al agregar tema');
+    } catch {
+      toast({ title: 'Error al agregar tema', status: 'error' });
     }
   };
 
@@ -43,9 +49,10 @@ export default function Topics() {
         topic_name: newName,
         description: newDesc,
       });
+      toast({ title: 'Tema actualizado', status: 'success' });
       fetchTopics();
-    } catch (err) {
-      alert('Error al editar tema');
+    } catch {
+      toast({ title: 'Error al editar tema', status: 'error' });
     }
   };
 
@@ -55,33 +62,38 @@ export default function Topics() {
 
     try {
       await axios.delete(`/topics/${id}`);
+      toast({ title: 'Tema eliminado', status: 'info' });
       fetchTopics();
-    } catch (err) {
-      alert('Error al eliminar tema');
+    } catch {
+      toast({ title: 'Error al eliminar tema', status: 'error' });
     }
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Temas disponibles</h2>
+    <Container maxW="4xl" py={10}>
+      <Heading mb={6} color="teal.600">Temas disponibles</Heading>
       {user.role === 'docente' && (
-        <button onClick={handleAdd} style={{ marginBottom: '1rem' }}>
-          ➕ Agregar tema
-        </button>
+        <Button colorScheme="teal" mb={4} onClick={handleAdd}>➕ Agregar tema</Button>
       )}
-      <ul>
+
+      <List spacing={4}>
         {topics.map(topic => (
-          <li key={topic._id} style={{ marginBottom: '1rem' }}>
-            <strong>{topic.topic_name}</strong>: {topic.description}
-            {user.role === 'docente' && (
-              <>
-                <button onClick={() => handleEdit(topic)} style={{ marginLeft: '1rem' }}>✏️ Editar</button>
-                <button onClick={() => handleDelete(topic._id)} style={{ marginLeft: '0.5rem' }}>🗑️ Eliminar</button>
-              </>
-            )}
-          </li>
+          <ListItem key={topic._id} p={4} borderWidth={1} borderRadius="md" boxShadow="sm">
+            <Flex justify="space-between" align="center">
+              <Box>
+                <Text fontWeight="bold" fontSize="lg">{topic.topic_name}</Text>
+                <Text color="gray.600">{topic.description}</Text>
+              </Box>
+              {user.role === 'docente' && (
+                <Stack direction="row" spacing={2}>
+                  <Button size="sm" colorScheme="yellow" onClick={() => handleEdit(topic)}>✏️ Editar</Button>
+                  <Button size="sm" colorScheme="red" onClick={() => handleDelete(topic._id)}>🗑️ Eliminar</Button>
+                </Stack>
+              )}
+            </Flex>
+          </ListItem>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Container>
   );
 }

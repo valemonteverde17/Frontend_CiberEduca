@@ -10,10 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@chakra-ui/react": "^3.17.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@nestjs/mapped-types": "*",
     "axios": "^1.9.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "framer-motion": "^7.10.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^7.5.3"
   },
   "devDependencies": {

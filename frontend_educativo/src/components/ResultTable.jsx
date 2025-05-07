@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import {
+  Box, Heading, Table, Thead, Tbody, Tr, Th, Td, Text, TableContainer
+} from '@chakra-ui/react';
 
 export default function ResultTable() {
   const { user } = useAuth();
@@ -13,30 +16,34 @@ export default function ResultTable() {
   }, [user]);
 
   return (
-    <div style={{ marginTop: '3rem' }}>
-      <h3>Historial de respuestas</h3>
+    <Box mt={10}>
+      <Heading size="md" mb={4}>📚 Historial de Respuestas</Heading>
       {results.length === 0 ? (
-        <p>Aún no has respondido ningún quiz.</p>
+        <Text>No has respondido ningún quiz todavía.</Text>
       ) : (
-        <table border="1" cellPadding="8">
-          <thead>
-            <tr>
-              <th>Pregunta</th>
-              <th>Tu respuesta</th>
-              <th>Resultado</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map(res => (
-              <tr key={res._id}>
-                <td>{res.quiz_id?.question || 'Pregunta eliminada'}</td>
-                <td>{res.selectedAnswer}</td>
-                <td>{res.isCorrect ? '✅ Correcto' : '❌ Incorrecto'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <TableContainer>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                <Th>Pregunta</Th>
+                <Th>Tu respuesta</Th>
+                <Th>Resultado</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {results.map(res => (
+                <Tr key={res._id}>
+                  <Td>{res.quiz_id?.question || 'Pregunta eliminada'}</Td>
+                  <Td>{res.selectedAnswer}</Td>
+                  <Td color={res.isCorrect ? 'green.500' : 'red.500'}>
+                    {res.isCorrect ? '✅ Correcto' : '❌ Incorrecto'}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
       )}
-    </div>
+    </Box>
   );
 }
