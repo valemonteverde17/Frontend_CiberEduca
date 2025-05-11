@@ -1,0 +1,60 @@
+.signup-page {
+  background-color: #ffe68f;
+  background-image: url('../assets/circuit-pattern.png'); /* opcional */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-box {
+  background-color: #ffc107;
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 320px;
+}
+
+.signup-box h2 {
+  color: #007b7f;
+  margin-bottom: 25px;
+}
+
+.signup-input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 2px solid #009688;
+  border-radius: 25px;
+  background-color: #fff8dc;
+  color: #007b7f;
+  font-weight: bold;
+}
+
+.signup-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #fff8dc;
+  border: none;
+  border-radius: 25px;
+  color: #009688;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.signup-button:hover {
+  background-color: #ffe082;
+}
+
+.forgot-password {
+  margin-top: 15px;
+  font-size: 12px;
+  color: white;
+}
