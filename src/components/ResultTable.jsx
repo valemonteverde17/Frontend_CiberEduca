@@ -14,7 +14,7 @@ export default function ResultTable() {
 
   return (
     <div style={{ marginTop: '3rem' }}>
-      <h3>Historial de respuestas</h3>
+      <h3>🕗 Historial de respuestas</h3>
       {results.length === 0 ? (
         <p>Aún no has respondido ningún quiz.</p>
       ) : (

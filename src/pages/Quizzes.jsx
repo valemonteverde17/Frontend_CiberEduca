@@ -3,6 +3,7 @@ import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ResultTable from '../components/ResultTable';
 import GlobalRanking from '../components/GlobalRanking';
+import './quizzes.css';
 
 export default function Quizzes() {
   const { user } = useAuth();
@@ -54,68 +55,56 @@ export default function Quizzes() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Quizzes Interactivos</h2>
+    <div className="quizzes-container">
+      <h2 className="quizzes-title">Quizzes</h2>
 
-      <label htmlFor="topic-select">Selecciona un tema:</label>
-      <select
-        id="topic-select"
-        value={selectedTopic}
-        onChange={(e) => setSelectedTopic(e.target.value)}
-        style={{ marginLeft: '1rem' }}
-      >
-        <option value="">-- Selecciona --</option>
-        {topics.map(topic => (
-          <option key={topic._id} value={topic._id}>
-            {topic.topic_name}
-          </option>
-        ))}
-      </select>
-
-      <div style={{ marginTop: '2rem' }}>
-        {quizzes.length === 0 && selectedTopic && <p>No hay quizzes para este tema.</p>}
-        {quizzes.map(quiz => (
-          <div
-            key={quiz._id}
-            style={{
-              marginBottom: '1.5rem',
-              padding: '1rem',
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              backgroundColor: feedback[quiz._id] === true
-                ? '#d4edda'
-                : feedback[quiz._id] === false
-                ? '#f8d7da'
-                : '#fff'
-            }}
-          >
-            <p><strong>{quiz.question}</strong></p>
-            {quiz.options.map(option => (
-              <div key={option}>
-                <label>
-                  <input
-                    type="radio"
-                    name={`quiz-${quiz._id}`}
-                    value={option}
-                    checked={answers[quiz._id] === option}
-                    onChange={() => handleAnswer(quiz._id, option)}
-                  />
-                  {' '}
-                  {option}
-                </label>
-              </div>
-            ))}
-            {feedback[quiz._id] !== undefined && (
-              <p>
-                {feedback[quiz._id] ? '✅ Correcto' : '❌ Incorrecto'}
-              </p>
-            )}
-          </div>
-        ))}
+      <div className="select-label">
+        <label htmlFor="topic-select">Tema:</label>
+        <select
+          id="topic-select"
+          className="topic-select"
+          value={selectedTopic}
+          onChange={(e) => setSelectedTopic(e.target.value)}
+        >
+          <option value="">Seleccionar</option>
+          {topics.map(topic => (
+            <option key={topic._id} value={topic._id}>
+              {topic.topic_name}
+            </option>
+          ))}
+        </select>
       </div>
 
+      {quizzes.length === 0 && selectedTopic && <p style={{ textAlign: 'center' }}>No hay quizzes para este tema.</p>}
+      
+      {quizzes.map(quiz => (
+        <div
+          key={quiz._id}
+          className={`quiz-box ${feedback[quiz._id] === true ? 'correct' : feedback[quiz._id] === false ? 'incorrect' : ''}`}
+        >
+          <p><strong>{quiz.question}</strong></p>
+          {quiz.options.map(option => (
+            <div key={option}>
+              <label>
+                <input
+                  type="radio"
+                  name={`quiz-${quiz._id}`}
+                  value={option}
+                  checked={answers[quiz._id] === option}
+                  onChange={() => handleAnswer(quiz._id, option)}
+                />
+                {' '}{option}
+              </label>
+            </div>
+          ))}
+          {feedback[quiz._id] !== undefined && (
+            <p>{feedback[quiz._id] ? '✅ Correcto' : '❌ Incorrecto'}</p>
+          )}
+        </div>
+      ))}
+
       {score && (
-        <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: '#e2e3e5', borderRadius: '8px' }}>
+        <div className="result-final">
           <h3>Resultado final</h3>
           <p>
             Has respondido <strong>{score.correct}</strong> de <strong>{score.total}</strong> preguntas correctamente.
@@ -123,9 +112,17 @@ export default function Quizzes() {
         </div>
       )}
 
-      {/* ✅ Historial y ranking al final */}
-      <ResultTable />
-      <GlobalRanking />
+      <div className="results-container">
+        <div className="table-wrapper">
+      
+          <ResultTable />
+        </div>
+        <div className="table-wrapper">
+        
+          <GlobalRanking />
+        </div>
+      </div>
     </div>
   );
 }
+
