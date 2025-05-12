@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import iconEdit from '../assets/icons/editar.png';
+import iconDelete from '../assets/icons/eliminar.png';
+import './Topics.css';
 
 export default function Topics() {
   const { user } = useAuth();
@@ -24,7 +27,6 @@ export default function Topics() {
     if (!topic_name) return;
     const description = prompt('Descripción:');
     if (!description || description.length < 10) return alert('Descripción demasiado corta');
-
     try {
       await axios.post('/topics', { topic_name, description });
       fetchTopics();
@@ -37,7 +39,6 @@ export default function Topics() {
     const newName = prompt('Nuevo nombre:', topic.topic_name);
     const newDesc = prompt('Nueva descripción:', topic.description);
     if (!newName || !newDesc) return;
-
     try {
       await axios.patch(`/topics/${topic._id}`, {
         topic_name: newName,
@@ -50,9 +51,7 @@ export default function Topics() {
   };
 
   const handleDelete = async (id) => {
-    const confirm = window.confirm('¿Estás seguro de eliminar este tema?');
-    if (!confirm) return;
-
+    if (!window.confirm('¿Eliminar este tema?')) return;
     try {
       await axios.delete(`/topics/${id}`);
       fetchTopics();
@@ -61,27 +60,32 @@ export default function Topics() {
     }
   };
 
+  const getCardClass = (index) => {
+    return ['topic-yellow', 'topic-teal', 'topic-red'][index % 3];
+  };
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Temas disponibles</h2>
+    <div className="topics-container">
+      <h2>{user.role === 'docente' ? 'Temas disponibles' : 'Temas'}</h2>
       {user.role === 'docente' && (
-        <button onClick={handleAdd} style={{ marginBottom: '1rem' }}>
-          ➕ Agregar tema
-        </button>
+        <button className="btn-add" onClick={handleAdd}>Tema Nuevo</button>
       )}
-      <ul>
-        {topics.map(topic => (
-          <li key={topic._id} style={{ marginBottom: '1rem' }}>
-            <strong>{topic.topic_name}</strong>: {topic.description}
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div className="nav-arrow">◀</div>
+        {topics.map((topic, index) => (
+          <div key={topic._id} className={`topic-card ${getCardClass(index)}`}>
             {user.role === 'docente' && (
               <>
-                <button onClick={() => handleEdit(topic)} style={{ marginLeft: '1rem' }}>✏️ Editar</button>
-                <button onClick={() => handleDelete(topic._id)} style={{ marginLeft: '0.5rem' }}>🗑️ Eliminar</button>
+                <img src={iconDelete} className="topic-icon delete" onClick={() => handleDelete(topic._id)} />
+                <img src={iconEdit} className="topic-icon edit" onClick={() => handleEdit(topic)} />
               </>
             )}
-          </li>
+            <div className="topic-title">{topic.topic_name}</div>
+            <div>{topic.description}</div>
+          </div>
         ))}
-      </ul>
+        <div className="nav-arrow">▶</div>
+      </div>
     </div>
   );
 }

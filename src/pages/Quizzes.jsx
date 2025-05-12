@@ -3,6 +3,7 @@ import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ResultTable from '../components/ResultTable';
 import GlobalRanking from '../components/GlobalRanking';
+import './quizzes.css';
 
 export default function Quizzes() {
   const { user } = useAuth();
@@ -12,30 +13,56 @@ export default function Quizzes() {
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState({});
   const [score, setScore] = useState(null);
+  const [pendingConfirm, setPendingConfirm] = useState(null);
 
   useEffect(() => {
     axios.get('/topics').then(res => setTopics(res.data));
   }, []);
 
   useEffect(() => {
-    if (selectedTopic) {
-      axios.get(`/quizzes/topic/${selectedTopic}`).then(res => {
-        setQuizzes(res.data);
-        setAnswers({});
-        setFeedback({});
-        setScore(null);
+    const fetchQuizzesAndResults = async () => {
+      const quizzesRes = await axios.get(`/quizzes/topic/${selectedTopic}`);
+      setQuizzes(quizzesRes.data);
+      setAnswers({});
+      setFeedback({});
+      setScore(null);
+      setPendingConfirm(null);
+
+      const resultsRes = await axios.get(`/results/by-topic/${user._id}/${selectedTopic}`);
+      const results = resultsRes.data;
+
+      const savedAnswers = {};
+      const savedFeedback = {};
+      results.forEach(r => {
+        savedAnswers[r.quiz_id] = r.selectedAnswer;
+        savedFeedback[r.quiz_id] = r.isCorrect;
       });
-    }
+
+      setAnswers(savedAnswers);
+      setFeedback(savedFeedback);
+    };
+
+    if (selectedTopic) fetchQuizzesAndResults();
   }, [selectedTopic]);
 
-  const handleAnswer = async (quizId, selectedOption) => {
+  const handleSelect = (quizId, selectedOption) => {
+    setPendingConfirm({ quizId, selectedOption });
+  };
+
+  const confirmAnswer = async () => {
+    if (!pendingConfirm) return;
+
+    const { quizId, selectedOption } = pendingConfirm;
     const quiz = quizzes.find(q => q._id === quizId);
     const isCorrect = quiz.correctAnswer === selectedOption;
 
     setAnswers(prev => ({ ...prev, [quizId]: selectedOption }));
     setFeedback(prev => ({ ...prev, [quizId]: isCorrect }));
+    setPendingConfirm(null);
 
     try {
+      if (user.role !== 'estudiante') return alert('Solo los estudiantes pueden responder');
+
       await axios.post('/results', {
         user_id: user._id,
         quiz_id: quizId,
@@ -46,76 +73,81 @@ export default function Quizzes() {
       console.error('Error al guardar resultado:', err);
     }
 
-    const allAnswered = quizzes.every(q => answers[q._id] || q._id === quizId);
+    const currentFeedback = { ...feedback, [quizId]: isCorrect };
+    const allAnswered = quizzes.every(q => currentFeedback[q._id] !== undefined);
+
     if (allAnswered) {
-      const res = await axios.get(`/results/score/${user._id}/${selectedTopic}`);
-      setScore(res.data);
+      const correct = quizzes.filter(q => currentFeedback[q._id] === true).length;
+      setScore({ total: quizzes.length, correct });
     }
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Quizzes Interactivos</h2>
+    <div className="quizzes-container">
+      <h2 className="quizzes-title">Quizzes</h2>
 
-      <label htmlFor="topic-select">Selecciona un tema:</label>
-      <select
-        id="topic-select"
-        value={selectedTopic}
-        onChange={(e) => setSelectedTopic(e.target.value)}
-        style={{ marginLeft: '1rem' }}
-      >
-        <option value="">-- Selecciona --</option>
-        {topics.map(topic => (
-          <option key={topic._id} value={topic._id}>
-            {topic.topic_name}
-          </option>
-        ))}
-      </select>
+      <div className="select-label">
+        <label htmlFor="topic-select">Tema:</label>
+        <select
+          id="topic-select"
+          className="topic-select"
+          value={selectedTopic}
+          onChange={(e) => setSelectedTopic(e.target.value)}
+        >
+          <option value="">Seleccionar</option>
+          {topics.map(topic => (
+            <option key={topic._id} value={topic._id}>
+              {topic.topic_name}
+            </option>
+          ))}
+        </select>
 
-      <div style={{ marginTop: '2rem' }}>
-        {quizzes.length === 0 && selectedTopic && <p>No hay quizzes para este tema.</p>}
-        {quizzes.map(quiz => (
-          <div
-            key={quiz._id}
-            style={{
-              marginBottom: '1.5rem',
-              padding: '1rem',
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              backgroundColor: feedback[quiz._id] === true
-                ? '#d4edda'
-                : feedback[quiz._id] === false
-                ? '#f8d7da'
-                : '#fff'
-            }}
-          >
-            <p><strong>{quiz.question}</strong></p>
-            {quiz.options.map(option => (
-              <div key={option}>
-                <label>
-                  <input
-                    type="radio"
-                    name={`quiz-${quiz._id}`}
-                    value={option}
-                    checked={answers[quiz._id] === option}
-                    onChange={() => handleAnswer(quiz._id, option)}
-                  />
-                  {' '}
-                  {option}
-                </label>
-              </div>
-            ))}
-            {feedback[quiz._id] !== undefined && (
-              <p>
-                {feedback[quiz._id] ? '✅ Correcto' : '❌ Incorrecto'}
-              </p>
-            )}
-          </div>
-        ))}
+        {user.role === 'docente' && (
+          <button onClick={() => window.location.href = '/quizzes'} className="add-quiz-button">
+            ➕ Agregar Quiz
+          </button>
+        )}
       </div>
 
+      {quizzes.length === 0 && selectedTopic && (
+        <p style={{ textAlign: 'center' }}>No hay quizzes para este tema.</p>
+      )}
+
+      {quizzes.map(quiz => (
+        <div
+          key={quiz._id}
+          className={`quiz-box ${feedback[quiz._id] === true ? 'correct' : feedback[quiz._id] === false ? 'incorrect' : ''}`}
+        >
+          <p><strong>{quiz.question}</strong></p>
+          {quiz.options.map(option => (
+            <div key={option}>
+              <label>
+                <input
+                  type="radio"
+                  name={`quiz-${quiz._id}`}
+                  value={option}
+                  checked={pendingConfirm?.quizId === quiz._id && pendingConfirm.selectedOption === option || answers[quiz._id] === option}
+                  onChange={() => handleSelect(quiz._id, option)}
+                  disabled={feedback[quiz._id] !== undefined}
+                />
+                {' '}{option}
+              </label>
+            </div>
+          ))}
+          {feedback[quiz._id] !== undefined && (
+            <p>{feedback[quiz._id] ? '✅ Correcto' : '❌ Incorrecto'}</p>
+          )}
+        </div>
+      ))}
+
+      {pendingConfirm && (
+        <button className="confirm-button" onClick={confirmAnswer}>
+          Confirmar respuesta
+        </button>
+      )}
+
       {score && (
-        <div style={{ marginTop: '2rem', padding: '1rem', backgroundColor: '#e2e3e5', borderRadius: '8px' }}>
+        <div className="result-final">
           <h3>Resultado final</h3>
           <p>
             Has respondido <strong>{score.correct}</strong> de <strong>{score.total}</strong> preguntas correctamente.
@@ -123,9 +155,14 @@ export default function Quizzes() {
         </div>
       )}
 
-      {/* ✅ Historial y ranking al final */}
-      <ResultTable />
-      <GlobalRanking />
+      <div className="results-container">
+        <div className="table-wrapper">
+          <ResultTable topicId={selectedTopic} />
+        </div>
+        <div className="table-wrapper">
+          <GlobalRanking topicId={selectedTopic} />
+        </div>
+      </div>
     </div>
   );
 }

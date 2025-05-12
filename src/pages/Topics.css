@@ -1,0 +1,62 @@
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+.topics-container {
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: #fff0b3;
+  text-align: center;
+}
+
+.topic-card {
+  display: inline-block;
+  width: 200px;
+  padding: 1rem;
+  margin: 1rem;
+  border-radius: 20px;
+  color: black;
+  position: relative;
+  vertical-align: top;
+}
+
+.topic-yellow { background-color: #ffcd00; }
+.topic-teal { background-color: #2b9997; color: white; }
+.topic-red { background-color: #ff4500; color: white; }
+
+.topic-title {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.topic-icon {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 10px;
+  cursor: pointer;
+}
+
+.topic-icon.delete { left: 10px; }
+.topic-icon.edit { right: 10px; }
+
+.nav-arrow {
+  font-size: 1.5rem;
+  margin: 1rem;
+  cursor: pointer;
+  color: #2b9997;
+}
+
+.btn-add {
+  background-color: #2b9997;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  float: right;
+  margin-right: 2rem;
+}
