@@ -103,7 +103,7 @@ export default function Quizzes() {
         </select>
 
         {user.role === 'docente' && (
-          <button onClick={() => window.location.href = '/quizzes'} className="add-quiz-button">
+          <button onClick={() => window.location.href = '/crear-quiz'} className="add-quiz-button">
             ➕ Agregar Quiz
           </button>
         )}

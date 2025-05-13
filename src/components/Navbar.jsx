@@ -16,6 +16,7 @@ export default function Navbar() {
         <Link to="/" style={{ marginRight: '1rem', color: '#ffefb5' }}>Inicio</Link>
         {user && <Link to="/topics" style={{ marginRight: '1rem', color: '#ffefb5' }}>Temas</Link>}
         {user && <Link to="/quizzes" style={{ marginRight: '1rem', color: '#ffefb5' }}>Quizzes</Link>}
+        
       </div>
       <div>
         {!user && <>

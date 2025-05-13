@@ -7,6 +7,7 @@ import SignUp from './pages/SignUp';
 import Topics from './pages/Topics';
 import Quizzes from './pages/Quizzes';
 import ProtectedRoute from './components/ProtectedRoute';
+import CreateQuizzes from "./pages/CreateQuizzes";
 
 function App() {
   const { user } = useAuth();
@@ -28,6 +29,7 @@ function App() {
             <Quizzes />
           </ProtectedRoute>
         } />
+       <Route path="/crear-quiz" element={<CreateQuizzes />} />
       </Routes>
     </BrowserRouter>
   );
