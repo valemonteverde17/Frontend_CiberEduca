@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import axios from '../api/axios';
+import './create-quizzes.css';
 
 const CreateQuizzes = () => {
   const { user } = useAuth();
@@ -71,9 +72,24 @@ const CreateQuizzes = () => {
   };
 
   return (
-    <div style={{ padding: '2rem', maxWidth: '700px', margin: 'auto' }}>
-      <h1>Crear Quiz</h1>
-      <form onSubmit={addQuestion}>
+    <div className="create-quiz-container">
+      <h1 className="create-quiz-title">Crear Quiz</h1>
+      <form className="create-quiz-form" onSubmit={addQuestion}>
+        
+        <label>Tema:</label>
+        <select
+          value={selectedTopic}
+          onChange={(e) => setSelectedTopic(e.target.value)}
+          required
+        >
+          <option value="">--Selecciona un tema--</option>
+          {topics.map(topic => (
+            <option key={topic._id} value={topic._id}>
+              {topic.topic_name}
+            </option>
+          ))}
+        </select>
+
         <label>Pregunta:</label>
         <input
           type="text"
@@ -85,7 +101,7 @@ const CreateQuizzes = () => {
 
         <label>Opciones:</label>
         {options.map((opt, index) => (
-          <div key={index}>
+          <div className="option-input" key={index}>
             <input
               type="text"
               value={opt}
@@ -98,7 +114,7 @@ const CreateQuizzes = () => {
             )}
           </div>
         ))}
-        <button type="button" onClick={addOption}>Agregar opción</button>
+        <button type="button" className="add-option-button" onClick={addOption}>Agregar opción</button>
 
         <label>Respuesta correcta:</label>
         <select
@@ -114,37 +130,24 @@ const CreateQuizzes = () => {
           ))}
         </select>
 
-        <label>Tema:</label>
-        <select
-          value={selectedTopic}
-          onChange={(e) => setSelectedTopic(e.target.value)}
-          required
-        >
-          <option value="">--Selecciona un tema--</option>
-          {topics.map(topic => (
-            <option key={topic._id} value={topic._id}>
-              {topic.topic_name}
-            </option>
-          ))}
-        </select>
-
-        <button type="submit" style={{ marginTop: '1rem' }}>Añadir Pregunta</button>
+        <button type="submit" className="add-question-button">Añadir Pregunta</button>
       </form>
 
-      <h2 style={{ marginTop: '2rem' }}>Preguntas añadidas:</h2>
-      <ul>
-        {questionsList.map((q, idx) => (
-          <li key={idx}>
-            <strong>{q.question}</strong> ({q.options.length} opciones)
-          </li>
-        ))}
-      </ul>
+      <div className="questions-list">
+        <h2>Preguntas añadidas:</h2>
+        <ul>
+          {questionsList.map((q, idx) => (
+            <li key={idx}>
+              <strong>{q.question}</strong> ({q.options.length} opciones)
+            </li>
+          ))}
+        </ul>
+        {questionsList.length > 0 && (
+          <button className="submit-quiz-button" onClick={submitQuiz}>Guardar Quiz</button>
+        )}
+      </div>
 
-      {questionsList.length > 0 && (
-        <button onClick={submitQuiz} style={{ marginTop: '2rem' }}>Guardar Quiz</button>
-      )}
-
-      {message && <p>{message}</p>}
+      {message && <p className="message">{message}</p>}
     </div>
   );
 };
