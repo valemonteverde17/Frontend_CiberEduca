@@ -1,0 +1,70 @@
+.hangman-page {
+  background-color: #FFF3C6;
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: Arial, sans-serif;
+}
+
+.hangman-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.hangman-page h1 {
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.hangman-page label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.hangman-page select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Texto de categoría */
+.hangman-page h2 {
+  font-size: 1.4rem;
+  color: #318b85;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.hangman-page p {
+  text-align: center;
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Botones */
+.control-button {
+  margin: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #318b85;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.control-button.secondary {
+  background-color: #dc3545;
+}
+
+.control-button:hover {
+  opacity: 0.9;
+}
