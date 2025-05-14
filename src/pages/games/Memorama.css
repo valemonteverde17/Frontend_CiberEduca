@@ -1,0 +1,69 @@
+.memorama-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .card {
+    width: 100px;
+    height: 150px;
+    perspective: 1000px;
+    cursor: pointer;
+    position: relative;
+    border-radius: 8px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .card-text {
+    font-size: 14px;
+  }
+  
+  /* Animación de sacudida para emparejamientos incorrectos */
+  .card.shake {
+    animation: shake 0.5s ease-in-out;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+  }
+  
+  .card.flipped {
+    background-color: #FFF3C6;
+    color: #000;
+  }
+  
+  /* Estilos de victoria */
+  .win-message {
+    text-align: center;
+    font-size: 24px;
+    color: #318b85;
+    font-weight: bold;
+    margin-top: 20px;
+  }
+  
+  .next-level-button {
+    background-color: #318b85;
+    color: white;
+    padding: 10px 15px;
+    font-size: 18px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .next-level-button:hover {
+    opacity: 0.8;
+  }
+  

@@ -9,6 +9,7 @@ import Quizzes from './pages/Quizzes';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateQuizzes from "./pages/CreateQuizzes";
 import Hangman from './pages/games/Hangman';
+import Memorama from './pages/games/Memorama';
 
 function App() {
   const { user } = useAuth();
@@ -34,6 +35,11 @@ function App() {
       <Route path="/games/hangman" element={
       <ProtectedRoute>
         <Hangman />
+      </ProtectedRoute>
+    } />
+          <Route path="/games/memorama" element={
+      <ProtectedRoute>
+        <Memorama />
       </ProtectedRoute>
     } />
 
