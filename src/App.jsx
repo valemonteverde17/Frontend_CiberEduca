@@ -8,6 +8,7 @@ import Topics from './pages/Topics';
 import Quizzes from './pages/Quizzes';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateQuizzes from "./pages/CreateQuizzes";
+import Games from './pages/games/Games';
 import Hangman from './pages/games/Hangman';
 import Memorama from './pages/games/Memorama';
 
@@ -37,6 +38,11 @@ function App() {
         <Hangman />
       </ProtectedRoute>
     } />
+    <Route path="/games" element={
+         <ProtectedRoute>
+         <Games />
+         </ProtectedRoute>
+       } />
           <Route path="/games/memorama" element={
       <ProtectedRoute>
         <Memorama />
