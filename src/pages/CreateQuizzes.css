@@ -94,6 +94,26 @@
   gap: 1.5rem;
 }
 
+.quiz-set-info {
+  background: #f0f9f9;
+  padding: 1.5rem;
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #2b9997;
+}
+
+.quiz-set-info h3 {
+  color: #2b5858;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, #2b9997 50%, transparent 100%);
+  margin: 2rem 0;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -108,6 +128,7 @@
 
 .form-select,
 .form-textarea,
+.form-input,
 .option-input {
   width: 100%;
   padding: 0.8rem;

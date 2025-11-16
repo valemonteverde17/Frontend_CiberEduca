@@ -12,11 +12,12 @@ export default function Quizzes() {
   const [topics, setTopics] = useState([]);
   const [selectedTopic, setSelectedTopic] = useState('');
   const [selectedTopicName, setSelectedTopicName] = useState('');
+  const [quizSets, setQuizSets] = useState([]);
+  const [selectedQuizSet, setSelectedQuizSet] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
   const [answers, setAnswers] = useState({});
   const [feedback, setFeedback] = useState({});
   const [score, setScore] = useState(null);
-  const [pendingConfirm, setPendingConfirm] = useState(null);
   const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
@@ -24,74 +25,97 @@ export default function Quizzes() {
   }, []);
 
   useEffect(() => {
-    const fetchQuizzesAndResults = async () => {
+    const fetchQuizSets = async () => {
       try {
-        const quizzesRes = await axios.get(`/quizzes/topic/${selectedTopic}`);
-        setQuizzes(quizzesRes.data);
+        const quizSetsRes = await axios.get(`/quiz-sets/topic/${selectedTopic}`);
+        setQuizSets(quizSetsRes.data);
+        setSelectedQuizSet(null);
+        setQuizzes([]);
         setAnswers({});
         setFeedback({});
         setScore(null);
-        setPendingConfirm(null);
         setShowResults(false);
-
-        if (user.role === 'estudiante') {
-          const resultsRes = await axios.get(`/results/by-topic/${user._id}/${selectedTopic}`);
-          const results = resultsRes.data;
-
-          const savedAnswers = {};
-          const savedFeedback = {};
-          results.forEach(r => {
-            savedAnswers[r.quiz_id] = r.selectedAnswer;
-            savedFeedback[r.quiz_id] = r.isCorrect;
-          });
-
-          setAnswers(savedAnswers);
-          setFeedback(savedFeedback);
-        }
       } catch (err) {
-        console.error('Error al cargar quizzes:', err);
+        console.error('Error al cargar cuestionarios:', err);
       }
     };
 
-    if (selectedTopic) fetchQuizzesAndResults();
-  }, [selectedTopic, user]);
+    if (selectedTopic) fetchQuizSets();
+  }, [selectedTopic]);
 
-  const handleSelect = (quizId, selectedOption) => {
-    setPendingConfirm({ quizId, selectedOption });
+  const startQuizSet = async (quizSet) => {
+    try {
+      setSelectedQuizSet(quizSet);
+      const quizzesRes = await axios.get(`/quizzes/quiz-set/${quizSet._id}`);
+      setQuizzes(quizzesRes.data);
+      setAnswers({});
+      setFeedback({});
+      setScore(null);
+      setShowResults(false);
+
+      if (user.role === 'estudiante') {
+        const resultsRes = await axios.get(`/results/by-topic/${user._id}/${selectedTopic}`);
+        const results = resultsRes.data;
+
+        const savedAnswers = {};
+        const savedFeedback = {};
+        results.forEach(r => {
+          savedAnswers[r.quiz_id] = r.selectedAnswer;
+          savedFeedback[r.quiz_id] = r.isCorrect;
+        });
+
+        setAnswers(savedAnswers);
+        setFeedback(savedFeedback);
+      }
+    } catch (err) {
+      console.error('Error al cargar preguntas:', err);
+    }
   };
 
-  const confirmAnswer = async () => {
-    if (!pendingConfirm) return;
-
-    const { quizId, selectedOption } = pendingConfirm;
-    const quiz = quizzes.find(q => q._id === quizId);
-    const isCorrect = quiz.correctAnswer === selectedOption;
-
+  const handleSelect = (quizId, selectedOption) => {
     setAnswers(prev => ({ ...prev, [quizId]: selectedOption }));
-    setFeedback(prev => ({ ...prev, [quizId]: isCorrect }));
-    setPendingConfirm(null);
+  };
 
-    try {
-      if (user.role !== 'estudiante') return alert('Solo los estudiantes pueden responder');
-
-      await axios.post('/results', {
-        user_id: user._id,
-        quiz_id: quizId,
-        selectedAnswer: selectedOption,
-        isCorrect
-      });
-    } catch (err) {
-      console.error('Error al guardar resultado:', err);
+  const confirmAnswers = async () => {
+    if (Object.keys(answers).length !== quizzes.length) {
+      alert('Por favor responde todas las preguntas antes de confirmar.');
+      return;
     }
 
-    const currentFeedback = { ...feedback, [quizId]: isCorrect };
-    const allAnswered = quizzes.every(q => currentFeedback[q._id] !== undefined);
+    const newFeedback = {};
+    let correct = 0;
 
-    if (allAnswered) {
-      const correct = quizzes.filter(q => currentFeedback[q._id] === true).length;
-      setScore({ total: quizzes.length, correct });
-      setShowResults(true);
+    for (const quiz of quizzes) {
+      const isCorrect = quiz.correctAnswer === answers[quiz._id];
+      newFeedback[quiz._id] = isCorrect;
+      if (isCorrect) correct++;
+
+      if (user.role === 'estudiante') {
+        try {
+          await axios.post('/results', {
+            user_id: user._id,
+            quiz_id: quiz._id,
+            selectedAnswer: answers[quiz._id],
+            isCorrect
+          });
+        } catch (err) {
+          console.error('Error al guardar resultado:', err);
+        }
+      }
     }
+
+    setFeedback(newFeedback);
+    setScore({ total: quizzes.length, correct });
+    setShowResults(true);
+  };
+
+  const resetQuiz = () => {
+    setSelectedQuizSet(null);
+    setQuizzes([]);
+    setAnswers({});
+    setFeedback({});
+    setScore(null);
+    setShowResults(false);
   };
 
   const handleTopicChange = (e) => {
@@ -136,18 +160,44 @@ export default function Quizzes() {
         </select>
       </div>
 
-      {quizzes.length === 0 && selectedTopic && (
-        <div className="no-quizzes-message">
-          <p>📚 No hay preguntas disponibles para este tema.</p>
-          {user.role === 'docente' && (
-            <button onClick={() => navigate('/crear-quiz')} className="btn-create-first">
-              Crear primera pregunta
-            </button>
+      {selectedTopic && !selectedQuizSet && (
+        <div className="quiz-sets-section">
+          <h3 className="quiz-sets-title">📋 Cuestionarios Disponibles</h3>
+          
+          {quizSets.length === 0 ? (
+            <div className="no-quizzes-message">
+              <p>📚 No hay cuestionarios disponibles para este tema.</p>
+              {user.role === 'docente' && (
+                <button onClick={() => navigate('/crear-quiz')} className="btn-create-first">
+                  Crear primer cuestionario
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="quiz-sets-grid">
+              {quizSets.map(quizSet => (
+                <div key={quizSet._id} className="quiz-set-card">
+                  <div className="quiz-set-header">
+                    <h4>{quizSet.quiz_name}</h4>
+                    {quizSet.isActive && <span className="active-badge">✓ Activo</span>}
+                  </div>
+                  {quizSet.description && (
+                    <p className="quiz-set-description">{quizSet.description}</p>
+                  )}
+                  <button 
+                    onClick={() => startQuizSet(quizSet)} 
+                    className="btn-start-quiz"
+                  >
+                    {user.role === 'docente' ? 'Ver Preguntas' : 'Iniciar Cuestionario'} →
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
 
-      {quizzes.length > 0 && (
+      {selectedQuizSet && quizzes.length > 0 && (
         <div className="quizzes-content">
           <div className="quiz-progress">
             <span>Pregunta {Object.keys(feedback).length} de {quizzes.length}</span>
@@ -179,7 +229,6 @@ export default function Quizzes() {
                     <label
                       key={option}
                       className={`quiz-option-label ${
-                        (pendingConfirm?.quizId === quiz._id && pendingConfirm.selectedOption === option) || 
                         answers[quiz._id] === option ? 'selected' : ''
                       } ${
                         feedback[quiz._id] !== undefined && option === quiz.correctAnswer ? 'correct-answer' : ''
@@ -189,7 +238,7 @@ export default function Quizzes() {
                         type="radio"
                         name={`quiz-${quiz._id}`}
                         value={option}
-                        checked={(pendingConfirm?.quizId === quiz._id && pendingConfirm.selectedOption === option) || answers[quiz._id] === option}
+                        checked={answers[quiz._id] === option}
                         onChange={() => handleSelect(quiz._id, option)}
                         disabled={feedback[quiz._id] !== undefined || user.role !== 'estudiante'}
                       />
@@ -204,10 +253,18 @@ export default function Quizzes() {
         </div>
       )}
 
-      {pendingConfirm && user.role === 'estudiante' && (
+      {selectedQuizSet && !showResults && user.role === 'estudiante' && (
         <div className="confirm-section">
-          <button className="btn-confirm-answer" onClick={confirmAnswer}>
-            ✓ Confirmar Respuesta
+          <button className="btn-confirm-answer" onClick={confirmAnswers}>
+            ✓ Confirmar Todas las Respuestas
+          </button>
+        </div>
+      )}
+
+      {selectedQuizSet && (
+        <div className="confirm-section">
+          <button className="btn-back-to-sets" onClick={resetQuiz}>
+            ← Volver a Cuestionarios
           </button>
         </div>
       )}

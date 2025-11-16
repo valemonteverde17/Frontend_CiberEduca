@@ -7,6 +7,8 @@ import './CreateQuizzes.css';
 const CreateQuizzes = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [quizSetName, setQuizSetName] = useState('');
+  const [quizSetDescription, setQuizSetDescription] = useState('');
   const [question, setQuestion] = useState('');
   const [options, setOptions] = useState(['', '', '', '']);
   const [correctAnswer, setCorrectAnswer] = useState('');
@@ -72,21 +74,46 @@ const CreateQuizzes = () => {
       return;
     }
 
+    if (!quizSetName.trim()) {
+      setMessage('Por favor ingresa un nombre para el cuestionario.');
+      setMessageType('error');
+      return;
+    }
+
     try {
-      for (const q of questionsList) {
-        await axios.post('/quizzes', q);
+      // 1. Crear el QuizSet
+      const quizSetRes = await axios.post('/quiz-sets', {
+        quiz_name: quizSetName,
+        description: quizSetDescription,
+        topic_id: selectedTopic,
+        isActive: true
+      });
+
+      const quizSetId = quizSetRes.data._id;
+
+      // 2. Crear todas las preguntas asociadas al QuizSet
+      for (let i = 0; i < questionsList.length; i++) {
+        const q = questionsList[i];
+        await axios.post('/quizzes', {
+          ...q,
+          quiz_set_id: quizSetId,
+          order: i
+        });
       }
-      setMessage(`¡${questionsList.length} pregunta(s) guardada(s) exitosamente!`);
+
+      setMessage(`¡Cuestionario "${quizSetName}" creado con ${questionsList.length} pregunta(s)!`);
       setMessageType('success');
       setQuestionsList([]);
       setSelectedTopic('');
+      setQuizSetName('');
+      setQuizSetDescription('');
       
       setTimeout(() => {
         navigate('/quizzes');
       }, 2000);
     } catch (err) {
-      console.error('Error al guardar el quiz', err);
-      setMessage('Error al guardar las preguntas.');
+      console.error('Error al guardar el cuestionario', err);
+      setMessage('Error al guardar el cuestionario.');
       setMessageType('error');
     }
   };
@@ -115,22 +142,51 @@ const CreateQuizzes = () => {
       <div className="create-quiz-content">
         <div className="form-section">
           <form className="create-quiz-form" onSubmit={addQuestion}>
-            <div className="form-group">
-              <label>Tema *</label>
-              <select
-                value={selectedTopic}
-                onChange={(e) => setSelectedTopic(e.target.value)}
-                required
-                className="form-select"
-              >
-                <option value="">-- Selecciona un tema --</option>
-                {topics.map(topic => (
-                  <option key={topic._id} value={topic._id}>
-                    {topic.topic_name}
-                  </option>
-                ))}
-              </select>
+            <div className="quiz-set-info">
+              <h3>Información del Cuestionario</h3>
+              <div className="form-group">
+                <label>Nombre del Cuestionario *</label>
+                <input
+                  type="text"
+                  value={quizSetName}
+                  onChange={(e) => setQuizSetName(e.target.value)}
+                  placeholder="Ej: Evaluación de Phishing - Nivel Básico"
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Descripción (Opcional)</label>
+                <textarea
+                  value={quizSetDescription}
+                  onChange={(e) => setQuizSetDescription(e.target.value)}
+                  placeholder="Describe brevemente el objetivo de este cuestionario..."
+                  className="form-textarea"
+                  rows={2}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Tema *</label>
+                <select
+                  value={selectedTopic}
+                  onChange={(e) => setSelectedTopic(e.target.value)}
+                  required
+                  className="form-select"
+                >
+                  <option value="">-- Selecciona un tema --</option>
+                  {topics.map(topic => (
+                    <option key={topic._id} value={topic._id}>
+                      {topic.topic_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
+            <div className="divider"></div>
+
+            <h3>Agregar Preguntas</h3>
 
             <div className="form-group">
               <label>Pregunta *</label>
