@@ -6,6 +6,7 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
     type: 'text',
     content: '',
     htmlContent: '',
+    showCode: false,
     style: {
       color: '#333333',
       fontSize: 'medium',
@@ -25,6 +26,7 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
         type: initialBlock.type,
         content: initialBlock.content,
         htmlContent: initialBlock.htmlContent || '',
+        showCode: initialBlock.showCode || false,
         style: {
           color: initialBlock.style?.color || '#333333',
           fontSize: initialBlock.style?.fontSize || 'medium',
@@ -43,6 +45,7 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
         type: 'text',
         content: '',
         htmlContent: '',
+        showCode: false,
         style: {
           color: '#333333',
           fontSize: 'medium',
@@ -262,6 +265,18 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
 </html>`}
                   rows={15}
                 />
+              </div>
+              
+              <div className="form-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={blockData.showCode}
+                    onChange={(e) => setBlockData({ ...blockData, showCode: e.target.checked })}
+                  />
+                  <span>👁️ Mostrar código a los estudiantes</span>
+                </label>
+                <p className="form-hint">Si está activado, los estudiantes podrán ver el código HTML además del resultado</p>
               </div>
             </div>
           )}

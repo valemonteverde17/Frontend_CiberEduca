@@ -37,7 +37,7 @@ export default function ContentEditor({ content, onChange }) {
         type: blockData.type,
         content: blockData.content,
         htmlContent: blockData.htmlContent,
-        cssContent: blockData.cssContent,
+        showCode: blockData.showCode,
         order: blocks.length,
         style: blockData.style
       };

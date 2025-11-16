@@ -124,6 +124,7 @@ export default function TopicDetail() {
         return (
           <LiveCodeBlock 
             htmlContent={block.htmlContent || ''}
+            showCode={block.showCode || false}
             editable={false}
           />
         );
