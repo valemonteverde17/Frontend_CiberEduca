@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Topics from './pages/Topics';
+import TopicDetail from './pages/TopicDetail';
 import Quizzes from './pages/Quizzes';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateQuizzes from "./pages/CreateQuizzes";
@@ -25,6 +26,11 @@ function App() {
         <Route path="/topics" element={
           <ProtectedRoute>
             <Topics />
+          </ProtectedRoute>
+        } />
+        <Route path="/topics/:id" element={
+          <ProtectedRoute>
+            <TopicDetail />
           </ProtectedRoute>
         } />
         <Route path="/quizzes" element={
