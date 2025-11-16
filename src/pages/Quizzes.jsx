@@ -138,7 +138,7 @@ export default function Quizzes() {
         </div>
         {user.role === 'docente' && selectedTopic && (
           <button onClick={() => navigate('/crear-quiz')} className="btn-add-quiz">
-            + Agregar Pregunta
+            + Agregar Cuestionario
           </button>
         )}
       </div>
