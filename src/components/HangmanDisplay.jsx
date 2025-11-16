@@ -13,7 +13,14 @@ export default function HangmanDisplay({ word, onRestart }) {
       const parsed = JSON.parse(saved);
       if (parsed.word === word) {
         setGuessed(parsed.guessed || []);
+      } else {
+        // Si la palabra cambió, limpiar el estado
+        setGuessed([]);
+        localStorage.removeItem('hangman_game');
       }
+    } else {
+      // Si no hay guardado, asegurar que el estado esté limpio
+      setGuessed([]);
     }
   }, [word]);
 
@@ -86,8 +93,10 @@ export default function HangmanDisplay({ word, onRestart }) {
         {won && <p className="message win">¡Ganaste!</p>}
       </div>
 
-      <div style={{ marginTop: '1rem' }}>
-        <button className="control-button" onClick={handleReset}>Otra palabra</button>
+      <div className="control-buttons">
+        <button className="control-button primary" onClick={handleReset}>
+          🔄 Otra Palabra
+        </button>
         {!lost && !won && (
           <button
             className="control-button secondary"
@@ -96,7 +105,7 @@ export default function HangmanDisplay({ word, onRestart }) {
                 setGuessed([...guessed, ...allWrong]);
             }}
           >
-            Rendirse
+            🏳️ Rendirse
           </button>
         )}
       </div>

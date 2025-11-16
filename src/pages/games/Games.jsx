@@ -7,11 +7,11 @@ const Games = () => {
     <div className="games-container">
       <h1 className="games-title">👾 ¡Elige tu juego!</h1>
       <div className="games-buttons">
-        <Link to="/games/hangman">
-          <button className="game-btn">Ahorcado</button>
+        <Link to="/hangman">
+          <button className="game-btn">🎯 Ahorcado</button>
         </Link>
-        <Link to="/games/memorama">
-          <button className="game-btn">Memorama</button>
+        <Link to="/memorama">
+          <button className="game-btn">🧠 Memorama</button>
         </Link>
       </div>
     </div>
