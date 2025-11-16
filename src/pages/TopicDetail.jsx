@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ContentEditor from '../components/ContentEditor';
+import CodeBlock from '../components/CodeBlock';
+import LiveCodeBlock from '../components/LiveCodeBlock';
 import './TopicDetail.css';
 
 export default function TopicDetail() {
@@ -114,6 +116,23 @@ export default function TopicDetail() {
           <pre className="content-code" style={style}>
             <code>{block.content}</code>
           </pre>
+        );
+      case 'code-static':
+        return (
+          <CodeBlock 
+            code={block.content}
+            language={block.style?.codeLanguage || 'javascript'}
+            theme={block.style?.codeTheme || 'dark'}
+            showLineNumbers={true}
+          />
+        );
+      case 'code-live':
+        return (
+          <LiveCodeBlock 
+            htmlContent={block.htmlContent || ''}
+            cssContent={block.cssContent || ''}
+            editable={false}
+          />
         );
       case 'quote':
         return <blockquote className="content-quote" style={style}>{block.content}</blockquote>;

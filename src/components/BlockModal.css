@@ -389,6 +389,54 @@
   }
 }
 
+/* Opciones de código */
+.code-options,
+.live-code-options {
+  background: #f0f7ff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 2px solid #d0e7ff;
+}
+
+.code-textarea {
+  font-family: 'Courier New', 'Consolas', monospace !important;
+  background: #1e1e1e !important;
+  color: #d4d4d4 !important;
+}
+
+.theme-buttons {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.theme-btn {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #666;
+  font-family: inherit;
+}
+
+.theme-btn:hover {
+  border-color: #2b9997;
+  background: #f0fffe;
+  transform: translateY(-2px);
+}
+
+.theme-btn.active {
+  border-color: #2b9997;
+  background: #2b9997;
+  color: white;
+  box-shadow: 0 2px 8px rgba(43, 153, 151, 0.3);
+}
+
 /* Scrollbar para el modal */
 .block-modal-content::-webkit-scrollbar {
   width: 8px;

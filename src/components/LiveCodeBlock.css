@@ -1,0 +1,256 @@
+.live-code-block {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: white;
+  margin: 1rem 0;
+}
+
+/* Header para modo editable */
+.live-code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.live-code-tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.tab-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.tab-button.active {
+  background: white;
+  color: #667eea;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+.reset-button {
+  padding: 0.5rem 1rem;
+  border: 2px solid white;
+  border-radius: 8px;
+  background: transparent;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.reset-button:hover {
+  background: white;
+  color: #667eea;
+  transform: translateY(-2px);
+}
+
+/* Header simple para modo vista */
+.live-code-header-simple {
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.live-code-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.badge-icon {
+  font-size: 1.3rem;
+}
+
+/* Contenido */
+.live-code-content {
+  min-height: 400px;
+  background: #1e1e1e;
+}
+
+.code-editor {
+  width: 100%;
+  height: 400px;
+  padding: 1.5rem;
+  border: none;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+}
+
+.code-editor::placeholder {
+  color: #6e7681;
+}
+
+.html-editor {
+  background: #1e1e1e;
+}
+
+.css-editor {
+  background: #1a1a2e;
+}
+
+/* Vista dividida para modo no editable */
+.split-view {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: #e0e0e0;
+}
+
+.code-section {
+  background: #f8f9fa;
+}
+
+.code-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  background: #e8e8e8;
+  border-bottom: 1px solid #d0d0d0;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.section-icon {
+  font-size: 1.1rem;
+}
+
+.code-display {
+  padding: 1rem;
+  margin: 0;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Courier New', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  min-height: 200px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+/* Sección de preview */
+.preview-section {
+  background: #f8f9fa;
+}
+
+.preview-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  background: #e8e8e8;
+  border-top: 1px solid #d0d0d0;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.preview-container {
+  background: white;
+  min-height: 300px;
+  position: relative;
+}
+
+.preview-iframe {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  border: none;
+  background: white;
+}
+
+/* Scrollbar personalizado */
+.code-editor::-webkit-scrollbar,
+.code-display::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.code-editor::-webkit-scrollbar-track,
+.code-display::-webkit-scrollbar-track {
+  background: #2d2d2d;
+}
+
+.code-editor::-webkit-scrollbar-thumb,
+.code-display::-webkit-scrollbar-thumb {
+  background: #4c4c4c;
+  border-radius: 4px;
+}
+
+.code-editor::-webkit-scrollbar-thumb:hover,
+.code-display::-webkit-scrollbar-thumb:hover {
+  background: #5c5c5c;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .live-code-header {
+    flex-direction: column;
+    gap: 0.8rem;
+    align-items: stretch;
+  }
+
+  .live-code-tabs {
+    justify-content: space-between;
+  }
+
+  .tab-button {
+    flex: 1;
+    justify-content: center;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .reset-button {
+    width: 100%;
+  }
+
+  .split-view {
+    grid-template-columns: 1fr;
+  }
+
+  .code-editor {
+    height: 300px;
+  }
+
+  .preview-iframe {
+    min-height: 250px;
+  }
+}

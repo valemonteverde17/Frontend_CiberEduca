@@ -5,6 +5,8 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
   const [blockData, setBlockData] = useState({
     type: 'text',
     content: '',
+    htmlContent: '',
+    cssContent: '',
     style: {
       color: '#333333',
       fontSize: 'medium',
@@ -12,7 +14,9 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
       fontStyle: 'normal',
       textAlign: 'left',
       listStyle: 'disc',
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent',
+      codeLanguage: 'javascript',
+      codeTheme: 'dark'
     }
   });
 
@@ -21,6 +25,8 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
       setBlockData({
         type: initialBlock.type,
         content: initialBlock.content,
+        htmlContent: initialBlock.htmlContent || '',
+        cssContent: initialBlock.cssContent || '',
         style: {
           color: initialBlock.style?.color || '#333333',
           fontSize: initialBlock.style?.fontSize || 'medium',
@@ -28,7 +34,9 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
           fontStyle: initialBlock.style?.fontStyle || 'normal',
           textAlign: initialBlock.style?.textAlign || 'left',
           listStyle: initialBlock.style?.listStyle || 'disc',
-          backgroundColor: initialBlock.style?.backgroundColor || 'transparent'
+          backgroundColor: initialBlock.style?.backgroundColor || 'transparent',
+          codeLanguage: initialBlock.style?.codeLanguage || 'javascript',
+          codeTheme: initialBlock.style?.codeTheme || 'dark'
         }
       });
     } else {
@@ -36,6 +44,8 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
       setBlockData({
         type: 'text',
         content: '',
+        htmlContent: '',
+        cssContent: '',
         style: {
           color: '#333333',
           fontSize: 'medium',
@@ -43,14 +53,21 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
           fontStyle: 'normal',
           textAlign: 'left',
           listStyle: 'disc',
-          backgroundColor: 'transparent'
+          backgroundColor: 'transparent',
+          codeLanguage: 'javascript',
+          codeTheme: 'dark'
         }
       });
     }
   }, [initialBlock, isOpen]);
 
   const handleSave = () => {
-    if (!blockData.content.trim()) {
+    if (blockData.type === 'code-live') {
+      if (!blockData.htmlContent.trim() && !blockData.cssContent.trim()) {
+        alert('Debes agregar al menos HTML o CSS');
+        return;
+      }
+    } else if (!blockData.content.trim()) {
       alert('El contenido no puede estar vacío');
       return;
     }
@@ -140,30 +157,124 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
                 <span className="type-icon">💬</span>
                 <span>Cita</span>
               </button>
+              <button
+                type="button"
+                className={`type-btn ${blockData.type === 'code-static' ? 'active' : ''}`}
+                onClick={() => setBlockData({ ...blockData, type: 'code-static' })}
+              >
+                <span className="type-icon">🖥️</span>
+                <span>Código Pro</span>
+              </button>
+              <button
+                type="button"
+                className={`type-btn ${blockData.type === 'code-live' ? 'active' : ''}`}
+                onClick={() => setBlockData({ ...blockData, type: 'code-live' })}
+              >
+                <span className="type-icon">⚡</span>
+                <span>Código Vivo</span>
+              </button>
             </div>
           </div>
 
           {/* Contenido */}
-          <div className="form-group">
-            <label className="form-label">✍️ Contenido</label>
-            <textarea
-              className="block-content-textarea"
-              value={blockData.content}
-              onChange={(e) => setBlockData({ ...blockData, content: e.target.value })}
-              placeholder={
-                blockData.type === 'list' 
-                  ? 'Escribe cada elemento en una línea nueva...'
-                  : blockData.type === 'code'
-                  ? 'Escribe tu código aquí...'
-                  : 'Escribe el contenido...'
-              }
-              rows={blockData.type === 'code' || blockData.type === 'list' ? 8 : 5}
-            />
-          </div>
+          {blockData.type !== 'code-live' && (
+            <div className="form-group">
+              <label className="form-label">✍️ Contenido</label>
+              <textarea
+                className="block-content-textarea"
+                value={blockData.content}
+                onChange={(e) => setBlockData({ ...blockData, content: e.target.value })}
+                placeholder={
+                  blockData.type === 'list' 
+                    ? 'Escribe cada elemento en una línea nueva...'
+                    : blockData.type === 'code' || blockData.type === 'code-static'
+                    ? 'Escribe tu código aquí...'
+                    : 'Escribe el contenido...'
+                }
+                rows={blockData.type === 'code' || blockData.type === 'code-static' || blockData.type === 'list' ? 8 : 5}
+              />
+            </div>
+          )}
 
-          {/* Opciones de Estilo */}
-          <div className="style-options">
-            <h4 className="style-section-title">🎨 Opciones de Estilo</h4>
+          {/* Opciones específicas para Código Estático */}
+          {blockData.type === 'code-static' && (
+            <div className="code-options">
+              <div className="form-group">
+                <label className="form-label">💻 Lenguaje de Programación</label>
+                <select
+                  className="form-select"
+                  value={blockData.style.codeLanguage}
+                  onChange={(e) => updateStyle('codeLanguage', e.target.value)}
+                >
+                  <option value="javascript">JavaScript</option>
+                  <option value="python">Python</option>
+                  <option value="java">Java</option>
+                  <option value="csharp">C#</option>
+                  <option value="cpp">C++</option>
+                  <option value="php">PHP</option>
+                  <option value="ruby">Ruby</option>
+                  <option value="go">Go</option>
+                  <option value="rust">Rust</option>
+                  <option value="typescript">TypeScript</option>
+                  <option value="html">HTML</option>
+                  <option value="css">CSS</option>
+                  <option value="sql">SQL</option>
+                  <option value="bash">Bash</option>
+                  <option value="json">JSON</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label className="form-label">🎨 Tema</label>
+                <div className="theme-buttons">
+                  <button
+                    type="button"
+                    className={`theme-btn ${blockData.style.codeTheme === 'dark' ? 'active' : ''}`}
+                    onClick={() => updateStyle('codeTheme', 'dark')}
+                  >
+                    🌙 Oscuro
+                  </button>
+                  <button
+                    type="button"
+                    className={`theme-btn ${blockData.style.codeTheme === 'light' ? 'active' : ''}`}
+                    onClick={() => updateStyle('codeTheme', 'light')}
+                  >
+                    ☀️ Claro
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Opciones específicas para Código en Vivo */}
+          {blockData.type === 'code-live' && (
+            <div className="live-code-options">
+              <div className="form-group">
+                <label className="form-label">🌐 Código HTML</label>
+                <textarea
+                  className="block-content-textarea code-textarea"
+                  value={blockData.htmlContent}
+                  onChange={(e) => setBlockData({ ...blockData, htmlContent: e.target.value })}
+                  placeholder="<div>Tu código HTML aquí...</div>"
+                  rows={8}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">🎨 Código CSS</label>
+                <textarea
+                  className="block-content-textarea code-textarea"
+                  value={blockData.cssContent}
+                  onChange={(e) => setBlockData({ ...blockData, cssContent: e.target.value })}
+                  placeholder="body { background: #fff; }"
+                  rows={8}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Opciones de Estilo (no para bloques de código) */}
+          {blockData.type !== 'code-static' && blockData.type !== 'code-live' && (
+            <div className="style-options">
+              <h4 className="style-section-title">🎨 Opciones de Estilo</h4>
 
             {/* Color de Texto */}
             <div className="form-group">
@@ -304,9 +415,11 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
                 </select>
               </div>
             )}
-          </div>
+            </div>
+          )}
 
-          {/* Vista Previa */}
+          {/* Vista Previa (no para bloques de código) */}
+          {blockData.type !== 'code-static' && blockData.type !== 'code-live' && (
           <div className="preview-section">
             <h4 className="style-section-title">👁️ Vista Previa</h4>
             <div 
@@ -331,6 +444,7 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
               {blockData.content || 'Tu contenido aparecerá aquí...'}
             </div>
           </div>
+          )}
         </div>
 
         <div className="block-modal-footer">

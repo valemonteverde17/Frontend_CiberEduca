@@ -1,0 +1,165 @@
+.code-block-container {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  margin: 1rem 0;
+}
+
+.code-block-container:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.code-block-container.dark-theme {
+  background: #1e1e1e;
+}
+
+.code-block-container.light-theme {
+  background: #f5f5f5;
+}
+
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .code-block-header {
+  background: #252526;
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.light-theme .code-block-header {
+  background: #e8e8e8;
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+.code-language-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.dark-theme .code-language-badge {
+  color: #d4d4d4;
+}
+
+.light-theme .code-language-badge {
+  color: #333;
+}
+
+.code-icon {
+  font-size: 1.2rem;
+}
+
+.language-name {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.copy-button {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.dark-theme .copy-button {
+  background: #3c3c3c;
+  color: #d4d4d4;
+}
+
+.light-theme .copy-button {
+  background: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.copy-button:hover {
+  transform: translateY(-2px);
+}
+
+.dark-theme .copy-button:hover {
+  background: #4c4c4c;
+}
+
+.light-theme .copy-button:hover {
+  background: #f0f0f0;
+}
+
+.copy-button.copied {
+  background: #4caf50 !important;
+  color: white !important;
+  border-color: #4caf50 !important;
+}
+
+.copy-icon {
+  font-size: 1rem;
+}
+
+.code-block-content {
+  overflow-x: auto;
+}
+
+/* Scrollbar personalizado */
+.code-block-content::-webkit-scrollbar {
+  height: 8px;
+}
+
+.dark-theme .code-block-content::-webkit-scrollbar-track {
+  background: #1e1e1e;
+}
+
+.light-theme .code-block-content::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+.dark-theme .code-block-content::-webkit-scrollbar-thumb {
+  background: #4c4c4c;
+  border-radius: 4px;
+}
+
+.light-theme .code-block-content::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.dark-theme .code-block-content::-webkit-scrollbar-thumb:hover {
+  background: #5c5c5c;
+}
+
+.light-theme .code-block-content::-webkit-scrollbar-thumb:hover {
+  background: #bbb;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .code-block-header {
+    padding: 0.6rem 1rem;
+  }
+
+  .copy-button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .language-name {
+    display: none;
+  }
+
+  .code-icon {
+    font-size: 1rem;
+  }
+}
