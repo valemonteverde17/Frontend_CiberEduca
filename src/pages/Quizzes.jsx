@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ResultTable from '../components/ResultTable';
-import GlobalRanking from '../components/GlobalRanking';
 import './Quizzes.css';
 
 export default function Quizzes() {
@@ -316,14 +315,19 @@ export default function Quizzes() {
 
       {selectedTopic && user.role === 'estudiante' && (
         <div className="results-section">
-          <h3 className="results-title">Estadísticas y Rankings</h3>
+          <h3 className="results-title">📊 Mi Historial de Evaluaciones</h3>
           <div className="results-container">
             <div className="table-wrapper">
               <ResultTable topicId={selectedTopic} />
             </div>
-            <div className="table-wrapper">
-              <GlobalRanking topicId={selectedTopic} />
-            </div>
+          </div>
+          <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+            <button 
+              onClick={() => window.location.href = '/rankings'} 
+              className="btn-view-rankings"
+            >
+              🏆 Ver Rankings Globales
+            </button>
           </div>
         </div>
       )}

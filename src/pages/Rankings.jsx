@@ -22,9 +22,11 @@ export default function Rankings() {
     setLoading(true);
     try {
       const res = await axios.get('/scores/ranking/global');
+      console.log('Ranking global recibido:', res.data);
       setGlobalRanking(res.data);
     } catch (err) {
       console.error('Error al cargar ranking global:', err);
+      console.error('Detalles del error:', err.response?.data);
     } finally {
       setLoading(false);
     }
@@ -33,6 +35,7 @@ export default function Rankings() {
   const loadQuizSets = async () => {
     try {
       const res = await axios.get('/quiz-sets');
+      console.log('Quiz sets recibidos:', res.data);
       setQuizSets(res.data);
     } catch (err) {
       console.error('Error al cargar quiz sets:', err);
@@ -171,7 +174,7 @@ export default function Rankings() {
                 <option value="">-- Selecciona un quiz --</option>
                 {quizSets.map((qs) => (
                   <option key={qs._id} value={qs._id}>
-                    {qs.title}
+                    {qs.quiz_name}
                   </option>
                 ))}
               </select>

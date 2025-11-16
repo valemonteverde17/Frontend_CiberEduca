@@ -412,6 +412,24 @@
   box-shadow: 0 4px 12px rgba(43, 153, 151, 0.3);
 }
 
+.btn-view-rankings {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.3);
+}
+
+.btn-view-rankings:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(245, 87, 108, 0.5);
+}
+
 .final-score-card {
   max-width: 600px;
   margin: 3rem auto;

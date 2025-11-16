@@ -288,7 +288,7 @@ export default function Profile() {
                     <div key={score._id} className="score-card">
                       <div className="score-header">
                         <div className="score-title">
-                          <h3>{score.quiz_set_id?.title || 'Quiz'}</h3>
+                          <h3>{score.quiz_set_id?.quiz_name || 'Quiz'}</h3>
                           <span className="score-topic">{score.topic_id?.topic_name || 'Tema'}</span>
                         </div>
                         <div 
