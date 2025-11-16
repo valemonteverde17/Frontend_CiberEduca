@@ -65,26 +65,60 @@ export default function TopicDetail() {
     }
   };
 
+  const getBlockStyle = (block) => {
+    if (!block.style) return {};
+    
+    const fontSizeMap = {
+      small: '0.875rem',
+      medium: '1rem',
+      large: '1.25rem',
+      xlarge: '1.5rem'
+    };
+
+    return {
+      color: block.style.color || '#333',
+      fontSize: fontSizeMap[block.style.fontSize] || '1rem',
+      fontWeight: block.style.fontWeight || 'normal',
+      fontStyle: block.style.fontStyle || 'normal',
+      textAlign: block.style.textAlign || 'left',
+      backgroundColor: block.style.backgroundColor !== 'transparent' ? block.style.backgroundColor : undefined,
+      padding: block.style.backgroundColor !== 'transparent' ? '1rem' : undefined,
+      borderRadius: block.style.backgroundColor !== 'transparent' ? '8px' : undefined
+    };
+  };
+
   const renderContentBlock = (block) => {
+    const style = getBlockStyle(block);
+    
     switch (block.type) {
       case 'heading':
-        return <h3 className="content-heading">{block.content}</h3>;
+        return <h3 className="content-heading" style={style}>{block.content}</h3>;
       case 'text':
-        return <p className="content-text">{block.content}</p>;
+        return <p className="content-text" style={style}>{block.content}</p>;
       case 'list':
         return (
-          <ul className="content-list">
+          <ul 
+            className="content-list" 
+            style={{
+              ...style,
+              listStyleType: block.style?.listStyle || 'disc'
+            }}
+          >
             {block.content.split('\n').filter(item => item.trim()).map((item, idx) => (
               <li key={idx}>{item}</li>
             ))}
           </ul>
         );
       case 'code':
-        return <pre className="content-code"><code>{block.content}</code></pre>;
+        return (
+          <pre className="content-code" style={style}>
+            <code>{block.content}</code>
+          </pre>
+        );
       case 'quote':
-        return <blockquote className="content-quote">{block.content}</blockquote>;
+        return <blockquote className="content-quote" style={style}>{block.content}</blockquote>;
       default:
-        return <p>{block.content}</p>;
+        return <p style={style}>{block.content}</p>;
     }
   };
 

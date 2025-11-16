@@ -501,30 +501,32 @@
 }
 
 .content-block-display {
-  background: #f8f9fa;
-  padding: 1.5rem;
+  background: white;
+  padding: 0;
   border-radius: 12px;
-  border-left: 4px solid #2b9997;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.content-block-display:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .content-heading {
-  color: #ff6b35;
-  font-size: 1.5rem;
   margin: 0;
   font-weight: 700;
+  line-height: 1.4;
 }
 
 .content-text {
-  color: #333;
   line-height: 1.8;
   margin: 0;
-  font-size: 1.05rem;
+  white-space: pre-wrap;
 }
 
 .content-list {
   margin: 0;
-  padding-left: 1.5rem;
-  color: #333;
+  padding-left: 2rem;
   line-height: 1.8;
 }
 
@@ -553,7 +555,5 @@
   padding-left: 1rem;
   margin: 0;
   font-style: italic;
-  color: #555;
-  font-size: 1.1rem;
   line-height: 1.7;
 }
