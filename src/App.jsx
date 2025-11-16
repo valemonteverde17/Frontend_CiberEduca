@@ -9,6 +9,7 @@ import TopicDetail from './pages/TopicDetail';
 import Quizzes from './pages/Quizzes';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateQuizzes from "./pages/CreateQuizzes";
+import EditQuizSet from './pages/EditQuizSet';
 import Games from './pages/games/Games';
 import Hangman from './pages/games/Hangman';
 import Memorama from './pages/games/Memorama';
@@ -38,7 +39,16 @@ function App() {
             <Quizzes />
           </ProtectedRoute>
         } />
-       <Route path="/crear-quiz" element={<CreateQuizzes />} />
+       <Route path="/crear-quiz" element={
+         <ProtectedRoute>
+           <CreateQuizzes />
+         </ProtectedRoute>
+       } />
+       <Route path="/edit-quiz-set/:id" element={
+         <ProtectedRoute>
+           <EditQuizSet />
+         </ProtectedRoute>
+       } />
       <Route path="/games/hangman" element={
       <ProtectedRoute>
         <Hangman />

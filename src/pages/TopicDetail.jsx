@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import ContentEditor from '../components/ContentEditor';
 import './TopicDetail.css';
 
 export default function TopicDetail() {
@@ -10,26 +11,25 @@ export default function TopicDetail() {
   const { user } = useAuth();
   const [topic, setTopic] = useState(null);
   const [quizzes, setQuizzes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [showEditModal, setShowEditModal] = useState(false);
+  const [quizSets, setQuizSets] = useState([]);
   const [editName, setEditName] = useState('');
   const [editDesc, setEditDesc] = useState('');
+  const [contentBlocks, setContentBlocks] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showContentModal, setShowContentModal] = useState(false);
 
   const load = async () => {
     try {
-      const [topicRes, quizzesRes] = await Promise.all([
-        axios.get(`/topics/${id}`),
-        axios.get(`/quizzes/topic/${id}`)
-      ]);
-      setTopic(topicRes.data);
-      setQuizzes(quizzesRes.data);
-      setEditName(topicRes.data.topic_name);
-      setEditDesc(topicRes.data.description);
-    } catch (e) {
-      setError('No se pudo cargar el tema');
-    } finally {
-      setLoading(false);
+      const res = await axios.get(`/topics/${id}`);
+      setTopic(res.data);
+      setEditName(res.data.topic_name);
+      setEditDesc(res.data.description);
+      setContentBlocks(res.data.content || []);
+
+      const quizSetsRes = await axios.get(`/quiz-sets/topic/${id}`);
+      setQuizSets(quizSetsRes.data);
+    } catch (err) {
+      console.error('Error al cargar tema:', err);
     }
   };
 
@@ -44,12 +44,47 @@ export default function TopicDetail() {
       return;
     }
     try {
-      await axios.patch(`/topics/${id}`, { topic_name: editName, description: editDesc });
+      await axios.patch(`/topics/${id}`, { 
+        topic_name: editName, 
+        description: editDesc 
+      });
       await load();
       setShowEditModal(false);
       alert('Tema actualizado exitosamente');
     } catch (e) {
       alert('No se pudo actualizar el tema');
+    }
+  };
+
+  const handleContentUpdate = async (updatedContent) => {
+    try {
+      await axios.patch(`/topics/${id}`, { content: updatedContent });
+      setContentBlocks(updatedContent);
+    } catch (e) {
+      console.error('Error al actualizar contenido:', e);
+    }
+  };
+
+  const renderContentBlock = (block) => {
+    switch (block.type) {
+      case 'heading':
+        return <h3 className="content-heading">{block.content}</h3>;
+      case 'text':
+        return <p className="content-text">{block.content}</p>;
+      case 'list':
+        return (
+          <ul className="content-list">
+            {block.content.split('\n').filter(item => item.trim()).map((item, idx) => (
+              <li key={idx}>{item}</li>
+            ))}
+          </ul>
+        );
+      case 'code':
+        return <pre className="content-code"><code>{block.content}</code></pre>;
+      case 'quote':
+        return <blockquote className="content-quote">{block.content}</blockquote>;
+      default:
+        return <p>{block.content}</p>;
     }
   };
 
@@ -63,9 +98,7 @@ export default function TopicDetail() {
     }
   };
 
-  if (loading) return <div className="loading-container">Cargando...</div>;
-  if (error) return <div className="error-container">{error}</div>;
-  if (!topic) return null;
+  if (!topic) return <div className="loading-container">Cargando...</div>;
 
   return (
     <div className="topic-detail-container">
@@ -81,69 +114,86 @@ export default function TopicDetail() {
           </div>
           {user?.role === 'docente' && (
             <button className="btn-edit-topic" onClick={() => setShowEditModal(true)}>
-              ✏️ Editar Tema
+              ✒️ Editar Tema
             </button>
           )}
         </div>
+
+        {/* Sección de Contenido */}
+        {user?.role === 'docente' ? (
+          <ContentEditor content={contentBlocks} onChange={handleContentUpdate} />
+        ) : (
+          contentBlocks && contentBlocks.length > 0 && (
+            <div className="topic-content-display">
+              <h3 className="content-section-title">📚 Contenido del Tema</h3>
+              <div className="content-blocks-display">
+                {contentBlocks.map((block) => (
+                  <div key={block.id} className="content-block-display">
+                    {renderContentBlock(block)}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        )}
       </div>
 
       <div className="quizzes-section">
         <div className="quizzes-header">
-          <h2>Preguntas de Evaluación</h2>
+          <h2>📋 Cuestionarios Disponibles</h2>
           {user?.role === 'docente' && (
             <button className="btn-add-quiz" onClick={() => navigate('/crear-quiz')}>
-              + Agregar Pregunta
+              + Crear Cuestionario
             </button>
           )}
         </div>
 
-        {quizzes.length === 0 ? (
+        {quizSets.length === 0 ? (
           <div className="no-quizzes">
-            <p>📚 Aún no hay preguntas para este tema.</p>
+            <p>📚 Aún no hay cuestionarios para este tema.</p>
             {user?.role === 'docente' && (
-              <p className="hint">Crea la primera pregunta para comenzar.</p>
+              <p className="hint">Crea el primer cuestionario para comenzar.</p>
             )}
           </div>
         ) : (
-          <div className="quizzes-list">
-            {quizzes.map((quiz, index) => (
-              <div key={quiz._id} className="quiz-item">
-                <div className="quiz-number">Pregunta {index + 1}</div>
-                <div className="quiz-question">{quiz.question}</div>
-                <div className="quiz-options">
-                  {quiz.options.map((option, idx) => (
-                    <div 
-                      key={idx} 
-                      className={`quiz-option ${option === quiz.correctAnswer ? 'correct-option' : ''}`}
-                    >
-                      <span className="option-letter">{String.fromCharCode(65 + idx)}</span>
-                      <span>{option}</span>
-                      {user?.role === 'docente' && option === quiz.correctAnswer && (
-                        <span className="correct-badge">✓ Correcta</span>
-                      )}
-                    </div>
-                  ))}
+          <div className="quiz-sets-grid">
+            {quizSets.map((quizSet) => (
+              <div key={quizSet._id} className="quiz-set-card">
+                <div className="quiz-set-card-header">
+                  <h3>{quizSet.quiz_name}</h3>
+                  {quizSet.isActive && <span className="active-badge">✓ Activo</span>}
                 </div>
-                {user?.role === 'docente' && (
-                  <button 
-                    className="btn-delete-quiz"
-                    onClick={() => handleDeleteQuiz(quiz._id)}
-                  >
-                    🗑️ Eliminar
-                  </button>
+                {quizSet.description && (
+                  <p className="quiz-set-card-description">{quizSet.description}</p>
                 )}
+                <div className="quiz-set-actions">
+                  {user?.role === 'estudiante' ? (
+                    <button 
+                      className="btn-take-quiz"
+                      onClick={() => navigate('/quizzes')}
+                    >
+                      🎯 Resolver Cuestionario →
+                    </button>
+                  ) : (
+                    <>
+                      <button 
+                        className="btn-edit-quiz-set"
+                        onClick={() => navigate(`/edit-quiz-set/${quizSet._id}`)}
+                      >
+                        ✒️ Editar
+                      </button>
+                      <button 
+                        className="btn-view-quiz"
+                        onClick={() => navigate('/quizzes')}
+                      >
+                        👁️ Ver
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             ))}
           </div>
-        )}
-
-        {quizzes.length > 0 && user?.role === 'estudiante' && (
-          <button 
-            className="btn-start-quiz"
-            onClick={() => navigate('/quizzes')}
-          >
-            🎯 Comenzar Evaluación
-          </button>
         )}
       </div>
 
