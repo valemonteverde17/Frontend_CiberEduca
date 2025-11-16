@@ -6,7 +6,6 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
     type: 'text',
     content: '',
     htmlContent: '',
-    cssContent: '',
     style: {
       color: '#333333',
       fontSize: 'medium',
@@ -26,7 +25,6 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
         type: initialBlock.type,
         content: initialBlock.content,
         htmlContent: initialBlock.htmlContent || '',
-        cssContent: initialBlock.cssContent || '',
         style: {
           color: initialBlock.style?.color || '#333333',
           fontSize: initialBlock.style?.fontSize || 'medium',
@@ -45,7 +43,6 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
         type: 'text',
         content: '',
         htmlContent: '',
-        cssContent: '',
         style: {
           color: '#333333',
           fontSize: 'medium',
@@ -63,8 +60,8 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
 
   const handleSave = () => {
     if (blockData.type === 'code-live') {
-      if (!blockData.htmlContent.trim() && !blockData.cssContent.trim()) {
-        alert('Debes agregar al menos HTML o CSS');
+      if (!blockData.htmlContent.trim()) {
+        alert('Debes agregar código HTML');
         return;
       }
     } else if (!blockData.content.trim()) {
@@ -143,14 +140,6 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
               </button>
               <button
                 type="button"
-                className={`type-btn ${blockData.type === 'code' ? 'active' : ''}`}
-                onClick={() => setBlockData({ ...blockData, type: 'code' })}
-              >
-                <span className="type-icon">💻</span>
-                <span>Código</span>
-              </button>
-              <button
-                type="button"
                 className={`type-btn ${blockData.type === 'quote' ? 'active' : ''}`}
                 onClick={() => setBlockData({ ...blockData, type: 'quote' })}
               >
@@ -187,11 +176,11 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
                 placeholder={
                   blockData.type === 'list' 
                     ? 'Escribe cada elemento en una línea nueva...'
-                    : blockData.type === 'code' || blockData.type === 'code-static'
+                    : blockData.type === 'code-static'
                     ? 'Escribe tu código aquí...'
                     : 'Escribe el contenido...'
                 }
-                rows={blockData.type === 'code' || blockData.type === 'code-static' || blockData.type === 'list' ? 8 : 5}
+                rows={blockData.type === 'code-static' || blockData.type === 'list' ? 8 : 5}
               />
             </div>
           )}
@@ -249,23 +238,29 @@ export default function BlockModal({ isOpen, onClose, onSave, initialBlock = nul
           {blockData.type === 'code-live' && (
             <div className="live-code-options">
               <div className="form-group">
-                <label className="form-label">🌐 Código HTML</label>
+                <label className="form-label">💻 Código HTML Completo</label>
+                <p className="form-hint">Incluye todo: &lt;!DOCTYPE html&gt;, &lt;style&gt;, etc.</p>
                 <textarea
                   className="block-content-textarea code-textarea"
                   value={blockData.htmlContent}
                   onChange={(e) => setBlockData({ ...blockData, htmlContent: e.target.value })}
-                  placeholder="<div>Tu código HTML aquí...</div>"
-                  rows={8}
-                />
-              </div>
-              <div className="form-group">
-                <label className="form-label">🎨 Código CSS</label>
-                <textarea
-                  className="block-content-textarea code-textarea"
-                  value={blockData.cssContent}
-                  onChange={(e) => setBlockData({ ...blockData, cssContent: e.target.value })}
-                  placeholder="body { background: #fff; }"
-                  rows={8}
+                  placeholder={`<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Mi Código</title>
+  <style>
+    body { 
+      font-family: Arial; 
+      padding: 20px; 
+    }
+  </style>
+</head>
+<body>
+  <h1>¡Hola Mundo!</h1>
+</body>
+</html>`}
+                  rows={15}
                 />
               </div>
             </div>

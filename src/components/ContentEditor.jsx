@@ -84,7 +84,6 @@ export default function ContentEditor({ content, onChange }) {
       case 'heading': return '📌';
       case 'text': return '📝';
       case 'list': return '📋';
-      case 'code': return '💻';
       case 'quote': return '💬';
       case 'code-static': return '🖥️';
       case 'code-live': return '⚡';
@@ -97,7 +96,6 @@ export default function ContentEditor({ content, onChange }) {
       case 'heading': return 'Encabezado';
       case 'text': return 'Texto';
       case 'list': return 'Lista';
-      case 'code': return 'Código';
       case 'quote': return 'Cita';
       case 'code-static': return 'Código Pro';
       case 'code-live': return 'Código Vivo';
@@ -199,10 +197,6 @@ export default function ContentEditor({ content, onChange }) {
                       <li key={idx}>{item}</li>
                     ))}
                   </ul>
-                ) : block.type === 'code' ? (
-                  <pre style={{ margin: 0, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}>
-                    <code>{block.content}</code>
-                  </pre>
                 ) : block.type === 'code-static' ? (
                   <div style={{ background: '#1e1e1e', color: '#d4d4d4', padding: '1rem', borderRadius: '8px', fontFamily: 'monospace', fontSize: '0.9rem' }}>
                     <div style={{ marginBottom: '0.5rem', color: '#6e7681' }}>
@@ -213,11 +207,10 @@ export default function ContentEditor({ content, onChange }) {
                 ) : block.type === 'code-live' ? (
                   <div style={{ background: '#f0f7ff', padding: '1rem', borderRadius: '8px', border: '2px solid #d0e7ff' }}>
                     <div style={{ marginBottom: '0.5rem', fontWeight: 'bold', color: '#667eea' }}>
-                      ⚡ Código en Vivo (HTML + CSS)
+                      ⚡ Código en Vivo - HTML Completo
                     </div>
                     <div style={{ fontSize: '0.85rem', color: '#666' }}>
-                      HTML: {block.htmlContent ? `${block.htmlContent.substring(0, 50)}...` : 'Sin HTML'}<br/>
-                      CSS: {block.cssContent ? `${block.cssContent.substring(0, 50)}...` : 'Sin CSS'}
+                      {block.htmlContent ? `${block.htmlContent.substring(0, 80)}...` : 'Sin código HTML'}
                     </div>
                   </div>
                 ) : (

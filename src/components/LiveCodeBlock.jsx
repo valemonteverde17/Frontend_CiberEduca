@@ -1,77 +1,42 @@
 import { useState, useEffect, useRef } from 'react';
 import './LiveCodeBlock.css';
 
-export default function LiveCodeBlock({ htmlContent = '', cssContent = '', editable = false, onUpdate }) {
-  const [html, setHtml] = useState(htmlContent);
-  const [css, setCss] = useState(cssContent);
-  const [activeTab, setActiveTab] = useState('html');
+export default function LiveCodeBlock({ htmlContent = '', editable = false, onUpdate }) {
+  const [code, setCode] = useState(htmlContent);
+  const [activeTab, setActiveTab] = useState('code');
   const iframeRef = useRef(null);
 
   useEffect(() => {
-    setHtml(htmlContent);
-    setCss(cssContent);
-  }, [htmlContent, cssContent]);
+    setCode(htmlContent);
+  }, [htmlContent]);
 
   useEffect(() => {
     updatePreview();
-  }, [html, css]);
+  }, [code]);
 
   const updatePreview = () => {
     if (!iframeRef.current) return;
 
-    const iframe = iframeRef.current;
-    const document = iframe.contentDocument || iframe.contentWindow.document;
-
-    const content = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <style>
-            * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-            }
-            body {
-              font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-              padding: 1rem;
-              background: white;
-            }
-            ${css}
-          </style>
-        </head>
-        <body>
-          ${html}
-        </body>
-      </html>
-    `;
-
-    document.open();
-    document.write(content);
-    document.close();
-  };
-
-  const handleHtmlChange = (e) => {
-    const newHtml = e.target.value;
-    setHtml(newHtml);
-    if (editable && onUpdate) {
-      onUpdate({ html: newHtml, css });
+    try {
+      const iframe = iframeRef.current;
+      
+      // Usar srcdoc en lugar de acceder al contentDocument
+      iframe.srcdoc = code || '<p style="color: #999; text-align: center; padding: 2rem;">Sin código para mostrar</p>';
+    } catch (error) {
+      console.error('Error al actualizar preview:', error);
     }
   };
 
-  const handleCssChange = (e) => {
-    const newCss = e.target.value;
-    setCss(newCss);
+  const handleCodeChange = (e) => {
+    const newCode = e.target.value;
+    setCode(newCode);
     if (editable && onUpdate) {
-      onUpdate({ html, css: newCss });
+      onUpdate(newCode);
     }
   };
 
   const handleReset = () => {
-    setHtml(htmlContent);
-    setCss(cssContent);
+    setCode(htmlContent);
   };
 
   return (
@@ -81,18 +46,11 @@ export default function LiveCodeBlock({ htmlContent = '', cssContent = '', edita
           <div className="live-code-header">
             <div className="live-code-tabs">
               <button
-                className={`tab-button ${activeTab === 'html' ? 'active' : ''}`}
-                onClick={() => setActiveTab('html')}
+                className={`tab-button ${activeTab === 'code' ? 'active' : ''}`}
+                onClick={() => setActiveTab('code')}
               >
-                <span className="tab-icon">🌐</span>
-                HTML
-              </button>
-              <button
-                className={`tab-button ${activeTab === 'css' ? 'active' : ''}`}
-                onClick={() => setActiveTab('css')}
-              >
-                <span className="tab-icon">🎨</span>
-                CSS
+                <span className="tab-icon">💻</span>
+                Código HTML
               </button>
               <button
                 className={`tab-button ${activeTab === 'preview' ? 'active' : ''}`}
@@ -108,21 +66,12 @@ export default function LiveCodeBlock({ htmlContent = '', cssContent = '', edita
           </div>
 
           <div className="live-code-content">
-            {activeTab === 'html' && (
+            {activeTab === 'code' && (
               <textarea
                 className="code-editor html-editor"
-                value={html}
-                onChange={handleHtmlChange}
-                placeholder="Escribe tu código HTML aquí..."
-                spellCheck="false"
-              />
-            )}
-            {activeTab === 'css' && (
-              <textarea
-                className="code-editor css-editor"
-                value={css}
-                onChange={handleCssChange}
-                placeholder="Escribe tu código CSS aquí..."
+                value={code}
+                onChange={handleCodeChange}
+                placeholder="Escribe tu código HTML completo aquí (incluyendo <!DOCTYPE html>, <style>, etc.)..."
                 spellCheck="false"
               />
             )}
@@ -132,7 +81,7 @@ export default function LiveCodeBlock({ htmlContent = '', cssContent = '', edita
                   ref={iframeRef}
                   className="preview-iframe"
                   title="Live Preview"
-                  sandbox="allow-scripts"
+                  sandbox="allow-scripts allow-same-origin"
                 />
               </div>
             )}
@@ -143,37 +92,30 @@ export default function LiveCodeBlock({ htmlContent = '', cssContent = '', edita
           <div className="live-code-header-simple">
             <div className="live-code-badge">
               <span className="badge-icon">⚡</span>
-              <span>Código en Vivo</span>
+              <span>Código en Vivo - HTML Completo</span>
             </div>
           </div>
-          <div className="split-view">
-            <div className="code-section">
+          <div className="student-view">
+            <div className="code-section-full">
               <div className="code-section-header">
-                <span className="section-icon">🌐</span>
-                HTML
+                <span className="section-icon">💻</span>
+                Código HTML
               </div>
-              <pre className="code-display">{html || 'Sin código HTML'}</pre>
+              <pre className="code-display">{code || 'Sin código'}</pre>
             </div>
-            <div className="code-section">
-              <div className="code-section-header">
-                <span className="section-icon">🎨</span>
-                CSS
+            <div className="preview-section">
+              <div className="preview-section-header">
+                <span className="section-icon">👁️</span>
+                Resultado
               </div>
-              <pre className="code-display">{css || 'Sin código CSS'}</pre>
-            </div>
-          </div>
-          <div className="preview-section">
-            <div className="preview-section-header">
-              <span className="section-icon">👁️</span>
-              Resultado
-            </div>
-            <div className="preview-container">
-              <iframe
-                ref={iframeRef}
-                className="preview-iframe"
-                title="Live Preview"
-                sandbox="allow-scripts"
-              />
+              <div className="preview-container">
+                <iframe
+                  ref={iframeRef}
+                  className="preview-iframe"
+                  title="Live Preview"
+                  sandbox="allow-scripts allow-same-origin"
+                />
+              </div>
             </div>
           </div>
         </>

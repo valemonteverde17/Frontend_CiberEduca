@@ -111,12 +111,6 @@ export default function TopicDetail() {
             ))}
           </ul>
         );
-      case 'code':
-        return (
-          <pre className="content-code" style={style}>
-            <code>{block.content}</code>
-          </pre>
-        );
       case 'code-static':
         return (
           <CodeBlock 
@@ -130,7 +124,6 @@ export default function TopicDetail() {
         return (
           <LiveCodeBlock 
             htmlContent={block.htmlContent || ''}
-            cssContent={block.cssContent || ''}
             editable={false}
           />
         );
