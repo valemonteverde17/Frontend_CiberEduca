@@ -1,5 +1,8 @@
 import axios from 'axios';
 
-export default axios.create({
-  baseURL: 'http://localhost:3000', // Cambia si tu API usa otro puerto
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  // Puedes agregar más configs aquí si quieres (headers, timeouts, etc.)
 });
+
+export default api;
