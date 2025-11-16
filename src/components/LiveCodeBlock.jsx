@@ -15,17 +15,27 @@ export default function LiveCodeBlock({ htmlContent = '', editable = false, show
   }, [htmlContent]);
 
   useEffect(() => {
-    updatePreview();
+    // Pequeño delay para asegurar que el iframe esté listo
+    const timer = setTimeout(() => {
+      updatePreview();
+    }, 10);
+    return () => clearTimeout(timer);
   }, [code, activeTab, studentView]);
 
   const updatePreview = () => {
-    if (!iframeRef.current) return;
+    if (!iframeRef.current) {
+      console.log('LiveCodeBlock: iframe ref no disponible');
+      return;
+    }
 
     try {
       const iframe = iframeRef.current;
+      const content = code || '<p style="color: #999; text-align: center; padding: 2rem;">Sin código para mostrar</p>';
+      
+      console.log('LiveCodeBlock: Actualizando preview, activeTab:', activeTab, 'código length:', code?.length);
       
       // Usar srcdoc en lugar de acceder al contentDocument
-      iframe.srcdoc = code || '<p style="color: #999; text-align: center; padding: 2rem;">Sin código para mostrar</p>';
+      iframe.srcdoc = content;
     } catch (error) {
       console.error('Error al actualizar preview:', error);
     }

@@ -13,7 +13,7 @@ export default function Topics() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
-  const [modalData, setModalData] = useState({ name: '', description: '', id: '' });
+  const [modalData, setModalData] = useState({ name: '', description: '', id: '', cardColor: '#2b9997' });
   const itemsPerPage = 3;
 
   const fetchTopics = async () => {
@@ -31,7 +31,7 @@ export default function Topics() {
 
   const handleAdd = () => {
     setModalType('add');
-    setModalData({ name: '', description: '', id: '' });
+    setModalData({ name: '', description: '', id: '', cardColor: '#2b9997' });
     setShowModal(true);
   };
 
@@ -41,7 +41,11 @@ export default function Topics() {
       return;
     }
     try {
-      await axios.post('/topics', { topic_name: modalData.name, description: modalData.description });
+      await axios.post('/topics', { 
+        topic_name: modalData.name, 
+        description: modalData.description,
+        cardColor: modalData.cardColor
+      });
       fetchTopics();
       setShowModal(false);
     } catch (err) {
@@ -51,7 +55,12 @@ export default function Topics() {
 
   const handleEdit = (topic) => {
     setModalType('edit');
-    setModalData({ name: topic.topic_name, description: topic.description, id: topic._id });
+    setModalData({ 
+      name: topic.topic_name, 
+      description: topic.description, 
+      id: topic._id,
+      cardColor: topic.cardColor || '#2b9997'
+    });
     setShowModal(true);
   };
 
@@ -61,6 +70,7 @@ export default function Topics() {
       await axios.patch(`/topics/${modalData.id}`, {
         topic_name: modalData.name,
         description: modalData.description,
+        cardColor: modalData.cardColor
       });
       fetchTopics();
       setShowModal(false);
@@ -121,6 +131,11 @@ export default function Topics() {
               key={topic._id} 
               className={`topic-card ${getCardClass(currentIndex + index)}`}
               onClick={() => handleTopicClick(topic._id)}
+              style={{ 
+                background: topic.cardColor 
+                  ? `linear-gradient(135deg, ${topic.cardColor} 0%, ${topic.cardColor}dd 100%)`
+                  : undefined
+              }}
             >
               {user.role === 'docente' && (
                 <div className="topic-actions">
@@ -174,6 +189,65 @@ export default function Topics() {
               className="modal-textarea"
               rows={4}
             />
+            
+            <div className="color-picker-section">
+              <label className="color-picker-label">
+                🎨 Color de la Card
+              </label>
+              <div className="color-picker-full">
+                <div className="color-presets-row">
+                  <span className="presets-label">Colores rápidos:</span>
+                  {[
+                    { name: 'Verde Agua', value: '#2b9997' },
+                    { name: 'Azul', value: '#3b82f6' },
+                    { name: 'Morado', value: '#8b5cf6' },
+                    { name: 'Rosa', value: '#ec4899' },
+                    { name: 'Naranja', value: '#f97316' },
+                    { name: 'Verde', value: '#10b981' },
+                    { name: 'Rojo', value: '#ef4444' },
+                    { name: 'Amarillo', value: '#f59e0b' }
+                  ].map((color) => (
+                    <button
+                      key={color.value}
+                      type="button"
+                      className={`color-preset-btn-small ${modalData.cardColor === color.value ? 'active' : ''}`}
+                      style={{ backgroundColor: color.value }}
+                      onClick={() => setModalData({ ...modalData, cardColor: color.value })}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+                
+                <div className="color-custom-picker">
+                  <label className="custom-picker-label">Color personalizado:</label>
+                  <input
+                    type="color"
+                    className="color-picker-input-large"
+                    value={modalData.cardColor}
+                    onChange={(e) => setModalData({ ...modalData, cardColor: e.target.value })}
+                    title="Selector de color RGB completo"
+                  />
+                  <input
+                    type="text"
+                    className="color-hex-input"
+                    value={modalData.cardColor}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
+                        setModalData({ ...modalData, cardColor: value });
+                      }
+                    }}
+                    placeholder="#2b9997"
+                    maxLength={7}
+                  />
+                </div>
+                
+                <div className="color-preview-large" style={{ backgroundColor: modalData.cardColor }}>
+                  <span>Vista previa del color de la card</span>
+                </div>
+              </div>
+            </div>
+
             <div className="modal-buttons">
               <button onClick={() => setShowModal(false)} className="btn-cancel">
                 Cancelar
