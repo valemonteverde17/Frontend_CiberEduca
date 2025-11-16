@@ -5,7 +5,17 @@
   color: white;
 }
 
-.back-button {
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.back-button,
+.manage-button {
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid white;
   color: white;
@@ -14,14 +24,14 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 2rem;
   backdrop-filter: blur(10px);
 }
 
-.back-button:hover {
+.back-button:hover,
+.manage-button:hover {
   background: white;
   color: #667eea;
-  transform: translateX(-4px);
+  transform: translateY(-2px);
 }
 
 .memorama-header {

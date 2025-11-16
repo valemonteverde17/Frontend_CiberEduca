@@ -22,13 +22,6 @@ export default function Memorama() {
   const [timer, setTimer] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
-  
-  // Estado para agregar pares (docentes)
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [newConcept, setNewConcept] = useState('');
-  const [newDefinition, setNewDefinition] = useState('');
-  const [newDifficulty, setNewDifficulty] = useState('easy');
-  const [message, setMessage] = useState('');
 
   // Cargar temas al inicio
   useEffect(() => {
@@ -78,7 +71,7 @@ export default function Memorama() {
       setTimeout(() => {
         setShowAll(false);
         setIsPlaying(true);
-      }, 3000);
+      }, 1000);
     } catch (err) {
       console.error('Error al cargar el juego:', err);
       alert('Error al cargar el juego');
@@ -151,37 +144,11 @@ export default function Memorama() {
         setTimeout(() => {
           setWrongMatch(false);
           setFlippedCards([]);
-        }, 1000);
+        }, 2000);
       }
     }
   };
 
-  const handleAddPair = async (e) => {
-    e.preventDefault();
-    if (!newConcept.trim() || !newDefinition.trim() || !selectedTopic) {
-      setMessage('Completa todos los campos');
-      return;
-    }
-
-    try {
-      await axios.post('/memorama', {
-        concept: newConcept,
-        definition: newDefinition,
-        difficulty: newDifficulty,
-        topic_id: selectedTopic,
-        user_id: user._id
-      });
-
-      setMessage('Par agregado correctamente');
-      setNewConcept('');
-      setNewDefinition('');
-      setShowAddForm(false);
-      setTimeout(() => setMessage(''), 3000);
-    } catch (err) {
-      console.error(err);
-      setMessage('Error al agregar el par');
-    }
-  };
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -197,9 +164,16 @@ export default function Memorama() {
 
   return (
     <div className="memorama-page">
-      <button className="back-button" onClick={() => navigate('/games')}>
-        ← Volver a Juegos
-      </button>
+      <div className="game-header">
+        <button className="back-button" onClick={() => navigate('/games')}>
+          ← Volver a Juegos
+        </button>
+        {user?.role === 'docente' && (
+          <button className="manage-button" onClick={() => navigate('/manage-memorama')}>
+            ⚙️ Gestionar Pares
+          </button>
+        )}
+      </div>
 
       <div className="memorama-header">
         <h1>🧠 Memorama de Ciberseguridad</h1>
@@ -311,58 +285,6 @@ export default function Memorama() {
         </div>
       )}
 
-      {user?.role === 'docente' && selectedTopic && (
-        <div className="teacher-section">
-          <button
-            className="btn-toggle-form"
-            onClick={() => setShowAddForm(!showAddForm)}
-          >
-            {showAddForm ? '✖ Cancelar' : '+ Agregar Par de Conceptos'}
-          </button>
-
-          {showAddForm && (
-            <form className="add-pair-form" onSubmit={handleAddPair}>
-              <h3>Nuevo Par de Conceptos</h3>
-              
-              <div className="form-group">
-                <label>Concepto:</label>
-                <input
-                  type="text"
-                  value={newConcept}
-                  onChange={(e) => setNewConcept(e.target.value)}
-                  placeholder="Ej: Phishing"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Definición:</label>
-                <textarea
-                  value={newDefinition}
-                  onChange={(e) => setNewDefinition(e.target.value)}
-                  placeholder="Ej: Estafa digital mediante correos falsos"
-                  rows={3}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Dificultad:</label>
-                <select value={newDifficulty} onChange={(e) => setNewDifficulty(e.target.value)}>
-                  <option value="easy">Fácil</option>
-                  <option value="medium">Medio</option>
-                  <option value="hard">Difícil</option>
-                </select>
-              </div>
-
-              <button type="submit" className="btn-submit">
-                ✓ Guardar Par
-              </button>
-              {message && <p className="message">{message}</p>}
-            </form>
-          )}
-        </div>
-      )}
     </div>
   );
 }

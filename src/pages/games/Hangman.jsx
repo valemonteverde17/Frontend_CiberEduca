@@ -19,12 +19,6 @@ export default function Hangman() {
   const [allWords, setAllWords] = useState([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
-  // Estado del formulario
-  const [newWord, setNewWord] = useState('');
-  const [newTitle, setNewTitle] = useState('');
-  const [newHint, setNewHint] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
-
   useEffect(() => {
     axios.get('/topics')
       .then(res => setTopics(res.data))
@@ -88,43 +82,18 @@ export default function Hangman() {
   const formatTitle = (str) =>
     str.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
 
-  const handleAddWord = async (e) => {
-    e.preventDefault();
-
-    if (!newWord.trim() || !newTitle.trim() || !selectedTopic) {
-      return setMessage('Completa todos los campos obligatorios.');
-    }
-
-    try {
-      await axios.post('/hangman', {
-        word: newWord.toUpperCase(),
-        title: newTitle.toLowerCase().replace(/\s+/g, '_'),
-        hint: newHint.trim(),
-        topic_id: selectedTopic,
-        user_id: user._id
-      });
-
-      setMessage('✓ Palabra agregada correctamente.');
-      setNewWord('');
-      setNewTitle('');
-      setNewHint('');
-      setShowAddForm(false);
-      
-      // Recargar palabras
-      fetchWords(selectedTopic);
-      
-      setTimeout(() => setMessage(''), 3000);
-    } catch (err) {
-      console.error(err);
-      setMessage('Error al agregar la palabra.');
-    }
-  };
-
   return (
     <div className="hangman-page">
-      <button className="back-button" onClick={() => navigate('/games')}>
-        ← Volver a Juegos
-      </button>
+      <div className="game-header">
+        <button className="back-button" onClick={() => navigate('/games')}>
+          ← Volver a Juegos
+        </button>
+        {user?.role === 'docente' && (
+          <button className="manage-button" onClick={() => navigate('/manage-hangman')}>
+            ⚙️ Gestionar Palabras
+          </button>
+        )}
+      </div>
 
       <div className="hangman-container">
         <div className="hangman-header">
@@ -181,69 +150,11 @@ export default function Hangman() {
           <div className="no-words-message">
             <p>📚 No hay palabras registradas para este tema.</p>
             {user?.role === 'docente' && (
-              <p className="hint-text">Agrega la primera palabra usando el formulario de abajo.</p>
-            )}
-          </div>
-        )}
-
-        {user?.role === 'docente' && selectedTopic && (
-          <div className="teacher-section">
-            <button
-              className="btn-toggle-form"
-              onClick={() => setShowAddForm(!showAddForm)}
-            >
-              {showAddForm ? '✖ Cancelar' : '+ Agregar Nueva Palabra'}
-            </button>
-
-            {showAddForm && (
-              <form className="add-word-form" onSubmit={handleAddWord}>
-                <h3>Nueva Palabra</h3>
-
-                <div className="form-group">
-                  <label>Categoría (título interno) *</label>
-                  <input
-                    type="text"
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    placeholder="Ej: vpn_seguro"
-                    required
-                  />
-                  <small>Usa guiones bajos para separar palabras</small>
-                </div>
-
-                <div className="form-group">
-                  <label>Palabra *</label>
-                  <input
-                    type="text"
-                    value={newWord}
-                    onChange={(e) => setNewWord(e.target.value)}
-                    placeholder="Ej: ENCRIPTADO"
-                    required
-                  />
-                  <small>La palabra que los estudiantes deben adivinar</small>
-                </div>
-
-                <div className="form-group">
-                  <label>Pista (opcional)</label>
-                  <textarea
-                    value={newHint}
-                    onChange={(e) => setNewHint(e.target.value)}
-                    placeholder="Ej: Proceso de convertir información en código secreto"
-                    rows={3}
-                  />
-                  <small>Una ayuda para los estudiantes</small>
-                </div>
-
-                <button type="submit" className="btn-submit">
-                  ✓ Guardar Palabra
+              <p className="hint-text">
+                <button className="btn-manage-link" onClick={() => navigate('/manage-hangman')}>
+                  Haz click aquí para agregar palabras
                 </button>
-                
-                {message && (
-                  <div className={`message ${message.includes('✓') ? 'success' : 'error'}`}>
-                    {message}
-                  </div>
-                )}
-              </form>
+              </p>
             )}
           </div>
         )}

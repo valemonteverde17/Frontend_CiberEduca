@@ -4,7 +4,17 @@
   padding: 2rem;
 }
 
-.back-button {
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.back-button,
+.manage-button {
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid white;
   color: white;
@@ -13,14 +23,14 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 2rem;
   backdrop-filter: blur(10px);
 }
 
-.back-button:hover {
+.back-button:hover,
+.manage-button:hover {
   background: white;
   color: #f5576c;
-  transform: translateX(-4px);
+  transform: translateY(-2px);
 }
 
 .hangman-container {
@@ -178,6 +188,25 @@
 .no-words-message .hint-text {
   font-size: 1rem;
   opacity: 0.9;
+}
+
+.btn-manage-link {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  margin-top: 1rem;
+}
+
+.btn-manage-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .teacher-section {

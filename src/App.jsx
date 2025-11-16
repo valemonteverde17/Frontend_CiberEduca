@@ -13,6 +13,8 @@ import EditQuizSet from './pages/EditQuizSet';
 import Games from './pages/games/Games';
 import Hangman from './pages/games/Hangman';
 import Memorama from './pages/games/Memorama';
+import ManageHangman from './pages/games/ManageHangman';
+import ManageMemorama from './pages/games/ManageMemorama';
 
 function App() {
   const { user } = useAuth();
@@ -49,23 +51,31 @@ function App() {
            <EditQuizSet />
          </ProtectedRoute>
        } />
-      <Route path="/games/hangman" element={
-      <ProtectedRoute>
-        <Hangman />
-      </ProtectedRoute>
-    } />
-    <Route path="/games" element={
+      <Route path="/games" element={
          <ProtectedRoute>
          <Games />
          </ProtectedRoute>
        } />
-          <Route path="/games/memorama" element={
+      <Route path="/hangman" element={
+      <ProtectedRoute>
+        <Hangman />
+      </ProtectedRoute>
+    } />
+          <Route path="/memorama" element={
       <ProtectedRoute>
         <Memorama />
       </ProtectedRoute>
     } />
-
-      
+    <Route path="/manage-hangman" element={
+      <ProtectedRoute>
+        <ManageHangman />
+      </ProtectedRoute>
+    } />
+    <Route path="/manage-memorama" element={
+      <ProtectedRoute>
+        <ManageMemorama />
+      </ProtectedRoute>
+    } />
       </Routes>
     </BrowserRouter>
   );
