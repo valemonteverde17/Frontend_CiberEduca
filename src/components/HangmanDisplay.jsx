@@ -13,7 +13,14 @@ export default function HangmanDisplay({ word, onRestart }) {
       const parsed = JSON.parse(saved);
       if (parsed.word === word) {
         setGuessed(parsed.guessed || []);
+      } else {
+        // Si la palabra cambió, limpiar el estado
+        setGuessed([]);
+        localStorage.removeItem('hangman_game');
       }
+    } else {
+      // Si no hay guardado, asegurar que el estado esté limpio
+      setGuessed([]);
     }
   }, [word]);
 

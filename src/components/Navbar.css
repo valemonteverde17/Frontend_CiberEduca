@@ -72,6 +72,15 @@
   padding: 0.5rem 1rem;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.user-greeting:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  transform: translateY(-2px);
 }
 
 .btn-signup {

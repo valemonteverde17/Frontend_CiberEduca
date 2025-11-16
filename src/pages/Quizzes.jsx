@@ -19,6 +19,7 @@ export default function Quizzes() {
   const [feedback, setFeedback] = useState({});
   const [score, setScore] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const [startTime, setStartTime] = useState(null);
 
   useEffect(() => {
     axios.get('/topics').then(res => setTopics(res.data));
@@ -52,6 +53,7 @@ export default function Quizzes() {
       setFeedback({});
       setScore(null);
       setShowResults(false);
+      setStartTime(Date.now()); // Iniciar timer
 
       if (user.role === 'estudiante') {
         const resultsRes = await axios.get(`/results/by-topic/${user._id}/${selectedTopic}`);
@@ -105,8 +107,29 @@ export default function Quizzes() {
     }
 
     setFeedback(newFeedback);
-    setScore({ total: quizzes.length, correct });
+    const finalScore = Math.round((correct / quizzes.length) * 100);
+    setScore({ total: quizzes.length, correct, percentage: finalScore });
     setShowResults(true);
+
+    // Guardar score si es estudiante
+    if (user.role === 'estudiante' && selectedQuizSet) {
+      const timeTaken = Math.floor((Date.now() - startTime) / 1000); // Tiempo en segundos
+      
+      try {
+        await axios.post('/scores', {
+          user_id: user._id,
+          quiz_set_id: selectedQuizSet._id,
+          topic_id: selectedTopic,
+          score: finalScore,
+          total_questions: quizzes.length,
+          correct_answers: correct,
+          time_taken: timeTaken,
+        });
+        console.log('Score guardado exitosamente');
+      } catch (err) {
+        console.error('Error al guardar score:', err);
+      }
+    }
   };
 
   const resetQuiz = () => {

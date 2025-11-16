@@ -25,6 +25,7 @@ export default function Navbar() {
           {user && <Link to="/topics" className="nav-link">Temas</Link>}
           {user && <Link to="/quizzes" className="nav-link">Evaluaciones</Link>}
           {user && <Link to="/games" className="nav-link">Juegos</Link>}
+          {user && <Link to="/rankings" className="nav-link">🏆 Rankings</Link>}
         </div>
         
         <div className="navbar-actions">
@@ -35,9 +36,9 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <span className="user-greeting">
+              <Link to="/profile" className="user-greeting">
                 {user.role === 'docente' ? '👨‍🏫' : '👨‍🎓'} {user.user_name}
-              </span>
+              </Link>
               <button onClick={handleLogout} className="btn-logout">Salir</button>
             </>
           )}

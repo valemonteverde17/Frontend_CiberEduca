@@ -15,6 +15,8 @@ import Hangman from './pages/games/Hangman';
 import Memorama from './pages/games/Memorama';
 import ManageHangman from './pages/games/ManageHangman';
 import ManageMemorama from './pages/games/ManageMemorama';
+import Profile from './pages/Profile';
+import Rankings from './pages/Rankings';
 
 function App() {
   const { user } = useAuth();
@@ -74,6 +76,16 @@ function App() {
     <Route path="/manage-memorama" element={
       <ProtectedRoute>
         <ManageMemorama />
+      </ProtectedRoute>
+    } />
+    <Route path="/profile" element={
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    } />
+    <Route path="/rankings" element={
+      <ProtectedRoute>
+        <Rankings />
       </ProtectedRoute>
     } />
       </Routes>
