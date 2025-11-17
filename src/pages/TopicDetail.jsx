@@ -71,6 +71,25 @@ export default function TopicDetail() {
     }
   };
 
+  const handleSubmitForReview = async () => {
+    if (!window.confirm('¿Enviar este tema a revisión? No podrás editarlo hasta que sea revisado.')) return;
+    try {
+      await axios.post(`/topics/${id}/submit-review`);
+      await load();
+      alert('✅ Tema enviado a revisión exitosamente');
+    } catch (err) {
+      alert('❌ Error al enviar a revisión: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const canEdit = () => {
+    if (!user || !topic) return false;
+    if (user.role !== 'docente') return false;
+    if (topic.created_by?._id !== user._id && topic.created_by !== user._id) return false;
+    if (topic.status === 'pending_review' || topic.status === 'approved') return false;
+    return true;
+  };
+
   const getBlockStyle = (block) => {
     if (!block.style) return {};
     
@@ -162,8 +181,28 @@ export default function TopicDetail() {
           <div>
             <h1 className="topic-detail-title">{topic.topic_name}</h1>
             <p className="topic-detail-description">{topic.description}</p>
+            
+            {/* Badge de estado */}
+            {topic.status && (
+              <div className={`topic-detail-status status-${topic.status}`}>
+                {topic.status === 'draft' && '📝 Borrador'}
+                {topic.status === 'pending_review' && '⌛ En Revisión'}
+                {topic.status === 'approved' && '✅ Aprobado'}
+                {topic.status === 'rejected' && '❌ Rechazado'}
+                {topic.status === 'archived' && '🗄️ Archivado'}
+              </div>
+            )}
+            
+            {/* Comentarios de revisión */}
+            {topic.review_comments && (
+              <div className="review-comments-box">
+                <h4>💬 Comentarios del Revisor:</h4>
+                <p>{topic.review_comments}</p>
+              </div>
+            )}
           </div>
-          {user?.role === 'docente' && (
+          
+          {user?.role === 'docente' && canEdit() && (
             <div className="topic-header-buttons">
               <button className="btn-preview-topic" onClick={() => setPreviewMode(!previewMode)}>
                 {previewMode ? '✒️ Modo Edición' : '👁️ Vista Previa'}
@@ -171,6 +210,11 @@ export default function TopicDetail() {
               <button className="btn-edit-topic" onClick={() => setShowEditModal(true)}>
                 ✒️ Editar Tema
               </button>
+              {topic.status === 'draft' && (
+                <button className="btn-submit-review" onClick={handleSubmitForReview}>
+                  📤 Enviar a Revisión
+                </button>
+              )}
             </div>
           )}
         </div>

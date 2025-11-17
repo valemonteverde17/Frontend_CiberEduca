@@ -17,6 +17,10 @@ import ManageHangman from './pages/games/ManageHangman';
 import ManageMemorama from './pages/games/ManageMemorama';
 import Profile from './pages/Profile';
 import Rankings from './pages/Rankings';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import ReviewTopic from './pages/admin/ReviewTopic';
+import UserManagement from './pages/admin/UserManagement';
+import OrganizationManagement from './pages/admin/OrganizationManagement';
 
 function App() {
   const { user } = useAuth();
@@ -86,6 +90,28 @@ function App() {
     <Route path="/rankings" element={
       <ProtectedRoute>
         <Rankings />
+      </ProtectedRoute>
+    } />
+    
+    {/* Rutas de Admin */}
+    <Route path="/admin/dashboard" element={
+      <ProtectedRoute allowedRoles={['admin']}>
+        <AdminDashboard />
+      </ProtectedRoute>
+    } />
+    <Route path="/admin/review-topic/:id" element={
+      <ProtectedRoute allowedRoles={['admin', 'revisor']}>
+        <ReviewTopic />
+      </ProtectedRoute>
+    } />
+    <Route path="/admin/users" element={
+      <ProtectedRoute allowedRoles={['admin']}>
+        <UserManagement />
+      </ProtectedRoute>
+    } />
+    <Route path="/admin/organizations" element={
+      <ProtectedRoute allowedRoles={['admin']}>
+        <OrganizationManagement />
       </ProtectedRoute>
     } />
       </Routes>

@@ -18,10 +18,18 @@ export default function Topics() {
 
   const fetchTopics = async () => {
     try {
-      const res = await axios.get('/topics');
+      // Filtrar temas según permisos del usuario
+      const res = await axios.get('/topics/by-permissions');
       setTopics(res.data);
     } catch (err) {
       console.error('Error al cargar temas:', err);
+      // Fallback a todos los temas si el endpoint no existe aún
+      try {
+        const fallbackRes = await axios.get('/topics');
+        setTopics(fallbackRes.data);
+      } catch (fallbackErr) {
+        console.error('Error en fallback:', fallbackErr);
+      }
     }
   };
 
@@ -44,12 +52,17 @@ export default function Topics() {
       await axios.post('/topics', { 
         topic_name: modalData.name, 
         description: modalData.description,
-        cardColor: modalData.cardColor
+        cardColor: modalData.cardColor,
+        created_by: user._id,
+        organization_id: user.organization_id || null,
+        status: 'draft',
+        visibility: 'public'
       });
       fetchTopics();
       setShowModal(false);
+      alert('✅ Tema creado en modo borrador');
     } catch (err) {
-      alert('Error al agregar tema');
+      alert('Error al agregar tema: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -137,6 +150,16 @@ export default function Topics() {
                   : undefined
               }}
             >
+              {/* Badge de estado */}
+              {topic.status && topic.status !== 'approved' && (
+                <div className={`topic-status-badge status-${topic.status}`}>
+                  {topic.status === 'draft' && '📝 Borrador'}
+                  {topic.status === 'pending_review' && '⏳ En Revisión'}
+                  {topic.status === 'rejected' && '❌ Rechazado'}
+                  {topic.status === 'archived' && '🗄️ Archivado'}
+                </div>
+              )}
+              
               {user.role === 'docente' && (
                 <div className="topic-actions">
                   <img 

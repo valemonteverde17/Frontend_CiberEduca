@@ -63,11 +63,23 @@ export default function SignUp() {
     }
 
     try {
-      await axios.post('/users', { user_name, password, role });
-      setSuccess(true);
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
+      const res = await axios.post('/auth/register', { user_name, password, role });
+      
+      // El backend devuelve { access_token, user }
+      const { user: userData } = res.data;
+      
+      // Mensaje diferente según el rol y status
+      if (userData.status === 'pending') {
+        setSuccess('¡Cuenta creada exitosamente! ⏳ Tu cuenta está pendiente de aprobación por un administrador. Te notificaremos cuando sea aprobada.');
+        setTimeout(() => {
+          navigate('/login');
+        }, 4000);
+      } else {
+        setSuccess('¡Cuenta creada exitosamente! Redirigiendo al login...');
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Error al registrar usuario. El nombre de usuario puede estar en uso.');
     }

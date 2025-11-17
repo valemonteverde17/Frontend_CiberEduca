@@ -27,11 +27,44 @@ export default function Login() {
     }
 
     try {
-      const res = await axios.post('/users/login', { user_name, password });
-      login(res.data);
-      navigate('/topics');
+      const res = await axios.post('/auth/login', { user_name, password });
+      
+      // El backend devuelve { access_token, user }
+      const { access_token, user: userData } = res.data;
+      
+      // Validar estado del usuario
+      if (userData.status === 'pending') {
+        setError('⏳ Tu cuenta está pendiente de aprobación por un administrador. Te notificaremos cuando sea aprobada.');
+        return;
+      }
+      
+      if (userData.status === 'suspended') {
+        setError('🚫 Tu cuenta ha sido suspendida. Contacta al administrador para más información.');
+        return;
+      }
+      
+      if (userData.status === 'rejected') {
+        setError('❌ Tu solicitud de registro fue rechazada. Contacta al administrador para más información.');
+        return;
+      }
+
+      // Login exitoso - combinar user data con token
+      login({ ...userData, token: access_token });
+      
+      // Redirigir según rol
+      if (userData.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (userData.role === 'revisor') {
+        navigate('/revisor/review');
+      } else {
+        navigate('/topics');
+      }
     } catch (err) {
-      setError('Credenciales incorrectas. Por favor verifica tu usuario y contraseña.');
+      if (err.response?.status === 401) {
+        setError('❌ Credenciales incorrectas. Por favor verifica tu usuario y contraseña.');
+      } else {
+        setError('❌ Error al iniciar sesión. Por favor intenta nuevamente.');
+      }
     }
   };
 
