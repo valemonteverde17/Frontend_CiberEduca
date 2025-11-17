@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import './Navbar.css';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -11,22 +12,37 @@ export default function Navbar() {
   };
 
   return (
-    <nav style={{ padding: '1rem', backgroundColor: '#319190', color: '#ffefb5', display: 'flex', justifyContent: 'space-between' }}>
-      <div>
-        <Link to="/" style={{ marginRight: '1rem', color: '#ffefb5' }}>Inicio</Link>
-        {user && <Link to="/topics" style={{ marginRight: '1rem', color: '#ffefb5' }}>Temas</Link>}
-        {user && <Link to="/quizzes" style={{ marginRight: '1rem', color: '#ffefb5' }}>Quizzes</Link>}
-        {user && <Link to="/games" style={{ marginRight: '1rem', color: '#ffefb5' }}>Games</Link>}
-      </div>
-      <div>
-        {!user && <>
-          <Link to="/login" style={{ marginRight: '1rem', color: '#ffefb5' }}>Entrar</Link>
-          <Link to="/signup" style={{ color: '#ffefb5' }}>Registrarse</Link>
-        </>}
-        {user && <>
-          <span style={{ marginRight: '1rem' }}>Hola, {user.user_name}</span>
-          <button onClick={handleLogout}>Salir</button>
-        </>}
+    <nav className="navbar">
+      <div className="navbar-container">
+        <div className="navbar-brand">
+          <Link to="/" className="brand-link">
+            🔒 CiberEduca
+          </Link>
+        </div>
+        
+        <div className="navbar-links">
+          <Link to="/" className="nav-link">Inicio</Link>
+          {user && <Link to="/topics" className="nav-link">Temas</Link>}
+          {user && <Link to="/quizzes" className="nav-link">Evaluaciones</Link>}
+          {user && <Link to="/games" className="nav-link">Juegos</Link>}
+          {user && <Link to="/rankings" className="nav-link">🏆 Rankings</Link>}
+        </div>
+        
+        <div className="navbar-actions">
+          {!user ? (
+            <>
+              <Link to="/login" className="nav-link">Entrar</Link>
+              <Link to="/signup" className="btn-signup">Registrarse</Link>
+            </>
+          ) : (
+            <>
+              <Link to="/profile" className="user-greeting">
+                {user.role === 'docente' ? '👨‍🏫' : '👨‍🎓'} {user.user_name}
+              </Link>
+              <button onClick={handleLogout} className="btn-logout">Salir</button>
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );
