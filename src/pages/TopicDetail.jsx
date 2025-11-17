@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import ContentEditor from '../components/ContentEditor';
+import CodeBlock from '../components/CodeBlock';
+import LiveCodeBlock from '../components/LiveCodeBlock';
 import './TopicDetail.css';
 
 export default function TopicDetail() {
@@ -17,6 +19,8 @@ export default function TopicDetail() {
   const [contentBlocks, setContentBlocks] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showContentModal, setShowContentModal] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
+  const [cardColor, setCardColor] = useState('#2b9997');
 
   const load = async () => {
     try {
@@ -25,6 +29,7 @@ export default function TopicDetail() {
       setEditName(res.data.topic_name);
       setEditDesc(res.data.description);
       setContentBlocks(res.data.content || []);
+      setCardColor(res.data.cardColor || '#2b9997');
 
       const quizSetsRes = await axios.get(`/quiz-sets/topic/${id}`);
       setQuizSets(quizSetsRes.data);
@@ -46,7 +51,8 @@ export default function TopicDetail() {
     try {
       await axios.patch(`/topics/${id}`, { 
         topic_name: editName, 
-        description: editDesc 
+        description: editDesc,
+        cardColor: cardColor
       });
       await load();
       setShowEditModal(false);
@@ -65,26 +71,71 @@ export default function TopicDetail() {
     }
   };
 
+  const getBlockStyle = (block) => {
+    if (!block.style) return {};
+    
+    const fontSizeMap = {
+      small: '0.875rem',
+      medium: '1rem',
+      large: '1.25rem',
+      xlarge: '1.5rem'
+    };
+
+    return {
+      color: block.style.color || '#333',
+      fontSize: fontSizeMap[block.style.fontSize] || '1rem',
+      fontWeight: block.style.fontWeight || 'normal',
+      fontStyle: block.style.fontStyle || 'normal',
+      textAlign: block.style.textAlign || 'left',
+      backgroundColor: block.style.backgroundColor !== 'transparent' ? block.style.backgroundColor : undefined,
+      padding: block.style.backgroundColor !== 'transparent' ? '1rem' : undefined,
+      borderRadius: block.style.backgroundColor !== 'transparent' ? '8px' : undefined
+    };
+  };
+
   const renderContentBlock = (block) => {
+    const style = getBlockStyle(block);
+    
     switch (block.type) {
       case 'heading':
-        return <h3 className="content-heading">{block.content}</h3>;
+        return <h3 className="content-heading" style={style}>{block.content}</h3>;
       case 'text':
-        return <p className="content-text">{block.content}</p>;
+        return <p className="content-text" style={style}>{block.content}</p>;
       case 'list':
         return (
-          <ul className="content-list">
+          <ul 
+            className="content-list" 
+            style={{
+              ...style,
+              listStyleType: block.style?.listStyle || 'disc'
+            }}
+          >
             {block.content.split('\n').filter(item => item.trim()).map((item, idx) => (
               <li key={idx}>{item}</li>
             ))}
           </ul>
         );
-      case 'code':
-        return <pre className="content-code"><code>{block.content}</code></pre>;
+      case 'code-static':
+        return (
+          <CodeBlock 
+            code={block.content}
+            language={block.style?.codeLanguage || 'javascript'}
+            theme={block.style?.codeTheme || 'dark'}
+            showLineNumbers={true}
+          />
+        );
+      case 'code-live':
+        return (
+          <LiveCodeBlock 
+            htmlContent={block.htmlContent || ''}
+            showCode={block.showCode || false}
+            editable={false}
+          />
+        );
       case 'quote':
-        return <blockquote className="content-quote">{block.content}</blockquote>;
+        return <blockquote className="content-quote" style={style}>{block.content}</blockquote>;
       default:
-        return <p>{block.content}</p>;
+        return <p style={style}>{block.content}</p>;
     }
   };
 
@@ -113,14 +164,19 @@ export default function TopicDetail() {
             <p className="topic-detail-description">{topic.description}</p>
           </div>
           {user?.role === 'docente' && (
-            <button className="btn-edit-topic" onClick={() => setShowEditModal(true)}>
-              ✒️ Editar Tema
-            </button>
+            <div className="topic-header-buttons">
+              <button className="btn-preview-topic" onClick={() => setPreviewMode(!previewMode)}>
+                {previewMode ? '✒️ Modo Edición' : '👁️ Vista Previa'}
+              </button>
+              <button className="btn-edit-topic" onClick={() => setShowEditModal(true)}>
+                ✒️ Editar Tema
+              </button>
+            </div>
           )}
         </div>
 
         {/* Sección de Contenido */}
-        {user?.role === 'docente' ? (
+        {user?.role === 'docente' && !previewMode ? (
           <ContentEditor content={contentBlocks} onChange={handleContentUpdate} />
         ) : (
           contentBlocks && contentBlocks.length > 0 && (
@@ -216,6 +272,65 @@ export default function TopicDetail() {
                 onChange={(e) => setEditDesc(e.target.value)}
                 placeholder="Descripción (mínimo 10 caracteres)"
               />
+              
+              <div className="color-picker-section">
+                <label className="color-picker-label">
+                  🎨 Color de la Card del Tema
+                </label>
+                <div className="color-picker-full">
+                  <div className="color-presets-row">
+                    <span className="presets-label">Colores rápidos:</span>
+                    {[
+                      { name: 'Verde Agua', value: '#2b9997' },
+                      { name: 'Azul', value: '#3b82f6' },
+                      { name: 'Morado', value: '#8b5cf6' },
+                      { name: 'Rosa', value: '#ec4899' },
+                      { name: 'Naranja', value: '#f97316' },
+                      { name: 'Verde', value: '#10b981' },
+                      { name: 'Rojo', value: '#ef4444' },
+                      { name: 'Amarillo', value: '#f59e0b' }
+                    ].map((color) => (
+                      <button
+                        key={color.value}
+                        type="button"
+                        className={`color-preset-btn-small ${cardColor === color.value ? 'active' : ''}`}
+                        style={{ backgroundColor: color.value }}
+                        onClick={() => setCardColor(color.value)}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+                  
+                  <div className="color-custom-picker">
+                    <label className="custom-picker-label">Color personalizado:</label>
+                    <input
+                      type="color"
+                      className="color-picker-input-large"
+                      value={cardColor}
+                      onChange={(e) => setCardColor(e.target.value)}
+                      title="Selector de color RGB completo"
+                    />
+                    <input
+                      type="text"
+                      className="color-hex-input"
+                      value={cardColor}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^#[0-9A-Fa-f]{0,6}$/.test(value)) {
+                          setCardColor(value);
+                        }
+                      }}
+                      placeholder="#2b9997"
+                      maxLength={7}
+                    />
+                  </div>
+                  
+                  <div className="color-preview-large" style={{ backgroundColor: cardColor }}>
+                    <span>Vista previa del color de la card</span>
+                  </div>
+                </div>
+              </div>
+
               <div className="modal-buttons">
                 <button type="button" onClick={() => setShowEditModal(false)} className="btn-cancel">
                   Cancelar
