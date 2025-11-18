@@ -6,6 +6,10 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 5173,
-    allowedHosts: process.env.VITE_ALLOWED_HOSTS?.split(',') || []
+    allowedHosts: [
+      '.ngrok-free.dev',  // Permite cualquier dominio de ngrok-free
+      'localhost',
+      '127.0.0.1'
+    ]
   }
 })
