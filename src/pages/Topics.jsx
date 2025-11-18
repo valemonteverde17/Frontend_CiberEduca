@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
-import iconEdit from '../assets/icons/editar.png';
-import iconDelete from '../assets/icons/eliminar.png';
+import iconEdit from '../assets/icons/Editar.png';
+import iconDelete from '../assets/icons/Eliminar.png';
 import './Topics.css';
 
 export default function Topics() {
