@@ -5,6 +5,18 @@ import { useAuth } from '../context/AuthContext';
 import ContentEditor from '../components/ContentEditor';
 import CodeBlock from '../components/CodeBlock';
 import LiveCodeBlock from '../components/LiveCodeBlock';
+import { 
+  canEditTopic, 
+  canDeleteTopic, 
+  canSubmitForReview, 
+  canReviewTopic,
+  canArchiveTopic,
+  canEditContent,
+  canEditQuizzes,
+  getStatusBadge,
+  getVisibilityBadge,
+  getAvailableActions
+} from '../utils/topicPermissions';
 import './TopicDetail.css';
 
 export default function TopicDetail() {
@@ -16,25 +28,38 @@ export default function TopicDetail() {
   const [quizSets, setQuizSets] = useState([]);
   const [editName, setEditName] = useState('');
   const [editDesc, setEditDesc] = useState('');
+  const [editTags, setEditTags] = useState([]);
+  const [editTagsInput, setEditTagsInput] = useState('');
+  const [editDifficulty, setEditDifficulty] = useState('beginner');
   const [contentBlocks, setContentBlocks] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showContentModal, setShowContentModal] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [cardColor, setCardColor] = useState('#2b9997');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const load = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const res = await axios.get(`/topics/${id}`);
       setTopic(res.data);
       setEditName(res.data.topic_name);
       setEditDesc(res.data.description);
+      setEditTags(res.data.tags || []);
+      setEditTagsInput(Array.isArray(res.data.tags) ? res.data.tags.join(', ') : '');
+      setEditDifficulty(res.data.difficulty || 'beginner');
       setContentBlocks(res.data.content || []);
       setCardColor(res.data.cardColor || '#2b9997');
 
-      const quizSetsRes = await axios.get(`/quiz-sets/topic/${id}`);
+      const quizSetsRes = await axios.get(`/quiz-sets/topic/${id}`).catch(() => ({ data: [] }));
       setQuizSets(quizSetsRes.data);
     } catch (err) {
       console.error('Error al cargar tema:', err);
+      setError(err.response?.data?.message || 'Error al cargar el tema');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,11 +73,15 @@ export default function TopicDetail() {
       alert('Por favor completa todos los campos correctamente');
       return;
     }
+    // Convertir tags de string a array
+    const tagsArray = editTagsInput ? editTagsInput.split(',').map(t => t.trim()).filter(t => t) : [];
     try {
       await axios.patch(`/topics/${id}`, { 
         topic_name: editName, 
         description: editDesc,
-        cardColor: cardColor
+        cardColor: cardColor,
+        tags: tagsArray,
+        difficulty: editDifficulty
       });
       await load();
       setShowEditModal(false);
@@ -66,8 +95,12 @@ export default function TopicDetail() {
     try {
       await axios.patch(`/topics/${id}`, { content: updatedContent });
       setContentBlocks(updatedContent);
+      // Recargar el tema completo para asegurar que se guardó correctamente
+      await load();
+      console.log('✅ Contenido guardado exitosamente');
     } catch (e) {
-      console.error('Error al actualizar contenido:', e);
+      console.error('❌ Error al actualizar contenido:', e);
+      alert('Error al guardar el contenido. Por favor intenta de nuevo.');
     }
   };
 
@@ -78,17 +111,61 @@ export default function TopicDetail() {
       await load();
       alert('✅ Tema enviado a revisión exitosamente');
     } catch (err) {
-      alert('❌ Error al enviar a revisión: ' + (err.response?.data?.message || err.message));
+      alert('Error al enviar a revisión: ' + (err.response?.data?.message || err.message));
     }
   };
 
-  const canEdit = () => {
-    if (!user || !topic) return false;
-    if (user.role !== 'docente') return false;
-    if (topic.created_by?._id !== user._id && topic.created_by !== user._id) return false;
-    if (topic.status === 'pending_review' || topic.status === 'approved') return false;
-    return true;
+  const handleApprove = async () => {
+    if (!window.confirm('¿Aprobar este tema?')) return;
+    const comments = prompt('Comentarios de aprobación (opcional):');
+    try {
+      await axios.post(`/topics/${id}/approve`, { comments });
+      await load();
+      alert('✅ Tema aprobado exitosamente');
+    } catch (err) {
+      alert('Error al aprobar tema: ' + (err.response?.data?.message || err.message));
+    }
   };
+
+  const handleReject = async () => {
+    const comments = prompt('Comentarios de rechazo (requerido):');
+    if (!comments) {
+      alert('Debes proporcionar comentarios para rechazar un tema');
+      return;
+    }
+    try {
+      await axios.post(`/topics/${id}/reject`, { comments });
+      await load();
+      alert('Tema rechazado');
+    } catch (err) {
+      alert('Error al rechazar tema');
+    }
+  };
+
+  const handleArchive = async () => {
+    if (!window.confirm('¿Archivar este tema?')) return;
+    try {
+      await axios.post(`/topics/${id}/archive`);
+      await load();
+      alert('Tema archivado');
+    } catch (err) {
+      alert('Error al archivar tema');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('⚠️ ¿ELIMINAR este tema permanentemente?')) return;
+    try {
+      await axios.delete(`/topics/${id}`);
+      alert('Tema eliminado');
+      navigate('/topics');
+    } catch (err) {
+      alert('Error al eliminar tema');
+    }
+  };
+
+  // Obtener acciones disponibles
+  const availableActions = topic ? getAvailableActions(user, topic) : [];
 
   const getBlockStyle = (block) => {
     if (!block.style) return {};
@@ -168,7 +245,31 @@ export default function TopicDetail() {
     }
   };
 
-  if (!topic) return <div className="loading-container">Cargando...</div>;
+  if (loading) {
+    return (
+      <div className="topic-detail-loading">
+        <div className="loading-spinner"></div>
+        <p>Cargando tema...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="topic-detail-error">
+        <h2>❌ Error</h2>
+        <p>{error}</p>
+        <button onClick={() => navigate('/topics')} className="btn-back">
+          ← Volver a Temas
+        </button>
+      </div>
+    );
+  }
+
+  if (!topic) return null;
+
+  const statusBadge = getStatusBadge(topic.status);
+  const visibilityBadge = getVisibilityBadge(topic.visibility);
 
   return (
     <div className="topic-detail-container">
@@ -178,18 +279,56 @@ export default function TopicDetail() {
 
       <div className="topic-detail-card">
         <div className="topic-header-section">
-          <div>
+          <div className="topic-header-info">
             <h1 className="topic-detail-title">{topic.topic_name}</h1>
             <p className="topic-detail-description">{topic.description}</p>
             
-            {/* Badge de estado */}
-            {topic.status && (
-              <div className={`topic-detail-status status-${topic.status}`}>
-                {topic.status === 'draft' && '📝 Borrador'}
-                {topic.status === 'pending_review' && '⌛ En Revisión'}
-                {topic.status === 'approved' && '✅ Aprobado'}
-                {topic.status === 'rejected' && '❌ Rechazado'}
-                {topic.status === 'archived' && '🗄️ Archivado'}
+            {/* Badges */}
+            <div className="topic-detail-badges">
+              <span 
+                className="topic-detail-badge status-badge"
+                style={{ backgroundColor: statusBadge.color }}
+              >
+                {statusBadge.icon} {statusBadge.text}
+              </span>
+              <span className="topic-detail-badge visibility-badge">
+                {visibilityBadge.icon} {visibilityBadge.text}
+              </span>
+            </div>
+
+            {/* Metadata */}
+            <div className="topic-detail-meta">
+              {topic.created_by && (
+                <span className="meta-item">
+                  👤 <strong>Autor:</strong> {topic.created_by.user_name}
+                </span>
+              )}
+              {topic.organization_id && (
+                <span className="meta-item">
+                  🏢 <strong>Organización:</strong> {topic.organization_id.name}
+                </span>
+              )}
+              {topic.difficulty && (
+                <span className="meta-item">
+                  📊 <strong>Dificultad:</strong> {topic.difficulty}
+                </span>
+              )}
+              <span className="meta-item">
+                📅 <strong>Creado:</strong> {new Date(topic.createdAt).toLocaleDateString('es-MX')}
+              </span>
+              {topic.publishedAt && (
+                <span className="meta-item">
+                  ✅ <strong>Publicado:</strong> {new Date(topic.publishedAt).toLocaleDateString('es-MX')}
+                </span>
+              )}
+            </div>
+
+            {/* Tags */}
+            {topic.tags && topic.tags.length > 0 && (
+              <div className="topic-detail-tags">
+                {topic.tags.map((tag, index) => (
+                  <span key={index} className="topic-tag">#{tag}</span>
+                ))}
               </div>
             )}
             
@@ -198,21 +337,54 @@ export default function TopicDetail() {
               <div className="review-comments-box">
                 <h4>💬 Comentarios del Revisor:</h4>
                 <p>{topic.review_comments}</p>
+                {topic.reviewed_by && (
+                  <p className="reviewer-name">— {topic.reviewed_by.user_name}</p>
+                )}
               </div>
             )}
           </div>
           
-          {user?.role === 'docente' && canEdit() && (
-            <div className="topic-header-buttons">
-              <button className="btn-preview-topic" onClick={() => setPreviewMode(!previewMode)}>
-                {previewMode ? '✒️ Modo Edición' : '👁️ Vista Previa'}
-              </button>
-              <button className="btn-edit-topic" onClick={() => setShowEditModal(true)}>
-                ✒️ Editar Tema
-              </button>
-              {topic.status === 'draft' && (
-                <button className="btn-submit-review" onClick={handleSubmitForReview}>
+          {/* Botones de acción según permisos */}
+          {availableActions.length > 0 && (
+            <div className="topic-header-actions">
+              {availableActions.includes('edit') && (
+                <>
+                  <button className="btn-action btn-preview" onClick={() => setPreviewMode(!previewMode)}>
+                    {previewMode ? '✒️ Editar' : '👁️ Vista Previa'}
+                  </button>
+                  <button className="btn-action btn-edit" onClick={() => setShowEditModal(true)}>
+                    ✏️ Editar Info
+                  </button>
+                </>
+              )}
+              
+              {availableActions.includes('submit-review') && (
+                <button className="btn-action btn-submit" onClick={handleSubmitForReview}>
                   📤 Enviar a Revisión
+                </button>
+              )}
+              
+              {availableActions.includes('approve') && (
+                <button className="btn-action btn-approve" onClick={handleApprove}>
+                  ✅ Aprobar
+                </button>
+              )}
+              
+              {availableActions.includes('reject') && (
+                <button className="btn-action btn-reject" onClick={handleReject}>
+                  ❌ Rechazar
+                </button>
+              )}
+              
+              {availableActions.includes('archive') && (
+                <button className="btn-action btn-archive" onClick={handleArchive}>
+                  📦 Archivar
+                </button>
+              )}
+              
+              {availableActions.includes('delete') && (
+                <button className="btn-action btn-delete" onClick={handleDelete}>
+                  🗑️ Eliminar
                 </button>
               )}
             </div>
@@ -220,10 +392,10 @@ export default function TopicDetail() {
         </div>
 
         {/* Sección de Contenido */}
-        {user?.role === 'docente' && !previewMode ? (
+        {canEditContent(user, topic) && !previewMode ? (
           <ContentEditor content={contentBlocks} onChange={handleContentUpdate} />
         ) : (
-          contentBlocks && contentBlocks.length > 0 && (
+          contentBlocks && contentBlocks.length > 0 ? (
             <div className="topic-content-display">
               <h3 className="content-section-title">📚 Contenido del Tema</h3>
               <div className="content-blocks-display">
@@ -234,6 +406,13 @@ export default function TopicDetail() {
                 ))}
               </div>
             </div>
+          ) : (
+            <div className="no-content">
+              <p>📝 Este tema aún no tiene contenido</p>
+              {canEditContent(user, topic) && (
+                <p className="hint">Comienza agregando bloques de contenido</p>
+              )}
+            </div>
           )
         )}
       </div>
@@ -241,7 +420,7 @@ export default function TopicDetail() {
       <div className="quizzes-section">
         <div className="quizzes-header">
           <h2>📋 Cuestionarios Disponibles</h2>
-          {user?.role === 'docente' && (
+          {canEditQuizzes(user, topic) && (
             <button className="btn-add-quiz" onClick={() => navigate('/crear-quiz')}>
               + Crear Cuestionario
             </button>
@@ -251,7 +430,7 @@ export default function TopicDetail() {
         {quizSets.length === 0 ? (
           <div className="no-quizzes">
             <p>📚 Aún no hay cuestionarios para este tema.</p>
-            {user?.role === 'docente' && (
+            {canEditQuizzes(user, topic) && (
               <p className="hint">Crea el primer cuestionario para comenzar.</p>
             )}
           </div>
@@ -276,12 +455,14 @@ export default function TopicDetail() {
                     </button>
                   ) : (
                     <>
-                      <button 
-                        className="btn-edit-quiz-set"
-                        onClick={() => navigate(`/edit-quiz-set/${quizSet._id}`)}
-                      >
-                        ✒️ Editar
-                      </button>
+                      {canEditQuizzes(user, topic) && (
+                        <button 
+                          className="btn-edit-quiz-set"
+                          onClick={() => navigate(`/edit-quiz-set/${quizSet._id}`)}
+                        >
+                          ✒️ Editar
+                        </button>
+                      )}
                       <button 
                         className="btn-view-quiz"
                         onClick={() => navigate('/quizzes')}
@@ -316,6 +497,30 @@ export default function TopicDetail() {
                 onChange={(e) => setEditDesc(e.target.value)}
                 placeholder="Descripción (mínimo 10 caracteres)"
               />
+
+              <div className="form-group">
+                <label className="form-label">🏷️ Tags (separados por coma)</label>
+                <input
+                  type="text"
+                  placeholder="Ej: ciberseguridad, contraseñas, seguridad"
+                  value={editTagsInput}
+                  onChange={(e) => setEditTagsInput(e.target.value)}
+                  className="modal-input"
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">📊 Dificultad</label>
+                <select
+                  value={editDifficulty}
+                  onChange={(e) => setEditDifficulty(e.target.value)}
+                  className="modal-select"
+                >
+                  <option value="beginner">🟢 Principiante</option>
+                  <option value="intermediate">🟡 Intermedio</option>
+                  <option value="advanced">🔴 Avanzado</option>
+                </select>
+              </div>
               
               <div className="color-picker-section">
                 <label className="color-picker-label">

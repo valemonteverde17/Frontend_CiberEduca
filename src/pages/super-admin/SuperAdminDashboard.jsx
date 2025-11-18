@@ -1,80 +1,78 @@
 import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../api/axios';
-import { useAuth } from '../../context/AuthContext';
 import StatsCard from '../../components/dashboard/StatsCard';
 import UserTable from '../../components/dashboard/UserTable';
 import ContentTable from '../../components/dashboard/ContentTable';
-import './AdminDashboard.css';
+import './SuperAdminDashboard.css';
 
-export default function AdminDashboard() {
+export default function SuperAdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('overview');
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('overview');
   
   // Estados para datos
   const [stats, setStats] = useState({
     totalUsers: 0,
-    myOrgUsers: 0,
-    pendingUsers: 0,
+    totalOrganizations: 0,
     totalTopics: 0,
+    totalQuizzes: 0,
+    pendingUsers: 0,
     pendingTopics: 0,
-    myTopics: 0,
     activeUsers: 0
   });
   
   const [users, setUsers] = useState([]);
-  const [topics, setTopics] = useState([]);
+  const [organizations, setOrganizations] = useState([]);
   const [pendingTopics, setPendingTopics] = useState([]);
-  const [myOrgUsers, setMyOrgUsers] = useState([]);
+  const [pendingQuizzes, setPendingQuizzes] = useState([]);
 
   useEffect(() => {
+    if (!user?.is_super) {
+      navigate('/');
+      return;
+    }
     loadData();
-  }, []);
+  }, [user]);
 
   const loadData = async () => {
     setLoading(true);
     try {
-      // Cargar datos según organización del admin
-      const [usersRes, topicsRes, statsRes] = await Promise.all([
+      // Cargar todos los datos en paralelo
+      const [usersRes, orgsRes, topicsRes, quizzesRes, statsRes] = await Promise.all([
         axios.get('/users'),
+        axios.get('/organizations'),
         axios.get('/topics'),
-        axios.get('/approval/stats').catch(() => ({ data: {} }))
+        axios.get('/quiz-sets'),
+        axios.get('/approval/stats')
       ]);
 
-      // Filtrar usuarios de mi organización
-      const orgUsers = user.organization_id 
-        ? usersRes.data.filter(u => u.organization_id?._id === user.organization_id)
-        : usersRes.data;
-      
-      setUsers(orgUsers);
-      setMyOrgUsers(orgUsers);
-      
-      // Filtrar temas de mi organización
-      const orgTopics = user.organization_id
-        ? topicsRes.data.filter(t => t.organization_id?._id === user.organization_id)
-        : topicsRes.data;
-      
-      setTopics(orgTopics);
+      setUsers(usersRes.data);
+      setOrganizations(orgsRes.data);
       
       // Filtrar temas pendientes
-      const pending = orgTopics.filter(t => t.status === 'pending_review');
+      const pending = topicsRes.data.filter(t => t.status === 'pending_review');
       setPendingTopics(pending);
+      
+      // Filtrar quizzes pendientes
+      const pendingQ = quizzesRes.data.filter(q => q.status === 'pending_review');
+      setPendingQuizzes(pendingQ);
 
       // Calcular estadísticas
       setStats({
-        totalUsers: orgUsers.length,
-        myOrgUsers: orgUsers.length,
-        pendingUsers: orgUsers.filter(u => u.status === 'pending').length,
-        totalTopics: orgTopics.length,
+        totalUsers: usersRes.data.length,
+        totalOrganizations: orgsRes.data.length,
+        totalTopics: topicsRes.data.length,
+        totalQuizzes: quizzesRes.data.length,
+        pendingUsers: usersRes.data.filter(u => u.status === 'pending').length,
         pendingTopics: pending.length,
-        myTopics: orgTopics.filter(t => t.created_by?._id === user._id).length,
-        activeUsers: orgUsers.filter(u => u.status === 'active').length,
+        activeUsers: usersRes.data.filter(u => u.status === 'active').length,
         ...statsRes.data
       });
     } catch (err) {
-      console.error('Error al cargar datos:', err);
+      console.error('Error cargando datos:', err);
       alert('Error al cargar datos del dashboard');
     } finally {
       setLoading(false);
@@ -126,7 +124,7 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteUser = async (userId) => {
-    if (!window.confirm('⚠️ ¿ELIMINAR este usuario permanentemente?')) return;
+    if (!window.confirm('⚠️ ¿ELIMINAR este usuario permanentemente? Esta acción no se puede deshacer.')) return;
     try {
       await axios.delete(`/users/${userId}`);
       await loadData();
@@ -160,7 +158,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="admin-loading">
+      <div className="super-admin-loading">
         <div className="loading-spinner"></div>
         <p>Cargando dashboard...</p>
       </div>
@@ -168,11 +166,11 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="admin-dashboard">
-      <div className="admin-header">
+    <div className="super-admin-dashboard">
+      <div className="super-admin-header">
         <div>
-          <h1>🛡️ Admin Dashboard</h1>
-          <p>Bienvenido, {user.user_name} - {user.organization_id?.name || 'Sin organización'}</p>
+          <h1>👑 Super Admin Dashboard</h1>
+          <p>Acceso total al sistema - Vista global</p>
         </div>
         <button className="btn-refresh" onClick={loadData}>
           🔄 Actualizar
@@ -180,7 +178,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Tabs de navegación */}
-      <div className="admin-tabs">
+      <div className="super-admin-tabs">
         <button
           className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
           onClick={() => setActiveTab('overview')}
@@ -191,13 +189,19 @@ export default function AdminDashboard() {
           className={`tab-btn ${activeTab === 'users' ? 'active' : ''}`}
           onClick={() => setActiveTab('users')}
         >
-          👥 Usuarios ({stats.myOrgUsers})
+          👥 Usuarios ({users.length})
+        </button>
+        <button
+          className={`tab-btn ${activeTab === 'organizations' ? 'active' : ''}`}
+          onClick={() => setActiveTab('organizations')}
+        >
+          🏢 Organizaciones ({organizations.length})
         </button>
         <button
           className={`tab-btn ${activeTab === 'content' ? 'active' : ''}`}
           onClick={() => setActiveTab('content')}
         >
-          📚 Contenido ({stats.totalTopics})
+          📚 Contenido
         </button>
         <button
           className={`tab-btn ${activeTab === 'pending' ? 'active' : ''}`}
@@ -209,14 +213,33 @@ export default function AdminDashboard() {
 
       {/* Contenido según tab activo */}
       {activeTab === 'overview' && (
-        <div className="admin-content">
+        <div className="super-admin-content">
           <div className="stats-grid">
             <StatsCard
               icon="👥"
-              title="Usuarios de mi Org"
-              value={stats.myOrgUsers}
+              title="Total Usuarios"
+              value={stats.totalUsers}
               subtitle={`${stats.activeUsers} activos`}
               color="blue"
+            />
+            <StatsCard
+              icon="🏢"
+              title="Organizaciones"
+              value={stats.totalOrganizations}
+              color="purple"
+            />
+            <StatsCard
+              icon="📚"
+              title="Temas"
+              value={stats.totalTopics}
+              subtitle={`${stats.pendingTopics} pendientes`}
+              color="teal"
+            />
+            <StatsCard
+              icon="📋"
+              title="Quizzes"
+              value={stats.totalQuizzes}
+              color="green"
             />
             <StatsCard
               icon="⏳"
@@ -225,28 +248,21 @@ export default function AdminDashboard() {
               color="orange"
             />
             <StatsCard
-              icon="📚"
-              title="Temas Totales"
-              value={stats.totalTopics}
-              subtitle={`${stats.myTopics} míos`}
-              color="teal"
-            />
-            <StatsCard
-              icon="📝"
-              title="Temas Pendientes"
-              value={stats.pendingTopics}
-              color="purple"
+              icon="✅"
+              title="Aprobaciones Hoy"
+              value={stats.approvedToday || 0}
+              color="green"
             />
           </div>
 
           {/* Actividad reciente */}
-          <div className="admin-section">
+          <div className="super-admin-section">
             <h2>📋 Actividad Reciente</h2>
             <div className="activity-grid">
               <div className="activity-card">
-                <h3>Últimos Usuarios</h3>
+                <h3>Últimos Usuarios Registrados</h3>
                 <ul className="activity-list">
-                  {myOrgUsers.slice(0, 5).map(u => (
+                  {users.slice(0, 5).map(u => (
                     <li key={u._id}>
                       <span className="activity-icon">👤</span>
                       <span>{u.user_name}</span>
@@ -259,14 +275,14 @@ export default function AdminDashboard() {
               </div>
 
               <div className="activity-card">
-                <h3>Últimos Temas</h3>
+                <h3>Últimos Temas Creados</h3>
                 <ul className="activity-list">
-                  {topics.slice(0, 5).map(t => (
+                  {pendingTopics.slice(0, 5).map(t => (
                     <li key={t._id}>
                       <span className="activity-icon">📚</span>
                       <span>{t.topic_name}</span>
                       <span className="activity-author">
-                        {t.created_by?.user_name}
+                        por {t.created_by?.user_name}
                       </span>
                     </li>
                   ))}
@@ -274,38 +290,15 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
-
-          {/* Acciones Rápidas */}
-          <div className="admin-section">
-            <h2>⚡ Acciones Rápidas</h2>
-            <div className="quick-actions-grid">
-              <button className="quick-action-btn" onClick={() => navigate('/my-topics')}>
-                <span className="qa-icon">📝</span>
-                <span className="qa-text">Mis Temas</span>
-              </button>
-              <button className="quick-action-btn" onClick={() => navigate('/topics')}>
-                <span className="qa-icon">📚</span>
-                <span className="qa-text">Ver Todos</span>
-              </button>
-              <button className="quick-action-btn" onClick={() => navigate('/admin/users')}>
-                <span className="qa-icon">👥</span>
-                <span className="qa-text">Gestionar Usuarios</span>
-              </button>
-              <button className="quick-action-btn" onClick={() => navigate('/admin/organizations')}>
-                <span className="qa-icon">🏢</span>
-                <span className="qa-text">Organizaciones</span>
-              </button>
-            </div>
-          </div>
         </div>
       )}
 
       {activeTab === 'users' && (
-        <div className="admin-content">
-          <div className="admin-section">
-            <h2>👥 Gestión de Usuarios de mi Organización</h2>
+        <div className="super-admin-content">
+          <div className="super-admin-section">
+            <h2>👥 Gestión de Usuarios</h2>
             <UserTable
-              users={myOrgUsers}
+              users={users}
               onApprove={handleApproveUser}
               onReject={handleRejectUser}
               onSuspend={handleSuspendUser}
@@ -318,29 +311,73 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {activeTab === 'organizations' && (
+        <div className="super-admin-content">
+          <div className="super-admin-section">
+            <h2>🏢 Organizaciones</h2>
+            <div className="organizations-grid">
+              {organizations.map(org => (
+                <div key={org._id} className="organization-card">
+                  <div className="org-header">
+                    <h3>{org.name}</h3>
+                    <span className="org-code">{org.code}</span>
+                  </div>
+                  <div className="org-stats">
+                    <div className="org-stat">
+                      <span className="org-stat-label">Admin:</span>
+                      <span className="org-stat-value">
+                        {org.admin_id?.user_name || 'Sin asignar'}
+                      </span>
+                    </div>
+                    <div className="org-stat">
+                      <span className="org-stat-label">Usuarios:</span>
+                      <span className="org-stat-value">
+                        {users.filter(u => u.organization_id?._id === org._id).length}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {activeTab === 'content' && (
-        <div className="admin-content">
-          <div className="admin-section">
-            <h2>📚 Contenido de mi Organización</h2>
-            <ContentTable
-              items={topics}
-              type="topics"
-              onApprove={handleApproveTopic}
-              onReject={handleRejectTopic}
-              canReview={true}
-            />
+        <div className="super-admin-content">
+          <div className="super-admin-section">
+            <h2>📚 Contenido del Sistema</h2>
+            <div className="content-stats">
+              <div className="content-stat-card">
+                <h3>Temas por Estado</h3>
+                <div className="stat-breakdown">
+                  <div className="stat-item">
+                    <span>✅ Aprobados:</span>
+                    <strong>{stats.approvedTopics || 0}</strong>
+                  </div>
+                  <div className="stat-item">
+                    <span>⏳ En Revisión:</span>
+                    <strong>{stats.pendingTopics}</strong>
+                  </div>
+                  <div className="stat-item">
+                    <span>📝 Borradores:</span>
+                    <strong>{stats.draftTopics || 0}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}
 
       {activeTab === 'pending' && (
-        <div className="admin-content">
-          <div className="admin-section">
+        <div className="super-admin-content">
+          <div className="super-admin-section">
             <h2>⏳ Aprobaciones Pendientes</h2>
             
             <h3>Usuarios Pendientes</h3>
             <UserTable
-              users={myOrgUsers.filter(u => u.status === 'pending')}
+              users={users.filter(u => u.status === 'pending')}
               onApprove={handleApproveUser}
               onReject={handleRejectUser}
               onSuspend={handleSuspendUser}

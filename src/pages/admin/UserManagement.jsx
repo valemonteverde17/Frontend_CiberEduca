@@ -18,6 +18,7 @@ export default function UserManagement() {
     password: '',
     email: '',
     role: 'estudiante',
+    is_super: false,
     organization_id: '',
     status: 'active'
   });
@@ -54,6 +55,7 @@ export default function UserManagement() {
         password: '',
         email: '',
         role: 'estudiante',
+        is_super: false,
         organization_id: '',
         status: 'active'
       });
@@ -237,7 +239,7 @@ export default function UserManagement() {
                   <td>{u.email || '-'}</td>
                   <td>
                     <span className={`role-badge role-${u.role}`}>
-                      {u.role === 'admin' && '👑 Admin'}
+                      {u.role === 'admin' && (u.is_super ? '⭐ Super Admin' : '👑 Admin')}
                       {u.role === 'revisor' && '👁️ Revisor'}
                       {u.role === 'docente' && '👨‍🏫 Docente'}
                       {u.role === 'estudiante' && '👨‍🎓 Estudiante'}
@@ -364,6 +366,20 @@ export default function UserManagement() {
                   <option value="admin">👑 Admin</option>
                 </select>
               </div>
+
+              {newUser.role === 'admin' && (
+                <div className="form-group">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={newUser.is_super}
+                      onChange={(e) => setNewUser({...newUser, is_super: e.target.checked})}
+                    />
+                    {' '}⭐ Super Administrador (acceso total al sistema)
+                  </label>
+                  <small>Los super admins pueden gestionar TODO. Los admins normales solo su organización.</small>
+                </div>
+              )}
 
               <div className="form-group">
                 <label>Organización</label>

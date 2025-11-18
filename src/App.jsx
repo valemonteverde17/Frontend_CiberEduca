@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Topics from './pages/Topics';
 import TopicDetail from './pages/TopicDetail';
+import MyTopics from './pages/MyTopics';
 import Quizzes from './pages/Quizzes';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateQuizzes from "./pages/CreateQuizzes";
@@ -21,6 +22,8 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import ReviewTopic from './pages/admin/ReviewTopic';
 import UserManagement from './pages/admin/UserManagement';
 import OrganizationManagement from './pages/admin/OrganizationManagement';
+import SuperAdminDashboard from './pages/super-admin/SuperAdminDashboard';
+import RevisorDashboard from './pages/revisor/RevisorDashboard';
 
 function App() {
   const { user } = useAuth();
@@ -40,6 +43,11 @@ function App() {
         <Route path="/topics/:id" element={
           <ProtectedRoute>
             <TopicDetail />
+          </ProtectedRoute>
+        } />
+        <Route path="/my-topics" element={
+          <ProtectedRoute allowedRoles={['docente', 'admin']}>
+            <MyTopics />
           </ProtectedRoute>
         } />
         <Route path="/quizzes" element={
@@ -112,6 +120,20 @@ function App() {
     <Route path="/admin/organizations" element={
       <ProtectedRoute allowedRoles={['admin']}>
         <OrganizationManagement />
+      </ProtectedRoute>
+    } />
+
+    {/* Ruta de Super Admin */}
+    <Route path="/super-admin/dashboard" element={
+      <ProtectedRoute allowedRoles={['admin']} requireSuper={true}>
+        <SuperAdminDashboard />
+      </ProtectedRoute>
+    } />
+
+    {/* Ruta de Revisor */}
+    <Route path="/revisor/dashboard" element={
+      <ProtectedRoute allowedRoles={['revisor', 'admin']}>
+        <RevisorDashboard />
       </ProtectedRoute>
     } />
       </Routes>

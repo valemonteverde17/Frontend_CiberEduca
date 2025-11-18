@@ -1,0 +1,136 @@
+.stats-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  transition: all 0.3s ease;
+  border-left: 4px solid;
+}
+
+.stats-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.stats-card-icon {
+  font-size: 3rem;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.stats-card-content {
+  flex: 1;
+}
+
+.stats-card-title {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-card-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #2b5858;
+}
+
+.stats-card-subtitle {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0.5rem 0 0;
+}
+
+.stats-card-trend {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.stats-card-trend.up {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.stats-card-trend.down {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* Colores por tipo */
+.stats-card-blue {
+  border-left-color: #2196f3;
+}
+
+.stats-card-blue .stats-card-icon {
+  background: rgba(33, 150, 243, 0.1);
+  color: #2196f3;
+}
+
+.stats-card-green {
+  border-left-color: #4caf50;
+}
+
+.stats-card-green .stats-card-icon {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+}
+
+.stats-card-orange {
+  border-left-color: #ff9800;
+}
+
+.stats-card-orange .stats-card-icon {
+  background: rgba(255, 152, 0, 0.1);
+  color: #ff9800;
+}
+
+.stats-card-red {
+  border-left-color: #f44336;
+}
+
+.stats-card-red .stats-card-icon {
+  background: rgba(244, 67, 54, 0.1);
+  color: #f44336;
+}
+
+.stats-card-purple {
+  border-left-color: #9c27b0;
+}
+
+.stats-card-purple .stats-card-icon {
+  background: rgba(156, 39, 176, 0.1);
+  color: #9c27b0;
+}
+
+.stats-card-teal {
+  border-left-color: #2b9997;
+}
+
+.stats-card-teal .stats-card-icon {
+  background: rgba(43, 153, 151, 0.1);
+  color: #2b9997;
+}
+
+.stats-card-yellow {
+  border-left-color: #ffc107;
+}
+
+.stats-card-yellow .stats-card-icon {
+  background: rgba(255, 193, 7, 0.1);
+  color: #f57c00;
+}

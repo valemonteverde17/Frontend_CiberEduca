@@ -6,22 +6,26 @@ import './OrganizationManagement.css';
 export default function OrganizationManagement() {
   const navigate = useNavigate();
   const [organizations, setOrganizations] = useState([]);
+  const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingOrg, setEditingOrg] = useState(null);
   const [newOrg, setNewOrg] = useState({
     name: '',
     description: '',
     code: '',
-    type: 'school',
-    contact: {
-      email: '',
-      phone: '',
-      address: ''
+    admin_id: '',
+    logo: '',
+    settings: {
+      allowPublicContent: true,
+      requireApproval: true
     }
   });
 
   useEffect(() => {
     loadOrganizations();
+    loadAdmins();
   }, []);
 
   const loadOrganizations = async () => {
@@ -37,6 +41,16 @@ export default function OrganizationManagement() {
     }
   };
 
+  const loadAdmins = async () => {
+    try {
+      const res = await axios.get('/users');
+      const adminUsers = res.data.filter(u => u.role === 'admin');
+      setAdmins(adminUsers);
+    } catch (err) {
+      console.error('Error al cargar admins:', err);
+    }
+  };
+
   const handleCreateOrg = async (e) => {
     e.preventDefault();
     try {
@@ -47,16 +61,46 @@ export default function OrganizationManagement() {
         name: '',
         description: '',
         code: '',
-        type: 'school',
-        contact: {
-          email: '',
-          phone: '',
-          address: ''
+        admin_id: '',
+        logo: '',
+        settings: {
+          allowPublicContent: true,
+          requireApproval: true
         }
       });
       alert('✅ Organización creada exitosamente');
     } catch (err) {
       alert('❌ Error al crear organización: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleEdit = (org) => {
+    setEditingOrg({
+      _id: org._id,
+      name: org.name,
+      description: org.description || '',
+      code: org.code,
+      admin_id: typeof org.admin_id === 'object' ? org.admin_id._id : org.admin_id,
+      logo: org.logo || '',
+      settings: {
+        allowPublicContent: org.settings?.allowPublicContent ?? true,
+        requireApproval: org.settings?.requireApproval ?? true
+      }
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateOrg = async (e) => {
+    e.preventDefault();
+    try {
+      const { _id, ...updateData } = editingOrg;
+      await axios.patch(`/organizations/${_id}`, updateData);
+      await loadOrganizations();
+      setShowEditModal(false);
+      setEditingOrg(null);
+      alert('✅ Organización actualizada');
+    } catch (err) {
+      alert('❌ Error al actualizar organización: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -100,21 +144,9 @@ export default function OrganizationManagement() {
           <div className="stat-value">{organizations.length}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">🏫 Escuelas</div>
+          <div className="stat-label">👤 Admin</div>
           <div className="stat-value">
-            {organizations.filter(o => o.type === 'school').length}
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">🏛️ Universidades</div>
-          <div className="stat-value">
-            {organizations.filter(o => o.type === 'university').length}
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-label">🏢 Empresas</div>
-          <div className="stat-value">
-            {organizations.filter(o => o.type === 'company').length}
+            {organizations.filter(o => o.admin_id).length}
           </div>
         </div>
       </div>
@@ -133,12 +165,6 @@ export default function OrganizationManagement() {
             <div key={org._id} className="org-card">
               <div className="org-header">
                 <h3>{org.name}</h3>
-                <span className={`org-type type-${org.type}`}>
-                  {org.type === 'school' && '🏫 Escuela'}
-                  {org.type === 'university' && '🏛️ Universidad'}
-                  {org.type === 'company' && '🏢 Empresa'}
-                  {org.type === 'other' && '📋 Otro'}
-                </span>
               </div>
               
               <p className="org-description">{org.description || 'Sin descripción'}</p>
@@ -148,24 +174,18 @@ export default function OrganizationManagement() {
                   <strong>Código:</strong>
                   <span className="org-code">{org.code}</span>
                 </div>
-                {org.contact?.email && (
-                  <div className="detail-item">
-                    <strong>📧 Email:</strong>
-                    <span>{org.contact.email}</span>
-                  </div>
-                )}
-                {org.contact?.phone && (
-                  <div className="detail-item">
-                    <strong>📞 Teléfono:</strong>
-                    <span>{org.contact.phone}</span>
-                  </div>
-                )}
-                {org.contact?.address && (
-                  <div className="detail-item">
-                    <strong>📍 Dirección:</strong>
-                    <span>{org.contact.address}</span>
-                  </div>
-                )}
+                <div className="detail-item">
+                  <strong>👤 Admin:</strong>
+                  <span>{org.admin_id?.user_name || org.admin_id || 'N/A'}</span>
+                </div>
+                <div className="detail-item">
+                  <strong>🌐 Contenido Público:</strong>
+                  <span>{org.settings?.allowPublicContent ? '✅ Sí' : '❌ No'}</span>
+                </div>
+                <div className="detail-item">
+                  <strong>✅ Requiere Aprobación:</strong>
+                  <span>{org.settings?.requireApproval ? '✅ Sí' : '❌ No'}</span>
+                </div>
                 <div className="detail-item">
                   <strong>📅 Creada:</strong>
                   <span>{new Date(org.createdAt).toLocaleDateString()}</span>
@@ -173,6 +193,12 @@ export default function OrganizationManagement() {
               </div>
 
               <div className="org-actions">
+                <button 
+                  className="btn-edit-org"
+                  onClick={() => handleEdit(org)}
+                >
+                  ✏️ Editar
+                </button>
                 <button 
                   className="btn-delete-org"
                   onClick={() => handleDelete(org._id)}
@@ -235,56 +261,58 @@ export default function OrganizationManagement() {
               </div>
 
               <div className="form-group">
-                <label>Tipo de Organización *</label>
+                <label>Administrador *</label>
                 <select
-                  value={newOrg.type}
-                  onChange={(e) => setNewOrg({...newOrg, type: e.target.value})}
+                  value={newOrg.admin_id}
+                  onChange={(e) => setNewOrg({...newOrg, admin_id: e.target.value})}
                   required
                 >
-                  <option value="school">🏫 Escuela</option>
-                  <option value="university">🏛️ Universidad</option>
-                  <option value="company">🏢 Empresa</option>
-                  <option value="other">📋 Otro</option>
+                  <option value="">Selecciona un administrador</option>
+                  {admins.map(admin => (
+                    <option key={admin._id} value={admin._id}>
+                      {admin.user_name} ({admin.profile?.fullName || 'Sin nombre'})
+                    </option>
+                  ))}
                 </select>
+                <small>Selecciona el usuario que administrará esta organización</small>
               </div>
 
               <div className="form-group">
-                <label>Email de Contacto</label>
+                <label>Logo (URL)</label>
                 <input
-                  type="email"
-                  value={newOrg.contact.email}
-                  onChange={(e) => setNewOrg({
-                    ...newOrg, 
-                    contact: {...newOrg.contact, email: e.target.value}
-                  })}
-                  placeholder="contacto@organizacion.com"
+                  type="url"
+                  value={newOrg.logo}
+                  onChange={(e) => setNewOrg({...newOrg, logo: e.target.value})}
+                  placeholder="https://ejemplo.com/logo.png"
                 />
               </div>
 
               <div className="form-group">
-                <label>Teléfono</label>
-                <input
-                  type="tel"
-                  value={newOrg.contact.phone}
-                  onChange={(e) => setNewOrg({
-                    ...newOrg, 
-                    contact: {...newOrg.contact, phone: e.target.value}
-                  })}
-                  placeholder="555-1234-5678"
-                />
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={newOrg.settings.allowPublicContent}
+                    onChange={(e) => setNewOrg({
+                      ...newOrg,
+                      settings: {...newOrg.settings, allowPublicContent: e.target.checked}
+                    })}
+                  />
+                  {' '}Permitir contenido público
+                </label>
               </div>
 
               <div className="form-group">
-                <label>Dirección</label>
-                <input
-                  type="text"
-                  value={newOrg.contact.address}
-                  onChange={(e) => setNewOrg({
-                    ...newOrg, 
-                    contact: {...newOrg.contact, address: e.target.value}
-                  })}
-                  placeholder="Calle, Número, Colonia, Ciudad"
-                />
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={newOrg.settings.requireApproval}
+                    onChange={(e) => setNewOrg({
+                      ...newOrg,
+                      settings: {...newOrg.settings, requireApproval: e.target.checked}
+                    })}
+                  />
+                  {' '}Requiere aprobación de contenido
+                </label>
               </div>
 
               <div className="modal-actions">
@@ -293,6 +321,114 @@ export default function OrganizationManagement() {
                 </button>
                 <button type="submit" className="btn-submit">
                   ✅ Crear Organización
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Editar Organización */}
+      {showEditModal && editingOrg && (
+        <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>✏️ Editar Organización</h2>
+            <form onSubmit={handleUpdateOrg}>
+              <div className="form-group">
+                <label>Nombre de la Organización *</label>
+                <input
+                  type="text"
+                  value={editingOrg.name}
+                  onChange={(e) => setEditingOrg({...editingOrg, name: e.target.value})}
+                  required
+                  placeholder="Ej: Escuela Primaria Benito Juárez"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Descripción</label>
+                <textarea
+                  value={editingOrg.description}
+                  onChange={(e) => setEditingOrg({...editingOrg, description: e.target.value})}
+                  rows={3}
+                  placeholder="Descripción de la organización..."
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Código de Acceso *</label>
+                <input
+                  type="text"
+                  value={editingOrg.code}
+                  onChange={(e) => setEditingOrg({...editingOrg, code: e.target.value.toUpperCase()})}
+                  required
+                  placeholder="CODIGO"
+                  maxLength={10}
+                />
+                <small>Este código será usado por docentes para unirse a la organización</small>
+              </div>
+
+              <div className="form-group">
+                <label>Administrador *</label>
+                <select
+                  value={editingOrg.admin_id}
+                  onChange={(e) => setEditingOrg({...editingOrg, admin_id: e.target.value})}
+                  required
+                >
+                  <option value="">Selecciona un administrador</option>
+                  {admins.map(admin => (
+                    <option key={admin._id} value={admin._id}>
+                      {admin.user_name} ({admin.profile?.fullName || 'Sin nombre'})
+                    </option>
+                  ))}
+                </select>
+                <small>Selecciona el usuario que administrará esta organización</small>
+              </div>
+
+              <div className="form-group">
+                <label>Logo (URL)</label>
+                <input
+                  type="url"
+                  value={editingOrg.logo}
+                  onChange={(e) => setEditingOrg({...editingOrg, logo: e.target.value})}
+                  placeholder="https://ejemplo.com/logo.png"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={editingOrg.settings.allowPublicContent}
+                    onChange={(e) => setEditingOrg({
+                      ...editingOrg,
+                      settings: {...editingOrg.settings, allowPublicContent: e.target.checked}
+                    })}
+                  />
+                  {' '}Permitir contenido público
+                </label>
+              </div>
+
+              <div className="form-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={editingOrg.settings.requireApproval}
+                    onChange={(e) => setEditingOrg({
+                      ...editingOrg,
+                      settings: {...editingOrg.settings, requireApproval: e.target.checked}
+                    })}
+                  />
+                  {' '}Requiere aprobación de contenido
+                </label>
+              </div>
+
+              <div className="modal-actions">
+                <button type="button" className="btn-cancel" onClick={() => setShowEditModal(false)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-submit">
+                  ✅ Actualizar Organización
                 </button>
               </div>
             </form>

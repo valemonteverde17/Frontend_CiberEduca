@@ -58,6 +58,42 @@
   color: white;
 }
 
+/* Estilos especiales para Dashboard */
+.nav-link-dashboard {
+  background: rgba(255, 205, 0, 0.2);
+  border: 1px solid rgba(255, 205, 0, 0.4);
+}
+
+.nav-link-dashboard:hover {
+  background: rgba(255, 205, 0, 0.3);
+  border-color: rgba(255, 205, 0, 0.6);
+}
+
+/* Estilos especiales para Revisor */
+.nav-link-revisor {
+  background: rgba(156, 39, 176, 0.2);
+  border: 1px solid rgba(156, 39, 176, 0.4);
+}
+
+.nav-link-revisor:hover {
+  background: rgba(156, 39, 176, 0.3);
+  border-color: rgba(156, 39, 176, 0.6);
+}
+
+/* Estilos especiales para Super Admin */
+.nav-link-super {
+  background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+  color: #2b5858;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.4);
+}
+
+.nav-link-super:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.6);
+  color: #1a4040;
+}
+
 .navbar-actions {
   display: flex;
   gap: 1rem;

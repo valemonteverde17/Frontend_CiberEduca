@@ -2,12 +2,17 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './ProtectedRoute.css';
 
-export default function ProtectedRoute({ children, allowedRoles }) {
+export default function ProtectedRoute({ children, allowedRoles, requireSuper = false }) {
   const { user } = useAuth();
 
   // No autenticado
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Requiere super admin
+  if (requireSuper && !user.is_super) {
+    return <Navigate to="/topics" replace />;
   }
 
   // Usuario pendiente de aprobación

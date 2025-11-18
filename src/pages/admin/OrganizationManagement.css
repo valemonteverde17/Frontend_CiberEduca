@@ -212,6 +212,25 @@
   margin-top: auto;
 }
 
+.btn-edit-org {
+  flex: 1;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+.btn-edit-org:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(52, 152, 219, 0.5);
+}
+
 .btn-delete-org {
   flex: 1;
   padding: 10px 20px;

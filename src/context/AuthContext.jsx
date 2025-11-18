@@ -16,10 +16,15 @@ export function AuthProvider({ children }) {
       user_name: data.user_name,
       email: data.email,
       role: data.role,
+      is_super: data.is_super || false,
       status: data.status,
       organization_id: data.organization_id || null,
       token: data.token,
-      profile: data.profile || {}
+      profile: data.profile || {},
+      permissions: data.permissions || { 
+        canReview: false, 
+        canManageUsers: false 
+      }
     };
     
     setUser(userData);
