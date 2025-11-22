@@ -17,6 +17,9 @@ import ManageHangman from './pages/games/ManageHangman';
 import ManageMemorama from './pages/games/ManageMemorama';
 import Profile from './pages/Profile';
 import Rankings from './pages/Rankings';
+import Dashboard from './pages/admin/Dashboard';
+import UserManagement from './pages/admin/UserManagement';
+import ContentManagement from './pages/admin/ContentManagement';
 
 function App() {
   const { user } = useAuth();
@@ -28,6 +31,24 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={user ? <Navigate to="/topics" /> : <Login />} />
         <Route path="/signup" element={user ? <Navigate to="/topics" /> : <SignUp />} />
+        
+        {/* Rutas Admin */}
+        <Route path="/admin/dashboard" element={
+          <ProtectedRoute role="admin">
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/users" element={
+          <ProtectedRoute role="admin">
+            <UserManagement />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/content" element={
+          <ProtectedRoute role="admin">
+            <ContentManagement />
+          </ProtectedRoute>
+        } />
+
         <Route path="/topics" element={
           <ProtectedRoute>
             <Topics />

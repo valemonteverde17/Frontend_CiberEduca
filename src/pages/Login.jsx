@@ -27,7 +27,7 @@ export default function Login() {
     }
 
     try {
-      const res = await axios.post('/users/login', { user_name, password });
+      const res = await axios.post('/auth/login', { user_name, password });
       login(res.data);
       navigate('/topics');
     } catch (err) {

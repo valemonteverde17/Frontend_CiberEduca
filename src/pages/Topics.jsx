@@ -7,7 +7,7 @@ import iconDelete from '../assets/icons/Eliminar.png';
 import './Topics.css';
 
 export default function Topics() {
-  const { user } = useAuth();
+  const { user, isStudentView } = useAuth();
   const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -110,8 +110,8 @@ export default function Topics() {
   return (
     <div className="topics-container">
       <div className="topics-header">
-        <h2>{user.role === 'docente' ? 'Gestión de Temas' : 'Explora los Temas'}</h2>
-        {user.role === 'docente' && (
+        <h2>{(!isStudentView && (user.role === 'docente' || user.role === 'admin')) ? 'Gestión de Temas' : 'Explora los Temas'}</h2>
+        {!isStudentView && (user.role === 'docente' || user.role === 'admin') && (
           <button className="btn-add" onClick={handleAdd}>+ Nuevo Tema</button>
         )}
       </div>
@@ -137,7 +137,7 @@ export default function Topics() {
                   : undefined
               }}
             >
-              {user.role === 'docente' && (
+              {!isStudentView && (user.role === 'admin' || (user.role === 'docente' && (topic.created_by?._id === user._id || topic.created_by === user._id))) && (
                 <div className="topic-actions">
                   <img 
                     src={iconDelete} 
