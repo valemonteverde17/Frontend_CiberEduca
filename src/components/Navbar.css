@@ -4,6 +4,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  position: relative; /* Para que el banner esté dentro del navbar */
 }
 
 .navbar-container {
@@ -118,17 +119,15 @@
   background-color: #ff9800;
   color: white;
   text-align: center;
-  padding: 0.5rem;
-  position: absolute;
-  top: 0;
-  left: 0;
+  padding: 0.6rem 1rem;
   width: 100%;
-  z-index: 1001;
   font-size: 0.9rem;
+  font-weight: 600;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 1rem;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
 }
 
 .btn-exit-view {

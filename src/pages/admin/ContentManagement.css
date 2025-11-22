@@ -40,6 +40,29 @@
     border-bottom: 1px solid #eee;
 }
 
+.status-selector {
+    padding: 0.5rem 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.status-selector:hover {
+    border-color: #2b9997;
+    box-shadow: 0 2px 8px rgba(43, 153, 151, 0.2);
+}
+
+.status-selector:focus {
+    outline: none;
+    border-color: #2b9997;
+    box-shadow: 0 0 0 3px rgba(43, 153, 151, 0.1);
+}
+
 .badge {
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
@@ -116,6 +139,19 @@
 .topic-name-cell {
   font-weight: 600;
   color: #2b5858;
+}
+
+.topic-link {
+  color: #2b9997;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.topic-link:hover {
+  color: #1a7573;
+  text-decoration: underline;
 }
 
 .actions-cell {

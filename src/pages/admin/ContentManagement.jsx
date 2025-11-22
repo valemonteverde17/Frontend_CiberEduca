@@ -110,6 +110,17 @@ export default function ContentManagement() {
     }
   };
 
+  const handleStatusChange = async (topicId, newStatus) => {
+    try {
+      await axios.patch(`/topics/${topicId}`, { status: newStatus });
+      loadTopics();
+      alert(`✅ Estado actualizado a: ${newStatus}`);
+    } catch (err) {
+      console.error('Error updating status:', err);
+      alert('❌ Error al actualizar estado');
+    }
+  };
+
   const renderActions = (topic) => {
     if (view === 'trash') {
       return (
@@ -236,10 +247,36 @@ export default function ContentManagement() {
           <tbody>
             {topics.map(topic => (
               <tr key={topic._id}>
-                <td className="topic-name-cell">{topic.topic_name}</td>
+                <td className="topic-name-cell">
+                  <a 
+                    href={`/topics/${topic._id}`} 
+                    className="topic-link"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(`/topics/${topic._id}`);
+                    }}
+                  >
+                    {topic.topic_name}
+                  </a>
+                </td>
                 <td>{topic.created_by?.user_name || 'Desconocido'}</td>
                 <td>
-                  <TopicStatusBadge status={topic.status || 'draft'} />
+                  {view === 'all' ? (
+                    <select 
+                      className="status-selector"
+                      value={topic.status || 'draft'}
+                      onChange={(e) => handleStatusChange(topic._id, e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <option value="draft">📝 Borrador</option>
+                      <option value="pending_approval">⏳ Pendiente</option>
+                      <option value="approved">✅ Aprobado</option>
+                      <option value="editing">✏️ En Edición</option>
+                      <option value="rejected">❌ Rechazado</option>
+                    </select>
+                  ) : (
+                    <TopicStatusBadge status={topic.status || 'draft'} />
+                  )}
                   {topic.edit_request_pending && (
                     <span className="edit-request-indicator" title="Solicitud de edición pendiente">⏳</span>
                   )}

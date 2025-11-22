@@ -1,0 +1,215 @@
+.collaborator-manager {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 2rem 0;
+}
+
+.collaborator-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.collaborator-header h4 {
+  margin: 0;
+  color: #2b5858;
+  font-size: 1.2rem;
+}
+
+.btn-add-collab {
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(43, 153, 151, 0.3);
+}
+
+.btn-add-collab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(43, 153, 151, 0.4);
+}
+
+.collaborator-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.collaborator-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.collaborator-item:hover {
+  background: #e9ecef;
+  transform: translateX(4px);
+}
+
+.collab-name {
+  font-weight: 600;
+  color: #2b5858;
+}
+
+.btn-remove-collab {
+  background: #f44336;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.btn-remove-collab:hover {
+  background: #d32f2f;
+  transform: scale(1.1);
+}
+
+.no-collaborators {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+  font-style: italic;
+}
+
+/* Modal */
+.modal-content-collab {
+  background: white;
+  padding: 2rem;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content-collab h3 {
+  margin: 0 0 1.5rem;
+  color: #2b5858;
+  font-size: 1.8rem;
+}
+
+.search-collab {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-collab:focus {
+  outline: none;
+  border-color: #2b9997;
+}
+
+.users-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1.5rem;
+}
+
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background 0.3s ease;
+}
+
+.user-item:hover {
+  background: #f8f9fa;
+}
+
+.btn-add-user {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-add-user:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.btn-close-modal {
+  width: 100%;
+  background: #e0e0e0;
+  color: #333;
+  padding: 0.8rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-close-modal:hover {
+  background: #d0d0d0;
+}
+
+.loading-text,
+.no-users {
+  text-align: center;
+  color: #666;
+  padding: 2rem;
+}
+
+/* Scroll del modal */
+.modal-content-collab::-webkit-scrollbar,
+.users-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content-collab::-webkit-scrollbar-track,
+.users-list::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-content-collab::-webkit-scrollbar-thumb,
+.users-list::-webkit-scrollbar-thumb {
+  background: #2b9997;
+  border-radius: 10px;
+}
+
+.modal-content-collab::-webkit-scrollbar-thumb:hover,
+.users-list::-webkit-scrollbar-thumb:hover {
+  background: #1a7573;
+}
+
+@media (max-width: 768px) {
+  .collaborator-manager {
+    padding: 1rem;
+  }
+  
+  .modal-content-collab {
+    padding: 1.5rem;
+    max-height: 90vh;
+  }
+}

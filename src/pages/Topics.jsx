@@ -11,6 +11,8 @@ export default function Topics() {
   const { user, isStudentView } = useAuth();
   const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
+  const [allTopics, setAllTopics] = useState([]); // Todos los temas sin filtrar
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
@@ -19,9 +21,12 @@ export default function Topics() {
 
   const fetchTopics = async () => {
     try {
-      // Si es admin, obtener todos los temas
-      const endpoint = user?.role === 'admin' ? '/topics?all=true' : '/topics';
+      // Admin y docentes obtienen todos los temas, estudiantes solo aprobados
+      const endpoint = (user?.role === 'admin' || user?.role === 'docente') ? '/topics?all=true' : '/topics';
       const res = await axios.get(endpoint);
+      
+      console.log('📚 Temas recibidos del backend:', res.data.length);
+      console.log('👤 Usuario actual:', user?._id, 'Rol:', user?.role);
       
       // Filtrar según rol y vista
       let filteredTopics = res.data;
@@ -30,19 +35,55 @@ export default function Topics() {
         // Estudiantes solo ven temas aprobados
         filteredTopics = res.data.filter(t => t.status === 'approved');
       } else if (user?.role === 'docente') {
-        // Docentes ven: sus propios temas (todos estados) + aprobados de otros
-        filteredTopics = res.data.filter(t => 
-          t.created_by?._id === user._id || 
-          t.created_by === user._id || 
-          t.status === 'approved'
-        );
+        // Docentes ven:
+        // 1. Sus propios temas (TODOS los estados incluyendo draft)
+        // 2. Temas donde es colaborador (TODOS los estados)
+        // 3. Temas aprobados de otros
+        filteredTopics = res.data.filter(t => {
+          const isOwner = t.created_by?._id === user._id || t.created_by === user._id;
+          const isCollaborator = t.edit_permissions?.some(uid => {
+            const collabId = uid._id || uid;
+            return collabId === user._id;
+          });
+          const isApproved = t.status === 'approved';
+          
+          // Debug log
+          if (isOwner || isCollaborator) {
+            console.log(`✅ Tema "${t.topic_name}" - Estado: ${t.status} - Owner: ${isOwner}, Colaborador: ${isCollaborator}`);
+          }
+          
+          // Si es owner o colaborador, ve el tema en cualquier estado
+          // Si no, solo ve si está aprobado
+          return isOwner || isCollaborator || isApproved;
+        });
+        
+        console.log('📋 Temas filtrados para docente:', filteredTopics.length);
       }
       // Admin ve todos (ya filtrado en endpoint)
       
-      setTopics(filteredTopics);
+      setAllTopics(filteredTopics); // Guardar todos los temas
+      setTopics(filteredTopics); // Mostrar todos inicialmente
     } catch (err) {
       console.error('Error al cargar temas:', err);
     }
+  };
+
+  // Función de búsqueda
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+    setCurrentIndex(0); // Resetear a la primera página
+    
+    if (!term.trim()) {
+      setTopics(allTopics);
+      return;
+    }
+    
+    const filtered = allTopics.filter(topic => 
+      topic.topic_name?.toLowerCase().includes(term.toLowerCase()) ||
+      topic.description?.toLowerCase().includes(term.toLowerCase())
+    );
+    
+    setTopics(filtered);
   };
 
   useEffect(() => {
@@ -76,6 +117,12 @@ export default function Topics() {
   };
 
   const handleEdit = (topic) => {
+    // Validar que solo se puede editar si está en estados editables
+    const editableStates = ['draft', 'editing', 'rejected'];
+    if (!editableStates.includes(topic.status)) {
+      alert('⚠️ No puedes editar este tema. Estado actual: ' + topic.status);
+      return;
+    }
     setModalType('edit');
     setModalData({ 
       name: topic.topic_name, 
@@ -137,6 +184,28 @@ export default function Topics() {
           <button className="btn-add" onClick={handleAdd}>+ Nuevo Tema</button>
         )}
       </div>
+
+      {/* Barra de búsqueda */}
+      <div className="search-bar-container">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="🔍 Buscar temas por nombre o descripción..."
+          value={searchTerm}
+          onChange={(e) => handleSearch(e.target.value)}
+        />
+        {searchTerm && (
+          <button className="clear-search" onClick={() => handleSearch('')}>
+            ✕
+          </button>
+        )}
+      </div>
+
+      {topics.length === 0 && searchTerm && (
+        <div className="no-results">
+          <p>📭 No se encontraron temas que coincidan con "{searchTerm}"</p>
+        </div>
+      )}
       
       <div className="carousel-container">
         <button 
@@ -161,14 +230,17 @@ export default function Topics() {
             >
               {!isStudentView && (user.role === 'admin' || (user.role === 'docente' && (topic.created_by?._id === user._id || topic.created_by === user._id))) && (
                 <div className="topic-actions">
-                  <img 
-                    src={iconDelete} 
-                    className="topic-icon delete" 
-                    onClick={(e) => { e.stopPropagation(); handleDelete(topic._id); }} 
-                    alt="Eliminar"
-                  />
-                  {/* Solo permitir editar si está en draft, editing o rechazado */}
-                  {(topic.status === 'draft' || topic.status === 'editing' || topic.status === 'rejected') && (
+                  {/* Admin puede eliminar siempre, docente solo si es suyo y está en draft/rejected */}
+                  {(user.role === 'admin' || (topic.status === 'draft' || topic.status === 'rejected')) && (
+                    <img 
+                      src={iconDelete} 
+                      className="topic-icon delete" 
+                      onClick={(e) => { e.stopPropagation(); handleDelete(topic._id); }} 
+                      alt="Eliminar"
+                    />
+                  )}
+                  {/* Solo permitir editar card si está en draft, editing o rechazado */}
+                  {(user.role === 'admin' || (topic.status === 'draft' || topic.status === 'editing' || topic.status === 'rejected')) && (
                     <img 
                       src={iconEdit} 
                       className="topic-icon edit" 
@@ -184,10 +256,37 @@ export default function Topics() {
                   <TopicStatusBadge status={topic.status || 'draft'} />
                 </div>
                 <div className="topic-description">{topic.description}</div>
-                {topic.created_by && (
-                  <div className="topic-author">Por: {topic.created_by.user_name || 'Usuario'}</div>
+                
+                <div className="topic-meta">
+                  {topic.created_by && (
+                    <div className="topic-author">
+                      <span className="author-icon">👤</span>
+                      {topic.created_by.user_name || 'Usuario'}
+                    </div>
+                  )}
+                  {topic.createdAt && (
+                    <div className="topic-date">
+                      <span className="date-icon">📅</span>
+                      {new Date(topic.createdAt).toLocaleDateString('es-ES', { 
+                        day: 'numeric', 
+                        month: 'short', 
+                        year: 'numeric' 
+                      })}
+                    </div>
+                  )}
+                </div>
+                
+                {topic.edit_permissions && topic.edit_permissions.length > 0 && (
+                  <div className="topic-collaborators">
+                    <span className="collab-icon">👥</span>
+                    {topic.edit_permissions.length} colaborador{topic.edit_permissions.length > 1 ? 'es' : ''}
+                  </div>
                 )}
-                <div className="topic-footer">Click para ver más →</div>
+                
+                <div className="topic-footer">
+                  <span className="view-more">Ver detalles</span>
+                  <span className="arrow">→</span>
+                </div>
               </div>
             </div>
           ))}

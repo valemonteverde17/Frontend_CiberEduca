@@ -74,7 +74,11 @@ export default function UserManagement() {
       return;
     }
     try {
-      const updateData = { user_name: formData.user_name, role: formData.role };
+      const updateData = { 
+        user_name: formData.user_name, 
+        role: formData.role,
+        status: formData.status 
+      };
       if (formData.password) {
         updateData.password = formData.password;
       }
@@ -311,6 +315,17 @@ export default function UserManagement() {
                   <option value="estudiante">Estudiante</option>
                   <option value="docente">Docente</option>
                   <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div className="form-group">
+                <label>Estado</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                >
+                  <option value="active">✅ Activo</option>
+                  <option value="pending">⏳ Pendiente</option>
+                  <option value="rejected">❌ Rechazado</option>
                 </select>
               </div>
               <div className="modal-buttons">

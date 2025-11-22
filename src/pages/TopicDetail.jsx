@@ -4,6 +4,7 @@ import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import TopicStatusBadge from '../components/TopicStatusBadge';
 import ContentEditor from '../components/ContentEditor';
+import CollaboratorManager from '../components/CollaboratorManager';
 import CodeBlock from '../components/CodeBlock';
 import LiveCodeBlock from '../components/LiveCodeBlock';
 import './TopicDetail.css';
@@ -120,6 +121,29 @@ export default function TopicDetail() {
     return (isOwner || isCollaborator) && topic.status === 'approved' && !topic.edit_request_pending;
   };
 
+  const handleApproveTopic = async () => {
+    if (!window.confirm('¿Aprobar este tema?')) return;
+    try {
+      await axios.patch(`/topics/${id}/approve-topic`);
+      alert('✅ Tema aprobado exitosamente');
+      await load();
+    } catch (err) {
+      alert('❌ Error al aprobar tema: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleRejectTopic = async () => {
+    const reason = prompt('Razón del rechazo (opcional):');
+    if (reason === null) return; // Cancelado
+    try {
+      await axios.patch(`/topics/${id}/reject-topic`, { reason });
+      alert('✅ Tema rechazado');
+      await load();
+    } catch (err) {
+      alert('❌ Error al rechazar tema');
+    }
+  };
+
   const getBlockStyle = (block) => {
     if (!block.style) return {};
     
@@ -227,30 +251,51 @@ export default function TopicDetail() {
           </div>
           {(user?.role === 'docente' || user?.role === 'admin') && (
             <div className="topic-header-buttons">
+              {/* Botones de Admin para aprobar/rechazar */}
+              {user?.role === 'admin' && topic.status === 'pending_approval' && (
+                <>
+                  <button className="btn-approve-admin" onClick={handleApproveTopic}>
+                    ✅ Aprobar Tema
+                  </button>
+                  <button className="btn-reject-admin" onClick={handleRejectTopic}>
+                    ❌ Rechazar Tema
+                  </button>
+                </>
+              )}
+              
+              {/* Botón de edición de contenido - solo si puede editar */}
               {canEdit() && (
                 <button className="btn-preview-topic" onClick={() => setPreviewMode(!previewMode)}>
                   {previewMode ? '✒️ Modo Edición' : '👁️ Vista Previa'}
                 </button>
               )}
+              
+              {/* Botón enviar a revisión - solo docente en draft/editing/rejected */}
               {canSubmitForApproval() && (
                 <button className="btn-submit-approval" onClick={handleSubmitForApproval}>
                   📤 Enviar a Revisión
                 </button>
               )}
+              
+              {/* Botón solicitar edición - solo si está aprobado */}
               {canRequestEdit() && (
                 <button className="btn-request-edit" onClick={handleRequestEdit}>
                   ✏️ Solicitar Edición
                 </button>
               )}
-              <button className="btn-edit-topic" onClick={() => setShowEditModal(true)}>
-                ✒️ Editar Tema
-              </button>
+              
+              {/* Botón editar card - solo si puede editar */}
+              {canEdit() && (
+                <button className="btn-edit-topic" onClick={() => setShowEditModal(true)}>
+                  ✒️ Editar Info
+                </button>
+              )}
             </div>
           )}
         </div>
 
         {/* Sección de Contenido */}
-        {user?.role === 'docente' && !previewMode ? (
+        {canEdit() && !previewMode ? (
           <ContentEditor content={contentBlocks} onChange={handleContentUpdate} />
         ) : (
           contentBlocks && contentBlocks.length > 0 && (
@@ -267,6 +312,15 @@ export default function TopicDetail() {
           )
         )}
       </div>
+
+      {/* Gestor de Colaboradores - Solo para owner y admin */}
+      {topic && (user?.role === 'admin' || (topic.created_by?._id === user?._id || topic.created_by === user?._id)) && (
+        <CollaboratorManager 
+          topicId={id}
+          currentCollaborators={topic.edit_permissions || []}
+          onUpdate={load}
+        />
+      )}
 
       <div className="quizzes-section">
         <div className="quizzes-header">

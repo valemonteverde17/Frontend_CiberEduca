@@ -15,7 +15,7 @@ body, html {
   justify-content: space-between;
   align-items: center;
   max-width: 1200px;
-  margin: 0 auto 3rem;
+  margin: 0 auto 1.5rem;
   padding: 0 2rem;
 }
 
@@ -36,12 +36,27 @@ body, html {
   padding: 2rem;
 }
 
+@media (max-width: 768px) {
+  .carousel-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+}
+
 .topics-grid {
   display: flex;
   gap: 2rem;
   justify-content: center;
   flex-wrap: nowrap;
   min-height: 350px;
+}
+
+@media (max-width: 768px) {
+  .topics-grid {
+    flex-wrap: wrap;
+    gap: 1rem;
+    min-height: auto;
+  }
 }
 
 .topic-card {
@@ -56,6 +71,15 @@ body, html {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .topic-card {
+    width: 100%;
+    max-width: 350px;
+    min-height: 280px;
+    padding: 1.5rem;
+  }
 }
 
 .topic-card:hover {
@@ -101,11 +125,26 @@ body, html {
   flex-wrap: wrap;
 }
 
+@media (max-width: 768px) {
+  .topic-header-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
 .topic-title {
   font-weight: 700;
   font-size: 1.5rem;
   margin-bottom: 1rem;
   line-height: 1.3;
+  word-break: break-word;
+}
+
+@media (max-width: 768px) {
+  .topic-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+  }
 }
 
 .topic-description {
@@ -432,4 +471,161 @@ body, html {
     height: 50px;
     font-size: 2rem;
   }
+}
+
+/* Barra de búsqueda */
+.search-bar-container {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 1rem 3rem 1rem 1.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 50px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #2b9997;
+  box-shadow: 0 4px 12px rgba(43, 153, 151, 0.2);
+}
+
+.clear-search {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #f0f0f0;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.clear-search:hover {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Meta información de las cards */
+.topic-meta {
+  display: flex;
+  gap: 1rem;
+  margin: 0.8rem 0;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  flex-wrap: wrap;
+}
+
+.topic-author,
+.topic-date {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.author-icon,
+.date-icon,
+.collab-icon {
+  font-size: 1rem;
+}
+
+.topic-collaborators {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin: 0.5rem 0;
+  padding: 0.4rem 0.8rem;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.topic-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0.9;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.view-more {
+  flex: 1;
+}
+
+.arrow {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.topic-card:hover .arrow {
+  transform: translateX(5px);
+}
+
+/* Modal más compacto */
+.modal-content {
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+@media (max-width: 768px) {
+  .search-bar-container {
+    margin: 0 1rem 1.5rem;
+  }
+  
+  .topic-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .modal-content {
+    max-height: 90vh;
+    padding: 1.5rem;
+  }
+}
+
+/* Scroll suave para el modal */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: #2b9997;
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #1a7573;
 }
