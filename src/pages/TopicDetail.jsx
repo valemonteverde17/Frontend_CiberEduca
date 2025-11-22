@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import TopicStatusBadge from '../components/TopicStatusBadge';
 import ContentEditor from '../components/ContentEditor';
 import CodeBlock from '../components/CodeBlock';
 import LiveCodeBlock from '../components/LiveCodeBlock';
@@ -69,6 +70,54 @@ export default function TopicDetail() {
     } catch (e) {
       console.error('Error al actualizar contenido:', e);
     }
+  };
+
+  // ========== FUNCIONES DE GESTIÓN DE ESTADOS ==========
+  
+  const handleSubmitForApproval = async () => {
+    if (!window.confirm('¿Enviar este tema a revisión? No podrás editarlo hasta que sea aprobado o rechazado.')) return;
+    try {
+      await axios.post(`/topics/${id}/submit`);
+      alert('✅ Tema enviado a revisión exitosamente');
+      await load();
+    } catch (err) {
+      alert('❌ Error al enviar tema: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const handleRequestEdit = async () => {
+    if (!window.confirm('¿Solicitar permiso para editar este tema aprobado?')) return;
+    try {
+      await axios.post(`/topics/${id}/request-edit`);
+      alert('✅ Solicitud de edición enviada. Espera la aprobación del administrador.');
+      await load();
+    } catch (err) {
+      alert('❌ Error al solicitar edición: ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const canEdit = () => {
+    if (!topic || !user) return false;
+    const isOwner = topic.created_by?._id === user._id || topic.created_by === user._id;
+    const isAdmin = user.role === 'admin';
+    const isCollaborator = topic.edit_permissions?.some(uid => uid._id === user._id || uid === user._id);
+    const editableStates = ['draft', 'editing', 'rejected'];
+    
+    return (isOwner || isAdmin || isCollaborator) && editableStates.includes(topic.status);
+  };
+
+  const canSubmitForApproval = () => {
+    if (!topic || !user) return false;
+    const isOwner = topic.created_by?._id === user._id || topic.created_by === user._id;
+    const submittableStates = ['draft', 'editing', 'rejected'];
+    return isOwner && submittableStates.includes(topic.status);
+  };
+
+  const canRequestEdit = () => {
+    if (!topic || !user) return false;
+    const isOwner = topic.created_by?._id === user._id || topic.created_by === user._id;
+    const isCollaborator = topic.edit_permissions?.some(uid => uid._id === user._id || uid === user._id);
+    return (isOwner || isCollaborator) && topic.status === 'approved' && !topic.edit_request_pending;
   };
 
   const getBlockStyle = (block) => {
@@ -159,15 +208,40 @@ export default function TopicDetail() {
 
       <div className="topic-detail-card">
         <div className="topic-header-section">
-          <div>
-            <h1 className="topic-detail-title">{topic.topic_name}</h1>
+          <div className="topic-header-info">
+            <div className="title-status-row">
+              <h1 className="topic-detail-title">{topic.topic_name}</h1>
+              <TopicStatusBadge status={topic.status || 'draft'} />
+            </div>
             <p className="topic-detail-description">{topic.description}</p>
+            {topic.created_by && (
+              <p className="topic-author-detail">
+                Creado por: <strong>{topic.created_by.user_name || 'Usuario'}</strong>
+              </p>
+            )}
+            {topic.edit_request_pending && (
+              <div className="alert-info">
+                ⏳ <strong>Solicitud de edición pendiente</strong> - Esperando aprobación del administrador
+              </div>
+            )}
           </div>
-          {user?.role === 'docente' && (
+          {(user?.role === 'docente' || user?.role === 'admin') && (
             <div className="topic-header-buttons">
-              <button className="btn-preview-topic" onClick={() => setPreviewMode(!previewMode)}>
-                {previewMode ? '✒️ Modo Edición' : '👁️ Vista Previa'}
-              </button>
+              {canEdit() && (
+                <button className="btn-preview-topic" onClick={() => setPreviewMode(!previewMode)}>
+                  {previewMode ? '✒️ Modo Edición' : '👁️ Vista Previa'}
+                </button>
+              )}
+              {canSubmitForApproval() && (
+                <button className="btn-submit-approval" onClick={handleSubmitForApproval}>
+                  📤 Enviar a Revisión
+                </button>
+              )}
+              {canRequestEdit() && (
+                <button className="btn-request-edit" onClick={handleRequestEdit}>
+                  ✏️ Solicitar Edición
+                </button>
+              )}
               <button className="btn-edit-topic" onClick={() => setShowEditModal(true)}>
                 ✒️ Editar Tema
               </button>

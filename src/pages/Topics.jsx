@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import TopicStatusBadge from '../components/TopicStatusBadge';
 import iconEdit from '../assets/icons/Editar.png';
 import iconDelete from '../assets/icons/Eliminar.png';
 import './Topics.css';
@@ -18,16 +19,37 @@ export default function Topics() {
 
   const fetchTopics = async () => {
     try {
-      const res = await axios.get('/topics');
-      setTopics(res.data);
+      // Si es admin, obtener todos los temas
+      const endpoint = user?.role === 'admin' ? '/topics?all=true' : '/topics';
+      const res = await axios.get(endpoint);
+      
+      // Filtrar según rol y vista
+      let filteredTopics = res.data;
+      
+      if (isStudentView || user?.role === 'estudiante') {
+        // Estudiantes solo ven temas aprobados
+        filteredTopics = res.data.filter(t => t.status === 'approved');
+      } else if (user?.role === 'docente') {
+        // Docentes ven: sus propios temas (todos estados) + aprobados de otros
+        filteredTopics = res.data.filter(t => 
+          t.created_by?._id === user._id || 
+          t.created_by === user._id || 
+          t.status === 'approved'
+        );
+      }
+      // Admin ve todos (ya filtrado en endpoint)
+      
+      setTopics(filteredTopics);
     } catch (err) {
       console.error('Error al cargar temas:', err);
     }
   };
 
   useEffect(() => {
-    fetchTopics();
-  }, []);
+    if (user) {
+      fetchTopics();
+    }
+  }, [user, isStudentView]);
 
   const handleAdd = () => {
     setModalType('add');
@@ -145,17 +167,26 @@ export default function Topics() {
                     onClick={(e) => { e.stopPropagation(); handleDelete(topic._id); }} 
                     alt="Eliminar"
                   />
-                  <img 
-                    src={iconEdit} 
-                    className="topic-icon edit" 
-                    onClick={(e) => { e.stopPropagation(); handleEdit(topic); }} 
-                    alt="Editar"
-                  />
+                  {/* Solo permitir editar si está en draft, editing o rechazado */}
+                  {(topic.status === 'draft' || topic.status === 'editing' || topic.status === 'rejected') && (
+                    <img 
+                      src={iconEdit} 
+                      className="topic-icon edit" 
+                      onClick={(e) => { e.stopPropagation(); handleEdit(topic); }} 
+                      alt="Editar"
+                    />
+                  )}
                 </div>
               )}
               <div className="topic-content">
-                <div className="topic-title">{topic.topic_name}</div>
+                <div className="topic-header-row">
+                  <div className="topic-title">{topic.topic_name}</div>
+                  <TopicStatusBadge status={topic.status || 'draft'} />
+                </div>
                 <div className="topic-description">{topic.description}</div>
+                {topic.created_by && (
+                  <div className="topic-author">Por: {topic.created_by.user_name || 'Usuario'}</div>
+                )}
                 <div className="topic-footer">Click para ver más →</div>
               </div>
             </div>

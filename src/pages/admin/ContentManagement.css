@@ -7,6 +7,7 @@
 .view-selector {
     display: flex;
     gap: 1rem;
+    flex-wrap: wrap;
     justify-content: center;
     margin-top: 1rem;
 }
@@ -76,4 +77,105 @@
     padding: 0.5rem;
     border-radius: 4px;
     cursor: pointer;
+}
+
+.filter-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.filter-section label {
+  font-weight: 600;
+  margin-right: 1rem;
+  color: #2b5858;
+}
+
+.filter-section select {
+  padding: 0.6rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.filter-section select:focus {
+  outline: none;
+  border-color: #2b9997;
+}
+
+.edit-request-indicator {
+  margin-left: 0.5rem;
+  font-size: 1.2rem;
+  cursor: help;
+}
+
+.topic-name-cell {
+  font-weight: 600;
+  color: #2b5858;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.btn-action.btn-approve {
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+}
+
+.btn-action.btn-reject {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  color: white;
+}
+
+.btn-action.btn-view {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+  color: white;
+}
+
+.btn-action.btn-restore {
+  background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+  color: white;
+}
+
+.btn-action.btn-delete {
+  background: linear-gradient(135deg, #757575 0%, #616161 100%);
+  color: white;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 12px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.loading-text {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1.1rem;
+  color: #666;
 }
