@@ -117,12 +117,28 @@ export default function Topics() {
   };
 
   const handleEdit = (topic) => {
-    // Validar que solo se puede editar si está en estados editables
+    // Si es admin → siempre puede editar
+    if (user?.role === 'admin') {
+      setModalType('edit');
+      setModalData({
+        name: topic.topic_name,
+        description: topic.description,
+        id: topic._id,
+        cardColor: topic.cardColor || '#2b9997'
+      });
+      setShowModal(true);
+      return;
+    }
+
+    // Estados que un docente puede editar
     const editableStates = ['draft', 'editing', 'rejected'];
+
+    // Cualquier otro rol (docente) debe respetar los estados
     if (!editableStates.includes(topic.status)) {
       alert('⚠️ No puedes editar este tema. Estado actual: ' + topic.status);
       return;
     }
+
     setModalType('edit');
     setModalData({ 
       name: topic.topic_name, 
@@ -132,6 +148,7 @@ export default function Topics() {
     });
     setShowModal(true);
   };
+
 
   const handleEditSubmit = async () => {
     if (!modalData.name || !modalData.description) return;
@@ -220,14 +237,20 @@ export default function Topics() {
           {visibleTopics.map((topic, index) => (
             <div 
               key={topic._id} 
-              className={`topic-card ${getCardClass(currentIndex + index)}`}
+              className="topic-card"
               onClick={() => handleTopicClick(topic._id)}
               style={{ 
-                background: topic.cardColor 
-                  ? `linear-gradient(135deg, ${topic.cardColor} 0%, ${topic.cardColor}dd 100%)`
-                  : undefined
+                '--card-color': topic.cardColor || '#2b9997'
               }}
             >
+              {/* Badge de status - Solo para docentes y admin */}
+              {!isStudentView && (user?.role === 'docente' || user?.role === 'admin') && (
+                <div className="topic-badge-container">
+                  <TopicStatusBadge status={topic.status || 'draft'} />
+                </div>
+              )}
+              
+              {/* Botones de acción - Solo para owner/admin en estados editables */}
               {!isStudentView && (user.role === 'admin' || (user.role === 'docente' && (topic.created_by?._id === user._id || topic.created_by === user._id))) && (
                 <div className="topic-actions">
                   {/* Admin puede eliminar siempre, docente solo si es suyo y está en draft/rejected */}
@@ -237,6 +260,7 @@ export default function Topics() {
                       className="topic-icon delete" 
                       onClick={(e) => { e.stopPropagation(); handleDelete(topic._id); }} 
                       alt="Eliminar"
+                      title="Eliminar tema"
                     />
                   )}
                   {/* Solo permitir editar card si está en draft, editing o rechazado */}
@@ -246,43 +270,51 @@ export default function Topics() {
                       className="topic-icon edit" 
                       onClick={(e) => { e.stopPropagation(); handleEdit(topic); }} 
                       alt="Editar"
+                      title="Editar tema"
                     />
                   )}
                 </div>
               )}
               <div className="topic-content">
-                <div className="topic-header-row">
-                  <div className="topic-title">{topic.topic_name}</div>
-                  <TopicStatusBadge status={topic.status || 'draft'} />
-                </div>
-                <div className="topic-description">{topic.description}</div>
+                {/* Título del tema */}
+                <h3 className="topic-title">{topic.topic_name}</h3>
                 
+                {/* Descripción */}
+                <p className="topic-description">{topic.description}</p>
+                
+                {/* Metadata: Autor y Fecha */}
                 <div className="topic-meta">
                   {topic.created_by && (
-                    <div className="topic-author">
-                      <span className="author-icon">👤</span>
-                      {topic.created_by.user_name || 'Usuario'}
+                    <div className="topic-meta-item">
+                      <span className="meta-icon">👤</span>
+                      <span className="meta-text">{topic.created_by.user_name || 'Usuario'}</span>
                     </div>
                   )}
                   {topic.createdAt && (
-                    <div className="topic-date">
-                      <span className="date-icon">📅</span>
-                      {new Date(topic.createdAt).toLocaleDateString('es-ES', { 
-                        day: 'numeric', 
-                        month: 'short', 
-                        year: 'numeric' 
-                      })}
+                    <div className="topic-meta-item">
+                      <span className="meta-icon">📅</span>
+                      <span className="meta-text">
+                        {new Date(topic.createdAt).toLocaleDateString('es-ES', { 
+                          day: 'numeric', 
+                          month: 'short', 
+                          year: 'numeric' 
+                        })}
+                      </span>
                     </div>
                   )}
                 </div>
                 
+                {/* Colaboradores */}
                 {topic.edit_permissions && topic.edit_permissions.length > 0 && (
-                  <div className="topic-collaborators">
-                    <span className="collab-icon">👥</span>
-                    {topic.edit_permissions.length} colaborador{topic.edit_permissions.length > 1 ? 'es' : ''}
+                  <div className="topic-meta-item topic-collaborators">
+                    <span className="meta-icon">👥</span>
+                    <span className="meta-text">
+                      {topic.edit_permissions.length} colaborador{topic.edit_permissions.length > 1 ? 'es' : ''}
+                    </span>
                   </div>
                 )}
                 
+                {/* Footer con call to action */}
                 <div className="topic-footer">
                   <span className="view-more">Ver detalles</span>
                   <span className="arrow">→</span>

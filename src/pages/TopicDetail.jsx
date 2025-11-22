@@ -235,12 +235,23 @@ export default function TopicDetail() {
           <div className="topic-header-info">
             <div className="title-status-row">
               <h1 className="topic-detail-title">{topic.topic_name}</h1>
-              <TopicStatusBadge status={topic.status || 'draft'} />
+              {/* Solo mostrar badge de status a docentes y admins */}
+              {(user?.role === 'docente' || user?.role === 'admin') && (
+                <TopicStatusBadge status={topic.status || 'draft'} />
+              )}
             </div>
             <p className="topic-detail-description">{topic.description}</p>
             {topic.created_by && (
               <p className="topic-author-detail">
                 Creado por: <strong>{topic.created_by.user_name || 'Usuario'}</strong>
+              </p>
+            )}
+            {/* Mostrar colaboradores para todos los usuarios */}
+            {topic.edit_permissions && topic.edit_permissions.length > 0 && (
+              <p className="topic-collaborators-detail">
+                👥 Colaboradores: <strong>
+                  {topic.edit_permissions.map(collab => collab.user_name || collab).join(', ')}
+                </strong>
               </p>
             )}
             {topic.edit_request_pending && (
@@ -313,8 +324,8 @@ export default function TopicDetail() {
         )}
       </div>
 
-      {/* Gestor de Colaboradores - Solo para owner y admin */}
-      {topic && (user?.role === 'admin' || (topic.created_by?._id === user?._id || topic.created_by === user?._id)) && (
+      {/* Gestor de Colaboradores - Solo para owner/admin y si el tema NO está aprobado */}
+      {topic && canEdit() && (user?.role === 'admin' || (topic.created_by?._id === user?._id || topic.created_by === user?._id)) && (
         <CollaboratorManager 
           topicId={id}
           currentCollaborators={topic.edit_permissions || []}

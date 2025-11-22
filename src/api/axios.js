@@ -19,9 +19,15 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
-        // Si el token expiró o es inválido, podríamos limpiar el storage y redirigir
-        // Pero eso es mejor manejarlo en el contexto o componente para no causar loops
-        // Por ahora solo rechazamos el error.
+      // Token expirado o inválido
+      const currentPath = window.location.pathname;
+      
+      // Solo limpiar y redirigir si no estamos ya en login/signup
+      if (currentPath !== '/login' && currentPath !== '/signup' && currentPath !== '/') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
