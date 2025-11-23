@@ -31,7 +31,23 @@ export default function Login() {
       login(res.data);
       navigate('/topics');
     } catch (err) {
-      setError('Credenciales incorrectas. Por favor verifica tu usuario y contraseña.');
+      // Manejar diferentes tipos de errores
+      const errorMessage = err.response?.data?.message;
+      
+      if (errorMessage) {
+        // Mensajes específicos del backend
+        if (errorMessage.includes('pending')) {
+          setError('⏳ Tu cuenta aún no ha sido aprobada. Un administrador revisará tu solicitud en un máximo de 24 horas. Por favor, intenta más tarde.');
+        } else if (errorMessage.includes('rejected')) {
+          setError('❌ Tu solicitud de registro fue rechazada. Si crees que esto es un error, contacta al administrador.');
+        } else if (errorMessage.includes('not active')) {
+          setError('⚠️ Tu cuenta no está activa. Contacta al administrador para más información.');
+        } else {
+          setError(errorMessage);
+        }
+      } else {
+        setError('❌ Credenciales incorrectas. Por favor verifica tu usuario y contraseña.');
+      }
     }
   };
 

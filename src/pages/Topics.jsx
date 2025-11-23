@@ -25,9 +25,6 @@ export default function Topics() {
       const endpoint = (user?.role === 'admin' || user?.role === 'docente') ? '/topics?all=true' : '/topics';
       const res = await axios.get(endpoint);
       
-      console.log('📚 Temas recibidos del backend:', res.data.length);
-      console.log('👤 Usuario actual:', user?._id, 'Rol:', user?.role);
-      
       // Filtrar según rol y vista
       let filteredTopics = res.data;
       
@@ -47,17 +44,10 @@ export default function Topics() {
           });
           const isApproved = t.status === 'approved';
           
-          // Debug log
-          if (isOwner || isCollaborator) {
-            console.log(`✅ Tema "${t.topic_name}" - Estado: ${t.status} - Owner: ${isOwner}, Colaborador: ${isCollaborator}`);
-          }
-          
           // Si es owner o colaborador, ve el tema en cualquier estado
           // Si no, solo ve si está aprobado
           return isOwner || isCollaborator || isApproved;
         });
-        
-        console.log('📋 Temas filtrados para docente:', filteredTopics.length);
       }
       // Admin ve todos (ya filtrado en endpoint)
       

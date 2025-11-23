@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import reactLogo from '../../public/vite.svg';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -22,19 +23,20 @@ export default function Navbar() {
       <div className="navbar-container">
         <div className="navbar-brand">
           <Link to="/" className="brand-link">
-            🔒 CiberEduca
+            <img src={reactLogo} alt="CiberEduca" className="brand-logo" />
+            <span className="brand-text">CiberEduca</span>
           </Link>
         </div>
         
         <div className="navbar-links">
           <Link to="/" className="nav-link">Inicio</Link>
           {user && user.role === 'admin' && !isStudentView && (
-            <Link to="/admin/dashboard" className="nav-link admin-link">⚡ Panel Admin</Link>
+            <Link to="/admin/dashboard" className="nav-link admin-link">Panel Admin</Link>
           )}
           {user && <Link to="/topics" className="nav-link">Temas</Link>}
           {user && <Link to="/quizzes" className="nav-link">Evaluaciones</Link>}
           {user && <Link to="/games" className="nav-link">Juegos</Link>}
-          {user && <Link to="/rankings" className="nav-link">🏆 Rankings</Link>}
+          {user && <Link to="/rankings" className="nav-link">Rankings</Link>}
         </div>
         
         <div className="navbar-actions">
@@ -46,7 +48,8 @@ export default function Navbar() {
           ) : (
             <>
               <Link to="/profile" className="user-greeting">
-                {isStudentView ? '👨‍🎓' : (user.role === 'admin' ? '🛡️' : (user.role === 'docente' ? '👨‍🏫' : '👨‍🎓'))} {user.user_name}
+                <span className="user-icon">{user.user_name.charAt(0).toUpperCase()}</span>
+                <span className="user-name">{user.user_name}</span>
               </Link>
               <button onClick={handleLogout} className="btn-logout">Salir</button>
             </>
