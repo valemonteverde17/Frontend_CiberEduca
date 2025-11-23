@@ -1,107 +1,292 @@
 .hangman-container {
   text-align: center;
   font-family: sans-serif;
+  zoom: 1.0;
+  transform-origin: top center;
 }
 
 .hangman-drawing {
   margin-bottom: 2rem;
-  background: rgba(102, 126, 234, 0.05);
-  padding: 2rem;
-  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(43, 153, 151, 0.05) 0%, rgba(26, 117, 115, 0.05) 100%);
+  padding: clamp(1rem, 3vw, 2.5rem);
+  border-radius: 20px;
   display: inline-block;
+  border: 3px solid rgba(43, 153, 151, 0.1);
+  position: relative;
+  overflow: hidden;
+  max-width: 90vw;
+}
+
+.hangman-drawing::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(43, 153, 151, 0.03) 0%, transparent 70%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 .hangman-figure {
-  stroke: #333;
-  stroke-width: 4;
+  stroke: #2b5858;
+  stroke-width: 5;
   fill: none;
   stroke-linecap: round;
-  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.15));
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  max-width: min(300px, 40vw);
+  max-height: min(350px, 40vh);
 }
 
-.hangman-figure line,
+/* Horca permanente con estilo */
+.hangman-figure line:nth-child(1),
+.hangman-figure line:nth-child(2),
+.hangman-figure line:nth-child(3),
+.hangman-figure line:nth-child(4) {
+  stroke: #8b7355;
+  stroke-width: 6;
+}
+
+/* Partes del muñeco con colores y animaciones */
 .hangman-figure circle {
-  stroke: #f5576c;
+  stroke: #f44336;
+  stroke-width: 4;
+  fill: #ffebee;
+  animation: fadeInBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
-.fade-in {
-  animation: fadeIn 0.6s ease-in forwards;
+.hangman-figure line.fade-in {
+  stroke: #f44336;
+  stroke-width: 4;
+  animation: drawLine 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
 
-@keyframes fadeIn {
-  from {
+@keyframes fadeInBounce {
+  0% {
     opacity: 0;
-    transform: scale(0.7);
+    transform: scale(0) rotate(-180deg);
   }
-  to {
+  60% {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1.2) rotate(10deg);
   }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes drawLine {
+  0% {
+    opacity: 0;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Efecto de shake cuando se pierde */
+.hangman-figure.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
 .word-display {
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
   margin: 2rem 0;
   font-weight: 700;
-  letter-spacing: 0.5rem;
+  letter-spacing: clamp(0.2rem, 1vw, 0.5rem);
   color: #333;
-}
-
-.letter {
-  display: inline-block;
-  margin: 0 8px;
-  border-bottom: 4px solid #667eea;
-  min-width: 30px;
-  height: 50px;
-  line-height: 50px;
-  animation: letterPop 0.3s ease;
-}
-
-@keyframes letterPop {
-  0% { transform: scale(0); }
-  50% { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-.keyboard {
-  margin: 2rem 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
   justify-content: center;
-  max-width: 600px;
+  gap: clamp(0.3rem, 1vw, 0.5rem);
+  max-width: 90vw;
   margin-left: auto;
   margin-right: auto;
 }
 
+.letter {
+  display: inline-block;
+  margin: 0;
+  border-bottom: 4px solid #2b9997;
+  min-width: clamp(25px, 4vw, 40px);
+  height: clamp(40px, 6vh, 60px);
+  line-height: clamp(40px, 6vh, 60px);
+  animation: letterPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  position: relative;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.letter.space {
+  min-width: clamp(15px, 2vw, 20px);
+  border-bottom: none;
+}
+
+.letter.special-char {
+  color: #2b9997;
+  font-weight: 700;
+}
+
+.letter::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #2b9997, #1a7573);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.letter:hover::after {
+  transform: scaleX(1);
+}
+
+@keyframes letterPop {
+  0% { 
+    transform: scale(0) rotateY(180deg);
+    opacity: 0;
+  }
+  60% { 
+    transform: scale(1.3) rotateY(0deg);
+    opacity: 1;
+  }
+  100% { 
+    transform: scale(1) rotateY(0deg);
+    opacity: 1;
+  }
+}
+
+.keyboard {
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-width: 900px;
+  width: 100%;
+}
+
+.keyboard-row {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Primera fila (Q-P): 10 teclas */
+.keyboard-row:nth-child(1) {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+/* Segunda fila (A-Ñ): 10 teclas, ligeramente indentada */
+.keyboard-row:nth-child(2) {
+  max-width: 650px;
+  margin: 0 auto;
+  padding-left: 30px;
+}
+
+/* Tercera fila (Z-M): 7 teclas, más indentada */
+.keyboard-row:nth-child(3) {
+  max-width: 500px;
+  margin: 0 auto;
+  padding-left: 60px;
+}
+
+/* Cuarta fila (0-9): números */
+.keyboard-row:nth-child(4) {
+  max-width: 650px;
+  margin: 0.5rem auto 0;
+  padding-top: 0.5rem;
+  border-top: 2px solid rgba(43, 153, 151, 0.2);
+}
+
 .key {
-  padding: 1rem 1.2rem;
-  font-size: 1.1rem;
+  padding: clamp(0.7rem, 1.5vw, 1rem) clamp(0.9rem, 2vw, 1.2rem);
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   font-weight: 700;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   color: white;
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  box-shadow: 0 4px 10px rgba(43, 153, 151, 0.3);
+  min-width: clamp(40px, 5vw, 55px);
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.key.number-key {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
-  min-width: 50px;
+}
+
+.key.number-key:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  background: linear-gradient(135deg, #7c8ef5 0%, #8a5bb8 100%);
+}
+
+.key::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.key:hover:not(:disabled)::before {
+  width: 200px;
+  height: 200px;
 }
 
 .key:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(43, 153, 151, 0.5);
 }
 
 .key:active:not(:disabled) {
-  transform: translateY(0);
+  transform: translateY(-1px) scale(0.98);
+  box-shadow: 0 3px 10px rgba(43, 153, 151, 0.4);
 }
 
 .key:disabled {
-  background: #e0e0e0;
-  color: #999;
+  background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%);
+  color: #757575;
   cursor: not-allowed;
   box-shadow: none;
+  opacity: 0.6;
+  transform: scale(0.95);
 }
 
 .status {
@@ -109,31 +294,69 @@
 }
 
 .status p {
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
   font-weight: 600;
   color: #666;
   margin: 0.5rem 0;
 }
 
 .message {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
   font-weight: 700;
-  padding: 1rem 2rem;
+  padding: clamp(0.8rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem);
   border-radius: 16px;
   margin: 1rem 0;
   animation: slideDown 0.5s ease;
+  max-width: 90vw;
+  word-wrap: break-word;
 }
 
 .message.win {
   background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 6px 25px rgba(76, 175, 80, 0.5);
+  animation: winPulse 1s ease-in-out infinite, slideDown 0.5s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.message.win::before {
+  content: '🎉';
+  position: absolute;
+  font-size: 3rem;
+  animation: confetti 2s ease-in-out infinite;
+  left: 10%;
+}
+
+.message.win::after {
+  content: '🎊';
+  position: absolute;
+  font-size: 3rem;
+  animation: confetti 2s ease-in-out infinite reverse;
+  right: 10%;
+}
+
+@keyframes winPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes confetti {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(-20px) rotate(360deg); opacity: 0.5; }
 }
 
 .message.lose {
   background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+  box-shadow: 0 6px 25px rgba(244, 67, 54, 0.5);
+  animation: loseShake 0.5s ease, slideDown 0.5s ease;
+}
+
+@keyframes loseShake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+  20%, 40%, 60%, 80% { transform: translateX(8px); }
 }
 
 @keyframes slideDown {
@@ -155,64 +378,144 @@
 }
 
 .control-button {
-  padding: 1rem 2rem;
-  font-size: 1rem;
+  padding: clamp(0.8rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(0.9rem, 2vw, 1rem);
   font-weight: 700;
   border: none;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: clamp(140px, 20vw, 180px);
 }
 
 .control-button.primary {
   background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
   color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.control-button.primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.control-button.primary:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .control-button.primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.5);
 }
 
 .control-button.secondary {
   background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%);
   color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.control-button.secondary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.control-button.secondary:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .control-button.secondary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(255, 107, 53, 0.5);
 }
 
 @media (max-width: 768px) {
-  .word-display {
-    font-size: 1.8rem;
-    letter-spacing: 0.3rem;
+  .hangman-drawing {
+    padding: 1rem;
   }
 
-  .letter {
-    min-width: 20px;
-    height: 40px;
-    line-height: 40px;
-    margin: 0 4px;
+  .hangman-figure {
+    max-width: 250px;
+    max-height: 300px;
+  }
+
+  .word-display {
+    gap: 0.3rem;
   }
 
   .keyboard {
+    gap: 1rem;
+  }
+
+  .keyboard-row {
     gap: 0.3rem;
   }
 
   .key {
-    padding: 0.8rem 1rem;
-    font-size: 1rem;
+    min-width: 35px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .key.number-key {
     min-width: 40px;
   }
 
   .control-buttons {
     flex-direction: column;
+    gap: 0.8rem;
   }
 
   .control-button {
     width: 100%;
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hangman-figure {
+    max-width: 200px;
+    max-height: 250px;
+  }
+
+  .word-display {
+    font-size: 1.2rem;
+    letter-spacing: 0.1rem;
+  }
+
+  .letter {
+    min-width: 20px;
+    height: 35px;
+    line-height: 35px;
+  }
+
+  .key {
+    min-width: 30px;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.85rem;
+  }
+
+  .keyboard-label {
+    font-size: 0.9rem;
   }
 }

@@ -1,8 +1,8 @@
 .memorama-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #fff0b3 0%, #ffe680 100%);
   padding: 2rem;
-  color: white;
+  color: #333;
 }
 
 .game-header {
@@ -16,21 +16,25 @@
 
 .back-button,
 .manage-button {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid white;
-  color: white;
+  background: white;
+  border: 2px solid #2b9997;
+  color: #2b9997;
   padding: 0.7rem 1.5rem;
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
 }
 
-.back-button:hover,
+.back-button:hover {
+  background: #2b9997;
+  color: white;
+  transform: translateX(-4px);
+}
+
 .manage-button:hover {
-  background: white;
-  color: #667eea;
+  background: #2b9997;
+  color: white;
   transform: translateY(-2px);
 }
 
@@ -42,13 +46,15 @@
 .memorama-header h1 {
   font-size: 3rem;
   margin: 0 0 0.5rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
+  color: #2b5858;
 }
 
 .subtitle {
   font-size: 1.2rem;
-  opacity: 0.9;
+  color: #666;
   margin: 0;
+  font-weight: 500;
 }
 
 .game-controls {
@@ -69,49 +75,49 @@
 .control-group label {
   font-weight: 600;
   font-size: 1rem;
+  color: #2b5858;
 }
 
 .control-group select {
-  padding: 0.8rem 1.2rem;
+  padding: 1rem;
   border-radius: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
+  border: 2px solid #ddd;
+  background: white;
+  color: #333;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  backdrop-filter: blur(10px);
   transition: all 0.3s ease;
   min-width: 200px;
 }
 
 .control-group select:focus {
   outline: none;
-  border-color: white;
-  background: rgba(255, 255, 255, 0.25);
+  border-color: #2b9997;
+  box-shadow: 0 0 0 3px rgba(43, 153, 151, 0.1);
 }
 
 .control-group select option {
-  background: #667eea;
-  color: white;
+  background: white;
+  color: #333;
 }
 
 .btn-start-game {
   padding: 0.8rem 2rem;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   color: white;
   font-size: 1.1rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+  box-shadow: 0 4px 15px rgba(43, 153, 151, 0.3);
 }
 
 .btn-start-game:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+  box-shadow: 0 6px 20px rgba(43, 153, 151, 0.5);
 }
 
 .btn-start-game:disabled {
@@ -128,25 +134,26 @@
 }
 
 .stat {
-  background: rgba(255, 255, 255, 0.15);
+  background: white;
   padding: 1rem 2rem;
   border-radius: 16px;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid #ddd;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .stat-label {
   font-size: 0.9rem;
-  opacity: 0.9;
+  color: #666;
 }
 
 .stat-value {
   font-size: 1.8rem;
   font-weight: 700;
+  color: #2b9997;
 }
 
 .memorama-grid {
@@ -212,8 +219,8 @@
 }
 
 .card-front {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: 3px solid rgba(255, 255, 255, 0.3);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
+  border: 3px solid rgba(43, 153, 151, 0.3);
 }
 
 .card-icon {
@@ -225,7 +232,7 @@
   background: white;
   color: #333;
   transform: rotateY(180deg);
-  border: 3px solid #667eea;
+  border: 3px solid #2b9997;
 }
 
 .card-back.concept {
@@ -278,7 +285,7 @@
 .win-content h2 {
   font-size: 2.5rem;
   margin: 0 0 1rem;
-  color: #667eea;
+  color: #2b9997;
 }
 
 .win-message {
@@ -309,7 +316,7 @@
 .win-stat-value {
   font-size: 2rem;
   font-weight: 700;
-  color: #667eea;
+  color: #2b9997;
 }
 
 .stars {
@@ -348,23 +355,23 @@
 }
 
 .btn-play-again {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   color: white;
 }
 
 .btn-play-again:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(43, 153, 151, 0.4);
 }
 
 .btn-next-level {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
   color: white;
 }
 
 .btn-next-level:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
 
 .teacher-section {

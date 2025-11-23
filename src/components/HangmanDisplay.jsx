@@ -1,7 +1,16 @@
 import { useState, useEffect } from 'react';
 import './HangmanDisplay.css';
 
-const ABC = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
+// Teclado QWERTY layout
+const KEYBOARD_ROWS = [
+  ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+  ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Ñ'],
+  ['Z', 'X', 'C', 'V', 'B', 'N', 'M'],
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0']
+];
+
+const ALL_VALID_CHARS = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ0123456789'.split('');
+const SPECIAL_CHARS = [' ', '-', '_', '.', ',', '!', '?', ':', ';'];
 
 export default function HangmanDisplay({ word, onRestart }) {
   const [guessed, setGuessed] = useState([]);
@@ -14,13 +23,15 @@ export default function HangmanDisplay({ word, onRestart }) {
       if (parsed.word === word) {
         setGuessed(parsed.guessed || []);
       } else {
-        // Si la palabra cambió, limpiar el estado
-        setGuessed([]);
+        // Si la palabra cambió, limpiar el estado y revelar caracteres especiales
+        const autoReveal = SPECIAL_CHARS.filter(char => word.includes(char));
+        setGuessed(autoReveal);
         localStorage.removeItem('hangman_game');
       }
     } else {
-      // Si no hay guardado, asegurar que el estado esté limpio
-      setGuessed([]);
+      // Revelar automáticamente espacios y caracteres especiales
+      const autoReveal = SPECIAL_CHARS.filter(char => word.includes(char));
+      setGuessed(autoReveal);
     }
   }, [word]);
 
@@ -31,9 +42,32 @@ export default function HangmanDisplay({ word, onRestart }) {
     );
   }, [guessed, word]);
 
-  const fails = guessed.filter(l => !word.includes(l)).length;
-  const won = word.split('').every(c => guessed.includes(c));
+  // Filtrar solo letras y números para contar fallos (ignorar espacios y caracteres especiales)
+  const fails = guessed.filter(l => !word.includes(l) && !SPECIAL_CHARS.includes(l)).length;
+  
+  // Verificar victoria: todas las letras y números adivinados (espacios y caracteres especiales no cuentan)
+  const won = word.split('').every(c => 
+    guessed.includes(c) || SPECIAL_CHARS.includes(c)
+  );
+  
   const lost = fails >= maxFails;
+
+  // Soporte para teclado físico
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (won || lost) return;
+      
+      const key = e.key.toUpperCase();
+      
+      // Verificar si es una letra, número o Ñ
+      if (ALL_VALID_CHARS.includes(key) && !guessed.includes(key)) {
+        setGuessed([...guessed, key]);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [guessed, won, lost]);
 
   const handleClick = (letter) => {
     if (!guessed.includes(letter)) {
@@ -67,23 +101,38 @@ export default function HangmanDisplay({ word, onRestart }) {
       </div>
 
       <div className="word-display">
-        {word.split('').map((char, i) => (
-          <span key={i} className="letter">
-            {guessed.includes(char) || lost ? char : '_'}
-          </span>
-        ))}
+        {word.split('').map((char, i) => {
+          const isSpecial = SPECIAL_CHARS.includes(char);
+          const isRevealed = guessed.includes(char) || lost || isSpecial;
+          
+          return (
+            <span 
+              key={i} 
+              className={`letter ${char === ' ' ? 'space' : ''} ${isSpecial ? 'special-char' : ''}`}
+            >
+              {isRevealed ? (char === ' ' ? '\u00A0' : char) : '_'}
+            </span>
+          );
+        })}
       </div>
 
       <div className="keyboard">
-        {ABC.map((l) => (
-          <button
-            key={l}
-            className="key"
-            onClick={() => handleClick(l)}
-            disabled={guessed.includes(l) || won || lost}
-          >
-            {l}
-          </button>
+        {KEYBOARD_ROWS.map((row, rowIndex) => (
+          <div key={rowIndex} className="keyboard-row">
+            {row.map((char) => {
+              const isNumber = !isNaN(char);
+              return (
+                <button
+                  key={char}
+                  className={`key ${isNumber ? 'number-key' : ''}`}
+                  onClick={() => handleClick(char)}
+                  disabled={guessed.includes(char) || won || lost}
+                >
+                  {char}
+                </button>
+              );
+            })}
+          </div>
         ))}
       </div>
 
@@ -95,17 +144,17 @@ export default function HangmanDisplay({ word, onRestart }) {
 
       <div className="control-buttons">
         <button className="control-button primary" onClick={handleReset}>
-          🔄 Otra Palabra
+          Otra Palabra
         </button>
         {!lost && !won && (
           <button
             className="control-button secondary"
             onClick={() => {
-                const allWrong = ABC.filter(l => !word.includes(l));
+                const allWrong = ALL_VALID_CHARS.filter(l => !word.includes(l));
                 setGuessed([...guessed, ...allWrong]);
             }}
           >
-            🏳️ Rendirse
+            Rendirse
           </button>
         )}
       </div>

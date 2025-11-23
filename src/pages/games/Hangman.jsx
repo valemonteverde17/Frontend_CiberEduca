@@ -97,12 +97,12 @@ export default function Hangman() {
 
       <div className="hangman-container">
         <div className="hangman-header">
-          <h1>🎯 Juego del Ahorcado</h1>
+          <h1>Juego del Ahorcado</h1>
           <p className="subtitle">Adivina la palabra relacionada con ciberseguridad</p>
         </div>
 
         <div className="topic-selector">
-          <label>📚 Selecciona un tema:</label>
+          <label>Selecciona un tema:</label>
           <select value={selectedTopic} onChange={handleChange}>
             <option value="">-- Selecciona un tema --</option>
             {topics.map(t => (
@@ -121,14 +121,12 @@ export default function Hangman() {
         {!loading && word && (
           <div className="game-area">
             <div className="category-badge">
-              <span className="badge-icon">🏷️</span>
               <span className="badge-text">{formatTitle(title)}</span>
             </div>
 
             {hint && (
               <div className="hint-box">
-                <span className="hint-icon">💡</span>
-                <span className="hint-text">{hint}</span>
+                <span className="hint-text"><strong>Pista:</strong> {hint}</span>
               </div>
             )}
 
@@ -148,7 +146,7 @@ export default function Hangman() {
 
         {!loading && selectedTopic && !word && (
           <div className="no-words-message">
-            <p>📚 No hay palabras registradas para este tema.</p>
+            <p>No hay palabras registradas para este tema.</p>
             {user?.role === 'docente' && (
               <p className="hint-text">
                 <button className="btn-manage-link" onClick={() => navigate('/manage-hangman')}>
