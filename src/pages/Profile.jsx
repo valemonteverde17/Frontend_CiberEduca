@@ -20,6 +20,9 @@ export default function Profile() {
   const [stats, setStats] = useState(null);
   const [scores, setScores] = useState([]);
   const [loadingStats, setLoadingStats] = useState(false);
+  
+  // Estado para estadísticas de admin
+  const [adminStats, setAdminStats] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -29,6 +32,8 @@ export default function Profile() {
 
     if (user.role === 'estudiante') {
       loadStudentData();
+    } else if (user.role === 'admin') {
+      loadAdminData();
     }
   }, [user, navigate]);
 
@@ -44,6 +49,35 @@ export default function Profile() {
       setScores(scoresRes.data);
     } catch (err) {
       console.error('Error al cargar datos:', err);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
+  const loadAdminData = async () => {
+    setLoadingStats(true);
+    try {
+      const [usersRes, topicsRes] = await Promise.all([
+        axios.get('/users'),
+        axios.get('/topics?all=true')
+      ]);
+      
+      const users = usersRes.data;
+      const topics = topicsRes.data;
+      
+      setAdminStats({
+        totalUsers: users.length,
+        activeUsers: users.filter(u => u.status === 'active').length,
+        pendingUsers: users.filter(u => u.status === 'pending').length,
+        totalTopics: topics.length,
+        approvedTopics: topics.filter(t => t.status === 'approved').length,
+        pendingTopics: topics.filter(t => t.status === 'pending_approval').length,
+        draftTopics: topics.filter(t => t.status === 'draft').length,
+        students: users.filter(u => u.role === 'estudiante').length,
+        teachers: users.filter(u => u.role === 'docente').length,
+      });
+    } catch (err) {
+      console.error('Error al cargar datos de admin:', err);
     } finally {
       setLoadingStats(false);
     }
@@ -148,7 +182,7 @@ export default function Profile() {
           <div className="profile-info">
             <h1>{user.user_name}</h1>
             <span className={`role-badge ${user.role}`}>
-              {user.role === 'docente' ? '👨‍🏫 Docente' : '👨‍🎓 Estudiante'}
+              {user.role === 'admin' ? '🛡️ Administrador' : user.role === 'docente' ? '👨‍🏫 Docente' : '👨‍🎓 Estudiante'}
             </span>
           </div>
         </div>
@@ -323,6 +357,77 @@ export default function Profile() {
               <button className="btn-rankings" onClick={() => navigate('/rankings')}>
                 🏆 Ver Rankings Globales
               </button>
+            </div>
+          </>
+        )}
+
+        {/* Estadísticas para admin */}
+        {user.role === 'admin' && (
+          <>
+            <div className="profile-section">
+              <h2>📊 Estadísticas del Sistema</h2>
+              {loadingStats ? (
+                <div className="loading">Cargando estadísticas...</div>
+              ) : adminStats ? (
+                <div className="stats-grid">
+                  <div className="stat-card admin-stat">
+                    <div className="stat-icon">👥</div>
+                    <div className="stat-value">{adminStats.totalUsers}</div>
+                    <div className="stat-label">Total Usuarios</div>
+                    <div className="stat-detail">
+                      ✅ {adminStats.activeUsers} activos • ⏳ {adminStats.pendingUsers} pendientes
+                    </div>
+                  </div>
+                  <div className="stat-card admin-stat">
+                    <div className="stat-icon">📚</div>
+                    <div className="stat-value">{adminStats.totalTopics}</div>
+                    <div className="stat-label">Total Temas</div>
+                    <div className="stat-detail">
+                      ✅ {adminStats.approvedTopics} aprobados • 📝 {adminStats.draftTopics} borradores
+                    </div>
+                  </div>
+                  <div className="stat-card admin-stat">
+                    <div className="stat-icon">👨‍🎓</div>
+                    <div className="stat-value">{adminStats.students}</div>
+                    <div className="stat-label">Estudiantes</div>
+                  </div>
+                  <div className="stat-card admin-stat">
+                    <div className="stat-icon">👨‍🏫</div>
+                    <div className="stat-value">{adminStats.teachers}</div>
+                    <div className="stat-label">Docentes</div>
+                  </div>
+                  <div className="stat-card admin-stat">
+                    <div className="stat-icon">⏳</div>
+                    <div className="stat-value">{adminStats.pendingTopics}</div>
+                    <div className="stat-label">Temas Pendientes</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="no-stats">
+                  <p>📊 No se pudieron cargar las estadísticas</p>
+                </div>
+              )}
+            </div>
+
+            <div className="profile-section">
+              <h2>🛡️ Panel de Administrador</h2>
+              <div className="teacher-actions">
+                <button className="action-btn admin-btn" onClick={() => navigate('/admin/dashboard')}>
+                  ⚡ Dashboard Admin
+                </button>
+                <button className="action-btn admin-btn" onClick={() => navigate('/admin/users')}>
+                  👥 Gestión de Usuarios
+                </button>
+                <button className="action-btn admin-btn" onClick={() => navigate('/admin/content')}>
+                  📚 Gestión de Contenido
+                </button>
+                <button className="action-btn admin-btn" onClick={() => navigate('/topics')}>
+                  📖 Ver Todos los Temas
+                </button>
+                <button className="action-btn admin-btn" onClick={() => navigate('/rankings')}>
+                  🏆 Rankings de Estudiantes
+                </button>
+              </div>
             </div>
           </>
         )}

@@ -24,15 +24,12 @@ export default function LiveCodeBlock({ htmlContent = '', editable = false, show
 
   const updatePreview = () => {
     if (!iframeRef.current) {
-      console.log('LiveCodeBlock: iframe ref no disponible');
       return;
     }
 
     try {
       const iframe = iframeRef.current;
       const content = code || '<p style="color: #999; text-align: center; padding: 2rem;">Sin código para mostrar</p>';
-      
-      console.log('LiveCodeBlock: Actualizando preview, activeTab:', activeTab, 'código length:', code?.length);
       
       // Usar srcdoc en lugar de acceder al contentDocument
       iframe.srcdoc = content;

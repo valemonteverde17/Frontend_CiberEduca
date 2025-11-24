@@ -22,7 +22,6 @@ export default function Rankings() {
     setLoading(true);
     try {
       const res = await axios.get('/scores/ranking/global');
-      console.log('Ranking global recibido:', res.data);
       setGlobalRanking(res.data);
     } catch (err) {
       console.error('Error al cargar ranking global:', err);
@@ -35,7 +34,6 @@ export default function Rankings() {
   const loadQuizSets = async () => {
     try {
       const res = await axios.get('/quiz-sets');
-      console.log('Quiz sets recibidos:', res.data);
       setQuizSets(res.data);
     } catch (err) {
       console.error('Error al cargar quiz sets:', err);
@@ -84,7 +82,7 @@ export default function Rankings() {
 
       <div className="rankings-container">
         <div className="rankings-header">
-          <h1>🏆 Rankings</h1>
+          <h1>Rankings</h1>
           <p className="subtitle">Compite y alcanza la cima</p>
         </div>
 
@@ -94,13 +92,13 @@ export default function Rankings() {
             className={`view-btn ${view === 'global' ? 'active' : ''}`}
             onClick={() => setView('global')}
           >
-            🌍 Ranking Global
+            Ranking Global
           </button>
           <button
             className={`view-btn ${view === 'quiz' ? 'active' : ''}`}
             onClick={() => setView('quiz')}
           >
-            📝 Por Quiz
+            Por Quiz
           </button>
         </div>
 
@@ -108,7 +106,7 @@ export default function Rankings() {
         {view === 'global' && (
           <div className="ranking-section">
             <div className="section-header">
-              <h2>🌍 Ranking Global</h2>
+              <h2>Ranking Global</h2>
               <p>Basado en la suma total de puntajes</p>
             </div>
 

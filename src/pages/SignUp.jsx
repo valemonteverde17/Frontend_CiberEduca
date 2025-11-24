@@ -67,7 +67,7 @@ export default function SignUp() {
       setSuccess(true);
       setTimeout(() => {
         navigate('/login');
-      }, 2000);
+      }, 3000);
     } catch (err) {
       setError(err.response?.data?.message || 'Error al registrar usuario. El nombre de usuario puede estar en uso.');
     }
@@ -90,7 +90,7 @@ export default function SignUp() {
 
         {success && (
           <div className="success-message">
-            ✓ ¡Cuenta creada exitosamente! Redirigiendo al login...
+            ✓ ¡Solicitud enviada! Tu cuenta está pendiente de aprobación por un administrador. Redirigiendo al login...
           </div>
         )}
 

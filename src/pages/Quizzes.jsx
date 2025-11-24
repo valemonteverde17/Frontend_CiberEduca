@@ -124,7 +124,6 @@ export default function Quizzes() {
           correct_answers: correct,
           time_taken: timeTaken,
         });
-        console.log('Score guardado exitosamente');
       } catch (err) {
         console.error('Error al guardar score:', err);
       }

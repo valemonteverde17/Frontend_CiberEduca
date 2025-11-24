@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
+import TopicStatusBadge from '../components/TopicStatusBadge';
 import iconEdit from '../assets/icons/Editar.png';
 import iconDelete from '../assets/icons/Eliminar.png';
 import './Topics.css';
 
 export default function Topics() {
-  const { user } = useAuth();
+  const { user, isStudentView } = useAuth();
   const navigate = useNavigate();
   const [topics, setTopics] = useState([]);
+  const [allTopics, setAllTopics] = useState([]); // Todos los temas sin filtrar
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
@@ -18,16 +21,66 @@ export default function Topics() {
 
   const fetchTopics = async () => {
     try {
-      const res = await axios.get('/topics');
-      setTopics(res.data);
+      // Admin y docentes obtienen todos los temas, estudiantes solo aprobados
+      const endpoint = (user?.role === 'admin' || user?.role === 'docente') ? '/topics?all=true' : '/topics';
+      const res = await axios.get(endpoint);
+      
+      // Filtrar según rol y vista
+      let filteredTopics = res.data;
+      
+      if (isStudentView || user?.role === 'estudiante') {
+        // Estudiantes solo ven temas aprobados
+        filteredTopics = res.data.filter(t => t.status === 'approved');
+      } else if (user?.role === 'docente') {
+        // Docentes ven:
+        // 1. Sus propios temas (TODOS los estados incluyendo draft)
+        // 2. Temas donde es colaborador (TODOS los estados)
+        // 3. Temas aprobados de otros
+        filteredTopics = res.data.filter(t => {
+          const isOwner = t.created_by?._id === user._id || t.created_by === user._id;
+          const isCollaborator = t.edit_permissions?.some(uid => {
+            const collabId = uid._id || uid;
+            return collabId === user._id;
+          });
+          const isApproved = t.status === 'approved';
+          
+          // Si es owner o colaborador, ve el tema en cualquier estado
+          // Si no, solo ve si está aprobado
+          return isOwner || isCollaborator || isApproved;
+        });
+      }
+      // Admin ve todos (ya filtrado en endpoint)
+      
+      setAllTopics(filteredTopics); // Guardar todos los temas
+      setTopics(filteredTopics); // Mostrar todos inicialmente
     } catch (err) {
       console.error('Error al cargar temas:', err);
     }
   };
 
+  // Función de búsqueda
+  const handleSearch = (term) => {
+    setSearchTerm(term);
+    setCurrentIndex(0); // Resetear a la primera página
+    
+    if (!term.trim()) {
+      setTopics(allTopics);
+      return;
+    }
+    
+    const filtered = allTopics.filter(topic => 
+      topic.topic_name?.toLowerCase().includes(term.toLowerCase()) ||
+      topic.description?.toLowerCase().includes(term.toLowerCase())
+    );
+    
+    setTopics(filtered);
+  };
+
   useEffect(() => {
-    fetchTopics();
-  }, []);
+    if (user) {
+      fetchTopics();
+    }
+  }, [user, isStudentView]);
 
   const handleAdd = () => {
     setModalType('add');
@@ -54,6 +107,28 @@ export default function Topics() {
   };
 
   const handleEdit = (topic) => {
+    // Si es admin → siempre puede editar
+    if (user?.role === 'admin') {
+      setModalType('edit');
+      setModalData({
+        name: topic.topic_name,
+        description: topic.description,
+        id: topic._id,
+        cardColor: topic.cardColor || '#2b9997'
+      });
+      setShowModal(true);
+      return;
+    }
+
+    // Estados que un docente puede editar
+    const editableStates = ['draft', 'editing', 'rejected'];
+
+    // Cualquier otro rol (docente) debe respetar los estados
+    if (!editableStates.includes(topic.status)) {
+      alert('⚠️ No puedes editar este tema. Estado actual: ' + topic.status);
+      return;
+    }
+
     setModalType('edit');
     setModalData({ 
       name: topic.topic_name, 
@@ -63,6 +138,7 @@ export default function Topics() {
     });
     setShowModal(true);
   };
+
 
   const handleEditSubmit = async () => {
     if (!modalData.name || !modalData.description) return;
@@ -110,11 +186,33 @@ export default function Topics() {
   return (
     <div className="topics-container">
       <div className="topics-header">
-        <h2>{user.role === 'docente' ? 'Gestión de Temas' : 'Explora los Temas'}</h2>
-        {user.role === 'docente' && (
+        <h2>{(!isStudentView && (user.role === 'docente' || user.role === 'admin')) ? 'Gestión de Temas' : 'Explora los Temas'}</h2>
+        {!isStudentView && (user.role === 'docente' || user.role === 'admin') && (
           <button className="btn-add" onClick={handleAdd}>+ Nuevo Tema</button>
         )}
       </div>
+
+      {/* Barra de búsqueda */}
+      <div className="search-bar-container">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="🔍 Buscar temas por nombre o descripción..."
+          value={searchTerm}
+          onChange={(e) => handleSearch(e.target.value)}
+        />
+        {searchTerm && (
+          <button className="clear-search" onClick={() => handleSearch('')}>
+            ✕
+          </button>
+        )}
+      </div>
+
+      {topics.length === 0 && searchTerm && (
+        <div className="no-results">
+          <p>📭 No se encontraron temas que coincidan con "{searchTerm}"</p>
+        </div>
+      )}
       
       <div className="carousel-container">
         <button 
@@ -129,34 +227,88 @@ export default function Topics() {
           {visibleTopics.map((topic, index) => (
             <div 
               key={topic._id} 
-              className={`topic-card ${getCardClass(currentIndex + index)}`}
+              className="topic-card"
               onClick={() => handleTopicClick(topic._id)}
               style={{ 
-                background: topic.cardColor 
-                  ? `linear-gradient(135deg, ${topic.cardColor} 0%, ${topic.cardColor}dd 100%)`
-                  : undefined
+                '--card-color': topic.cardColor || '#2b9997'
               }}
             >
-              {user.role === 'docente' && (
+              {/* Badge de status - Solo para docentes y admin */}
+              {!isStudentView && (user?.role === 'docente' || user?.role === 'admin') && (
+                <div className="topic-badge-container">
+                  <TopicStatusBadge status={topic.status || 'draft'} />
+                </div>
+              )}
+              
+              {/* Botones de acción - Solo para owner/admin en estados editables */}
+              {!isStudentView && (user.role === 'admin' || (user.role === 'docente' && (topic.created_by?._id === user._id || topic.created_by === user._id))) && (
                 <div className="topic-actions">
-                  <img 
-                    src={iconDelete} 
-                    className="topic-icon delete" 
-                    onClick={(e) => { e.stopPropagation(); handleDelete(topic._id); }} 
-                    alt="Eliminar"
-                  />
-                  <img 
-                    src={iconEdit} 
-                    className="topic-icon edit" 
-                    onClick={(e) => { e.stopPropagation(); handleEdit(topic); }} 
-                    alt="Editar"
-                  />
+                  {/* Admin puede eliminar siempre, docente solo si es suyo y está en draft/rejected */}
+                  {(user.role === 'admin' || (topic.status === 'draft' || topic.status === 'rejected')) && (
+                    <img 
+                      src={iconDelete} 
+                      className="topic-icon delete" 
+                      onClick={(e) => { e.stopPropagation(); handleDelete(topic._id); }} 
+                      alt="Eliminar"
+                      title="Eliminar tema"
+                    />
+                  )}
+                  {/* Solo permitir editar card si está en draft, editing o rechazado */}
+                  {(user.role === 'admin' || (topic.status === 'draft' || topic.status === 'editing' || topic.status === 'rejected')) && (
+                    <img 
+                      src={iconEdit} 
+                      className="topic-icon edit" 
+                      onClick={(e) => { e.stopPropagation(); handleEdit(topic); }} 
+                      alt="Editar"
+                      title="Editar tema"
+                    />
+                  )}
                 </div>
               )}
               <div className="topic-content">
-                <div className="topic-title">{topic.topic_name}</div>
-                <div className="topic-description">{topic.description}</div>
-                <div className="topic-footer">Click para ver más →</div>
+                {/* Título del tema */}
+                <h3 className="topic-title">{topic.topic_name}</h3>
+                
+                {/* Descripción */}
+                <p className="topic-description">{topic.description}</p>
+                
+                {/* Metadata: Autor y Fecha */}
+                <div className="topic-meta">
+                  {topic.created_by && (
+                    <div className="topic-meta-item">
+                      <span className="meta-icon">👤</span>
+                      <span className="meta-text">{topic.created_by.user_name || 'Usuario'}</span>
+                    </div>
+                  )}
+                  {topic.createdAt && (
+                    <div className="topic-meta-item">
+                      <span className="meta-icon">📅</span>
+                      <span className="meta-text">
+                        {new Date(topic.createdAt).toLocaleDateString('es-ES', { 
+                          day: 'numeric', 
+                          month: 'short', 
+                          year: 'numeric' 
+                        })}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Colaboradores */}
+                {topic.edit_permissions && topic.edit_permissions.length > 0 && (
+                  <div className="topic-meta-item topic-collaborators">
+                    <span className="meta-icon">👥</span>
+                    <span className="meta-text">
+                      {topic.edit_permissions.length} colaborador{topic.edit_permissions.length > 1 ? 'es' : ''}
+                    </span>
+                  </div>
+                )}
+                
+                {/* Footer con call to action */}
+                <div className="topic-footer">
+                  <span className="view-more">Ver detalles</span>
+                  <span className="arrow">→</span>
+                </div>
               </div>
             </div>
           ))}

@@ -170,19 +170,19 @@ export default function Memorama() {
         </button>
         {user?.role === 'docente' && (
           <button className="manage-button" onClick={() => navigate('/manage-memorama')}>
-            ⚙️ Gestionar Pares
+            Gestionar Pares
           </button>
         )}
       </div>
 
       <div className="memorama-header">
-        <h1>🧠 Memorama de Ciberseguridad</h1>
+        <h1>Memorama de Ciberseguridad</h1>
         <p className="subtitle">Encuentra los pares de conceptos y definiciones</p>
       </div>
 
       <div className="game-controls">
         <div className="control-group">
-          <label>📚 Tema:</label>
+          <label>Tema:</label>
           <select value={selectedTopic} onChange={handleTopicChange}>
             <option value="">-- Selecciona un tema --</option>
             {topics.map(t => (
@@ -192,7 +192,7 @@ export default function Memorama() {
         </div>
 
         <div className="control-group">
-          <label>⚡ Dificultad:</label>
+          <label>Dificultad:</label>
           <select value={difficulty} onChange={handleDifficultyChange}>
             <option value="easy">Fácil (5 pares)</option>
             <option value="medium">Medio (7 pares)</option>
@@ -201,22 +201,22 @@ export default function Memorama() {
         </div>
 
         <button className="btn-start-game" onClick={startGame} disabled={!selectedTopic || loading}>
-          {loading ? 'Cargando...' : cards.length > 0 ? '🔄 Reiniciar' : '🎮 Iniciar Juego'}
+          {loading ? 'Cargando...' : cards.length > 0 ? 'Reiniciar' : 'Iniciar Juego'}
         </button>
       </div>
 
       {isPlaying && (
         <div className="game-stats">
           <div className="stat">
-            <span className="stat-label">⏱️ Tiempo:</span>
+            <span className="stat-label">Tiempo:</span>
             <span className="stat-value">{formatTime(timer)}</span>
           </div>
           <div className="stat">
-            <span className="stat-label">🎯 Movimientos:</span>
+            <span className="stat-label">Movimientos:</span>
             <span className="stat-value">{moves}</span>
           </div>
           <div className="stat">
-            <span className="stat-label">✅ Pares:</span>
+            <span className="stat-label">Pares:</span>
             <span className="stat-value">{matchedPairs.length} / {cards.length / 2}</span>
           </div>
         </div>
@@ -236,7 +236,7 @@ export default function Memorama() {
             >
               <div className="card-inner">
                 <div className="card-front">
-                  <span className="card-icon">🔒</span>
+                  <span className="card-icon">?</span>
                 </div>
                 <div className={`card-back ${card.type}`}>
                   <span className="card-text">{card.content}</span>
@@ -250,7 +250,7 @@ export default function Memorama() {
       {gameWon && (
         <div className="win-modal">
           <div className="win-content">
-            <h2>🎉 ¡Felicidades! 🎉</h2>
+            <h2>¡Felicidades!</h2>
             <p className="win-message">Has completado el memorama</p>
             <div className="win-stats">
               <div className="win-stat">
@@ -271,14 +271,14 @@ export default function Memorama() {
             </div>
             <div className="win-actions">
               <button className="btn-play-again" onClick={startGame}>
-                🔄 Jugar de Nuevo
+                Jugar de Nuevo
               </button>
               <button className="btn-next-level" onClick={() => {
                 if (difficulty === 'easy') setDifficulty('medium');
                 else if (difficulty === 'medium') setDifficulty('hard');
                 resetGame();
               }}>
-                ⬆️ Siguiente Nivel
+                Siguiente Nivel
               </button>
             </div>
           </div>

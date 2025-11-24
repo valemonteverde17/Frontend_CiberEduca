@@ -1,6 +1,6 @@
 .hangman-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #fff0b3 0%, #ffe680 100%);
   padding: 2rem;
 }
 
@@ -15,21 +15,25 @@
 
 .back-button,
 .manage-button {
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid white;
-  color: white;
+  background: white;
+  border: 2px solid #2b9997;
+  color: #2b9997;
   padding: 0.7rem 1.5rem;
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  font-size: 1rem;
 }
 
 .back-button:hover,
 .manage-button:hover {
-  background: white;
-  color: #f5576c;
+  background: #2b9997;
+  color: white;
+  transform: translateX(-4px);
+}
+
+.manage-button:hover {
   transform: translateY(-2px);
 }
 
@@ -40,28 +44,29 @@
 
 .hangman-header {
   text-align: center;
-  color: white;
+  color: #2b5858;
   margin-bottom: 2rem;
 }
 
 .hangman-header h1 {
   font-size: 3rem;
   margin: 0 0 0.5rem;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
+  color: #2b5858;
 }
 
 .subtitle {
   font-size: 1.2rem;
-  opacity: 0.9;
+  color: #666;
   margin: 0;
+  font-weight: 500;
 }
 
 .topic-selector {
-  background: rgba(255, 255, 255, 0.15);
+  background: white;
   padding: 1.5rem;
   border-radius: 16px;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 2rem;
   display: flex;
   flex-direction: column;
@@ -69,7 +74,7 @@
 }
 
 .topic-selector label {
-  color: white;
+  color: #2b5858;
   font-weight: 600;
   font-size: 1.1rem;
 }
@@ -77,31 +82,34 @@
 .topic-selector select {
   padding: 1rem;
   border-radius: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #ddd;
+  background: white;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
+  color: #333;
 }
 
 .topic-selector select:focus {
   outline: none;
-  border-color: white;
-  background: white;
+  border-color: #2b9997;
+  box-shadow: 0 0 0 3px rgba(43, 153, 151, 0.1);
 }
 
 .loading-message {
   text-align: center;
   padding: 3rem;
-  color: white;
+  color: #666;
+  background: white;
+  border-radius: 16px;
 }
 
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border: 4px solid #f0f0f0;
+  border-top-color: #2b9997;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -122,14 +130,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   color: white;
   padding: 0.8rem 1.5rem;
   border-radius: 20px;
   font-weight: 700;
   font-size: 1.1rem;
   margin-bottom: 1.5rem;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(43, 153, 151, 0.3);
 }
 
 .badge-icon {
@@ -163,21 +171,21 @@
   text-align: center;
   margin-top: 1.5rem;
   padding: 0.8rem;
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(43, 153, 151, 0.1);
   border-radius: 12px;
-  color: #667eea;
+  color: #2b9997;
   font-weight: 700;
   font-size: 1rem;
 }
 
 .no-words-message {
-  background: rgba(255, 255, 255, 0.15);
+  background: white;
   padding: 3rem 2rem;
   border-radius: 16px;
   text-align: center;
-  color: white;
-  backdrop-filter: blur(10px);
-  border: 2px dashed rgba(255, 255, 255, 0.3);
+  color: #666;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 2px dashed #ddd;
 }
 
 .no-words-message p {
@@ -191,7 +199,7 @@
 }
 
 .btn-manage-link {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   color: white;
   border: none;
   padding: 0.8rem 1.5rem;
@@ -200,13 +208,13 @@
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 1rem;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(43, 153, 151, 0.3);
   margin-top: 1rem;
 }
 
 .btn-manage-link:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(43, 153, 151, 0.4);
 }
 
 .teacher-section {
