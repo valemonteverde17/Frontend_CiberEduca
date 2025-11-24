@@ -22,6 +22,9 @@ export default function Memorama() {
   const [timer, setTimer] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [isShuffling, setIsShuffling] = useState(false);
+  const [previewPairs, setPreviewPairs] = useState([]);
 
   // Cargar temas al inicio
   useEffect(() => {
@@ -58,26 +61,35 @@ export default function Memorama() {
       const numPairs = diff === 'easy' ? 5 : diff === 'medium' ? 7 : 10;
       const selectedPairs = pairs.sort(() => Math.random() - 0.5).slice(0, Math.min(numPairs, pairs.length));
 
-      // Crear cartas
-      const gameCards = selectedPairs.flatMap(pair => [
-        { id: pair._id, content: pair.concept, type: 'concept', pairId: pair._id },
-        { id: pair._id + '_def', content: pair.definition, type: 'definition', pairId: pair._id }
-      ]);
-
-      // Mezclar
-      const shuffled = gameCards.sort(() => Math.random() - 0.5);
-      setCards(shuffled);
-      setShowAll(true);
-      setTimeout(() => {
-        setShowAll(false);
-        setIsPlaying(true);
-      }, 1000);
+      // Guardar pares para vista previa
+      setPreviewPairs(selectedPairs);
+      setShowPreview(true);
+      setLoading(false);
     } catch (err) {
       console.error('Error al cargar el juego:', err);
       alert('Error al cargar el juego');
-    } finally {
       setLoading(false);
     }
+  };
+
+  // Iniciar el juego después de la vista previa
+  const startGameAfterPreview = () => {
+    // Crear cartas
+    const gameCards = previewPairs.flatMap(pair => [
+      { id: pair._id, content: pair.concept, type: 'concept', pairId: pair._id },
+      { id: pair._id + '_def', content: pair.definition, type: 'definition', pairId: pair._id }
+    ]);
+
+    // Mezclar con animación
+    setIsShuffling(true);
+    setShowPreview(false);
+    
+    setTimeout(() => {
+      const shuffled = gameCards.sort(() => Math.random() - 0.5);
+      setCards(shuffled);
+      setIsShuffling(false);
+      setIsPlaying(true);
+    }, 1500);
   };
 
   const handleTopicChange = (e) => {
@@ -109,6 +121,9 @@ export default function Memorama() {
     setTimer(0);
     setIsPlaying(false);
     setShowAll(false);
+    setShowPreview(false);
+    setIsShuffling(false);
+    setPreviewPairs([]);
   };
 
   const handleFlip = (index) => {
@@ -200,10 +215,51 @@ export default function Memorama() {
           </select>
         </div>
 
-        <button className="btn-start-game" onClick={startGame} disabled={!selectedTopic || loading}>
-          {loading ? 'Cargando...' : cards.length > 0 ? 'Reiniciar' : 'Iniciar Juego'}
+        <button className="btn-start-game" onClick={startGame} disabled={!selectedTopic || loading || showPreview}>
+          {loading ? 'Cargando...' : cards.length > 0 ? 'Reiniciar' : 'Cargar Juego'}
         </button>
       </div>
+
+      {showPreview && (
+        <div className="preview-section">
+          <div className="preview-header">
+            <h2>📚 Familiarízate con los Pares</h2>
+            <p>Estudia estos conceptos y definiciones antes de empezar</p>
+          </div>
+          <div className="preview-grid">
+            {previewPairs.map((pair, index) => (
+              <div key={pair._id} className="preview-pair">
+                <div className="preview-number">{index + 1}</div>
+                <div className="preview-card concept-preview">
+                  <div className="preview-label">Concepto</div>
+                  <div className="preview-content">{pair.concept}</div>
+                </div>
+                <div className="preview-divider">↔</div>
+                <div className="preview-card definition-preview">
+                  <div className="preview-label">Definición</div>
+                  <div className="preview-content">{pair.definition}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <button className="btn-start-playing" onClick={startGameAfterPreview}>
+            🎮 ¡Empezar a Jugar!
+          </button>
+        </div>
+      )}
+
+      {isShuffling && (
+        <div className="shuffling-animation">
+          <div className="shuffle-cards">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="shuffle-card" style={{ animationDelay: `${i * 0.1}s` }}>
+                ?
+              </div>
+            ))}
+          </div>
+          <p className="shuffle-text">Barajando cartas...</p>
+        </div>
+      )}
 
       {isPlaying && (
         <div className="game-stats">

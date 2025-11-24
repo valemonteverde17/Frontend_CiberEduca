@@ -15,7 +15,7 @@ export default function Login() {
 
   useEffect(() => {
     if (user) navigate('/topics');
-  }, [user]);
+  }, [user, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

@@ -1,7 +1,6 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext } from 'react';
 
 const AuthContext = createContext();
-export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -33,16 +32,12 @@ export function AuthProvider({ children }) {
       setIsStudentView(prev => !prev);
   };
 
-  // Opcional: Verificar expiración del token al cargar
-  useEffect(() => {
-     const token = localStorage.getItem('token');
-     // Aquí podríamos decodificar el token para ver si expiró,
-     // pero por simplicidad dejamos que el interceptor maneje el 401.
-  }, []);
-
   return (
     <AuthContext.Provider value={{ user, login, logout, isStudentView, toggleStudentView }}>
       {children}
     </AuthContext.Provider>
   );
 }
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAuth = () => useContext(AuthContext);

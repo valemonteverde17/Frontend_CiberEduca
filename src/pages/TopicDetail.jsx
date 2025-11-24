@@ -14,13 +14,11 @@ export default function TopicDetail() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [topic, setTopic] = useState(null);
-  const [quizzes, setQuizzes] = useState([]);
   const [quizSets, setQuizSets] = useState([]);
   const [editName, setEditName] = useState('');
   const [editDesc, setEditDesc] = useState('');
   const [contentBlocks, setContentBlocks] = useState([]);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showContentModal, setShowContentModal] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [cardColor, setCardColor] = useState('#2b9997');
 
@@ -42,6 +40,7 @@ export default function TopicDetail() {
 
   useEffect(() => {
     load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleUpdate = async (e) => {
@@ -59,7 +58,7 @@ export default function TopicDetail() {
       await load();
       setShowEditModal(false);
       alert('Tema actualizado exitosamente');
-    } catch (e) {
+    } catch {
       alert('No se pudo actualizar el tema');
     }
   };
@@ -68,8 +67,8 @@ export default function TopicDetail() {
     try {
       await axios.patch(`/topics/${id}`, { content: updatedContent });
       setContentBlocks(updatedContent);
-    } catch (e) {
-      console.error('Error al actualizar contenido:', e);
+    } catch (error) {
+      console.error('Error al actualizar contenido:', error);
     }
   };
 
@@ -139,7 +138,7 @@ export default function TopicDetail() {
       await axios.patch(`/topics/${id}/reject-topic`, { reason });
       alert('✅ Tema rechazado');
       await load();
-    } catch (err) {
+    } catch {
       alert('❌ Error al rechazar tema');
     }
   };
@@ -212,15 +211,6 @@ export default function TopicDetail() {
     }
   };
 
-  const handleDeleteQuiz = async (quizId) => {
-    if (!window.confirm('¿Eliminar esta pregunta?')) return;
-    try {
-      await axios.delete(`/quizzes/${quizId}`);
-      await load();
-    } catch (e) {
-      alert('Error al eliminar la pregunta');
-    }
-  };
 
   if (!topic) return <div className="loading-container">Cargando...</div>;
 

@@ -11,7 +11,6 @@ export default function Profile() {
   // Estado para edición de perfil
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState(user?.user_name || '');
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -35,6 +34,7 @@ export default function Profile() {
     } else if (user.role === 'admin') {
       loadAdminData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, navigate]);
 
   const loadStudentData = async () => {
@@ -137,7 +137,6 @@ export default function Profile() {
       
       setMessage('✓ Perfil actualizado correctamente');
       setIsEditing(false);
-      setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
       

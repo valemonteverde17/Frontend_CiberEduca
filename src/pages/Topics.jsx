@@ -80,6 +80,7 @@ export default function Topics() {
     if (user) {
       fetchTopics();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isStudentView]);
 
   const handleAdd = () => {
@@ -101,7 +102,7 @@ export default function Topics() {
       });
       fetchTopics();
       setShowModal(false);
-    } catch (err) {
+    } catch {
       alert('Error al agregar tema');
     }
   };
@@ -150,7 +151,7 @@ export default function Topics() {
       });
       fetchTopics();
       setShowModal(false);
-    } catch (err) {
+    } catch {
       alert('Error al editar tema');
     }
   };
@@ -160,13 +161,9 @@ export default function Topics() {
     try {
       await axios.delete(`/topics/${id}`);
       fetchTopics();
-    } catch (err) {
+    } catch {
       alert('Error al eliminar tema');
     }
-  };
-
-  const getCardClass = (index) => {
-    return ['topic-yellow', 'topic-teal', 'topic-red'][index % 3];
   };
 
   const handlePrev = () => {
@@ -224,7 +221,7 @@ export default function Topics() {
         </button>
         
         <div className="topics-grid">
-          {visibleTopics.map((topic, index) => (
+          {visibleTopics.map((topic) => (
             <div 
               key={topic._id} 
               className="topic-card"

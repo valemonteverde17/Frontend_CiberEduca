@@ -21,6 +21,7 @@ export default function EditQuizSet() {
 
   useEffect(() => {
     loadQuizSet();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const loadQuizSet = async () => {
@@ -54,7 +55,7 @@ export default function EditQuizSet() {
       });
       alert('Cuestionario actualizado exitosamente');
       loadQuizSet();
-    } catch (err) {
+    } catch {
       alert('Error al actualizar el cuestionario');
     }
   };
@@ -73,7 +74,7 @@ export default function EditQuizSet() {
       await axios.delete(`/quiz-sets/${id}`);
       alert('Cuestionario eliminado exitosamente');
       navigate('/quizzes');
-    } catch (err) {
+    } catch {
       alert('Error al eliminar el cuestionario');
     }
   };
@@ -103,7 +104,7 @@ export default function EditQuizSet() {
       setShowAddQuiz(false);
       loadQuizSet();
       alert('Pregunta agregada exitosamente');
-    } catch (err) {
+    } catch {
       alert('Error al agregar la pregunta');
     }
   };
@@ -121,7 +122,7 @@ export default function EditQuizSet() {
       setEditingQuiz(null);
       alert('Pregunta actualizada exitosamente');
       loadQuizSet();
-    } catch (err) {
+    } catch {
       alert('Error al actualizar la pregunta');
     }
   };
@@ -133,7 +134,7 @@ export default function EditQuizSet() {
       await axios.delete(`/quizzes/${quizId}`);
       loadQuizSet();
       alert('Pregunta eliminada exitosamente');
-    } catch (err) {
+    } catch {
       alert('Error al eliminar la pregunta');
     }
   };

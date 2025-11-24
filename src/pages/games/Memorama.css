@@ -504,6 +504,217 @@
   100% { transform: scale(1); }
 }
 
+/* Vista Previa de Pares */
+.preview-section {
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.5s ease;
+}
+
+.preview-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.preview-header h2 {
+  font-size: 2rem;
+  color: #2b9997;
+  margin: 0 0 0.5rem;
+}
+
+.preview-header p {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.preview-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.preview-pair {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  border: 2px solid #dee2e6;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.5s ease forwards;
+  opacity: 0;
+}
+
+.preview-pair:nth-child(1) { animation-delay: 0.1s; }
+.preview-pair:nth-child(2) { animation-delay: 0.2s; }
+.preview-pair:nth-child(3) { animation-delay: 0.3s; }
+.preview-pair:nth-child(4) { animation-delay: 0.4s; }
+.preview-pair:nth-child(5) { animation-delay: 0.5s; }
+.preview-pair:nth-child(6) { animation-delay: 0.6s; }
+.preview-pair:nth-child(7) { animation-delay: 0.7s; }
+.preview-pair:nth-child(8) { animation-delay: 0.8s; }
+.preview-pair:nth-child(9) { animation-delay: 0.9s; }
+.preview-pair:nth-child(10) { animation-delay: 1s; }
+
+.preview-pair:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(43, 153, 151, 0.15);
+}
+
+.preview-number {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(43, 153, 151, 0.3);
+}
+
+.preview-card {
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.preview-card:hover {
+  transform: scale(1.02);
+}
+
+.concept-preview {
+  background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+  border: 2px solid #fdcb6e;
+}
+
+.definition-preview {
+  background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+  color: white;
+  border: 2px solid #6c5ce7;
+}
+
+.preview-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+
+.preview-content {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.preview-divider {
+  font-size: 2rem;
+  color: #2b9997;
+  font-weight: 700;
+}
+
+.btn-start-playing {
+  width: 100%;
+  padding: 1.2rem 2rem;
+  border-radius: 16px;
+  border: none;
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(43, 153, 151, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.btn-start-playing:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(43, 153, 151, 0.6);
+}
+
+/* Animación de Barajar */
+.shuffling-animation {
+  text-align: center;
+  padding: 3rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.shuffle-cards {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.shuffle-card {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(43, 153, 151, 0.3);
+  animation: shuffleCard 1.5s ease-in-out infinite;
+}
+
+.shuffle-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2b9997;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes shuffleCard {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg);
+  }
+  25% { 
+    transform: translateY(-20px) rotate(-10deg);
+  }
+  50% { 
+    transform: translateY(0) rotate(0deg);
+  }
+  75% { 
+    transform: translateY(-20px) rotate(10deg);
+  }
+}
+
 @media (max-width: 768px) {
   .memorama-page {
     padding: 1rem;
@@ -543,5 +754,55 @@
 
   .win-actions {
     flex-direction: column;
+  }
+
+  .preview-section {
+    padding: 1.5rem;
+  }
+
+  .preview-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .preview-pair {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .preview-number {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+    margin: 0 auto;
+  }
+
+  .preview-divider {
+    font-size: 1.5rem;
+    text-align: center;
+    transform: rotate(90deg);
+  }
+
+  .preview-card {
+    padding: 1rem;
+  }
+
+  .preview-content {
+    font-size: 0.9rem;
+  }
+
+  .btn-start-playing {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+
+  .shuffle-card {
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+  }
+
+  .shuffle-text {
+    font-size: 1.2rem;
   }
 }
