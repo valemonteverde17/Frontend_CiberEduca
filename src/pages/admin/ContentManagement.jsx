@@ -13,6 +13,7 @@ export default function ContentManagement() {
 
   useEffect(() => {
     loadTopics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view]);
 
   const loadTopics = async () => {

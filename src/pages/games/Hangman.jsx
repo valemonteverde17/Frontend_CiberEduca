@@ -15,7 +15,6 @@ export default function Hangman() {
   const [title, setTitle] = useState('');
   const [hint, setHint] = useState('');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
   const [allWords, setAllWords] = useState([]);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
 
@@ -43,11 +42,9 @@ export default function Hangman() {
         loadWord(shuffled, 0);
       } else {
         setAllWords([]);
-        setMessage('No hay palabras registradas para este tema.');
       }
     } catch (err) {
       console.error('Error al cargar palabras:', err);
-      setMessage('Error al cargar las palabras');
     } finally {
       setLoading(false);
     }

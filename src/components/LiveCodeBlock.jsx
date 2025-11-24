@@ -20,6 +20,7 @@ export default function LiveCodeBlock({ htmlContent = '', editable = false, show
       updatePreview();
     }, 10);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [code, activeTab, studentView]);
 
   const updatePreview = () => {

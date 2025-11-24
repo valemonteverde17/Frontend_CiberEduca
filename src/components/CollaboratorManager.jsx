@@ -12,6 +12,7 @@ export default function CollaboratorManager({ topicId, currentCollaborators, onU
     if (showAddModal) {
       fetchUsers();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showAddModal]);
 
   const fetchUsers = async () => {
@@ -48,7 +49,7 @@ export default function CollaboratorManager({ topicId, currentCollaborators, onU
       await axios.delete(`/topics/${topicId}/collaborators/${userId}`);
       alert('✅ Colaborador eliminado');
       onUpdate();
-    } catch (err) {
+    } catch {
       alert('❌ Error al eliminar colaborador');
     }
   };
