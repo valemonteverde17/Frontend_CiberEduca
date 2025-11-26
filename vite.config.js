@@ -7,9 +7,16 @@ export default defineConfig({
     host: '0.0.0.0',
     port: 5173,
     allowedHosts: [
-      '.ngrok-free.dev',  // Permite cualquier dominio de ngrok-free
+      'ciber-educa.com',
       'localhost',
       '127.0.0.1'
+    ]
+  },
+  preview: {
+    host: '0.0.0.0',
+    port: 5173,
+    allowedHosts: [
+      'ciber-educa.com'
     ]
   }
 })
