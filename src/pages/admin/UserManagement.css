@@ -1,11 +1,11 @@
 .user-management-page {
-  padding: 2rem;
-  max-width: 1000px;
+  padding: clamp(1rem, 3vw, 2rem);
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .header {
-  margin: 1rem 0 2rem;
+  margin: clamp(0.75rem, 2vw, 1rem) 0 clamp(1.5rem, 3vw, 2rem);
   text-align: center;
 }
 
@@ -13,20 +13,22 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: clamp(0.75rem, 2vw, 1rem);
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: clamp(0.75rem, 2vw, 1rem);
 }
 
 .header h1 {
   color: #2b9997;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
 }
 
 .users-table-container {
   background: white;
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .users-table {
@@ -35,21 +37,27 @@
 }
 
 .users-table th, .users-table td {
-  padding: 1rem;
+  padding: clamp(0.75rem, 2vw, 1rem);
   text-align: left;
   border-bottom: 1px solid #eee;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  white-space: nowrap;
 }
 
 .users-table th {
   background-color: #f8f9fa;
   font-weight: 600;
   color: #444;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .role-badge {
-  padding: 0.25rem 0.5rem;
+  padding: clamp(0.2rem, 1vw, 0.25rem) clamp(0.4rem, 1.5vw, 0.5rem);
   border-radius: 12px;
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
+  white-space: nowrap;
 }
 
 .role-badge.docente {
@@ -64,25 +72,30 @@
 
 .actions-cell {
   display: flex;
-  gap: 0.5rem;
+  gap: clamp(0.4rem, 1vw, 0.5rem);
+  flex-wrap: wrap;
 }
 
 .btn-approve {
   background-color: #4caf50;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: clamp(0.4rem, 1.5vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
+  border-radius: 8px;
   cursor: pointer;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  transition: all 0.3s ease;
 }
 
 .btn-reject {
   background-color: #f44336;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  padding: clamp(0.4rem, 1.5vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
+  border-radius: 8px;
   cursor: pointer;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  transition: all 0.3s ease;
 }
 
 .btn-approve:hover { background-color: #43a047; }
@@ -99,13 +112,15 @@
 .btn-create-user {
   background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   color: white;
-  padding: 0.8rem 1.5rem;
+  padding: clamp(0.7rem, 2vw, 0.8rem) clamp(1.25rem, 3vw, 1.5rem);
   border-radius: 12px;
   border: none;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(43, 153, 151, 0.3);
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  white-space: nowrap;
 }
 
 .btn-create-user:hover {
@@ -119,11 +134,12 @@
 }
 
 .status-badge {
-  padding: 0.4rem 0.8rem;
+  padding: clamp(0.3rem, 1vw, 0.4rem) clamp(0.6rem, 2vw, 0.8rem);
   border-radius: 12px;
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
   font-weight: 600;
   display: inline-block;
+  white-space: nowrap;
 }
 
 .status-badge.active {
@@ -142,13 +158,14 @@
 }
 
 .btn-action {
-  padding: 0.5rem 1rem;
+  padding: clamp(0.4rem, 1.5vw, 0.5rem) clamp(0.75rem, 2vw, 1rem);
   border: none;
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  white-space: nowrap;
 }
 
 .btn-action.btn-edit {
@@ -182,21 +199,23 @@
 
 .modal-content {
   background: white;
-  padding: 2.5rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
   border-radius: 24px;
   width: 90%;
   max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .modal-content h3 {
-  margin: 0 0 1.5rem;
-  font-size: 1.8rem;
+  margin: 0 0 clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
   color: #2b5858;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
 }
 
 .form-group label {
@@ -204,15 +223,16 @@
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: #2b5858;
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 0.8rem;
+  padding: clamp(0.7rem, 2vw, 0.8rem);
   border: 2px solid #e0e0e0;
   border-radius: 12px;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
   font-family: inherit;
   transition: border-color 0.3s ease;
 }
@@ -263,17 +283,20 @@
 
 .view-selector {
   display: flex;
-  gap: 1rem;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  flex-wrap: wrap;
 }
 
 .view-selector button {
-  padding: 0.6rem 1.2rem;
+  padding: clamp(0.5rem, 1.5vw, 0.6rem) clamp(1rem, 2.5vw, 1.2rem);
   border: 2px solid #e0e0e0;
   background: white;
   border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
   transition: all 0.3s ease;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  white-space: nowrap;
 }
 
 .view-selector button.active {
@@ -285,4 +308,59 @@
 .view-selector button:hover:not(.active) {
   border-color: #2b9997;
   color: #2b9997;
+}
+
+@media (max-width: 768px) {
+  .user-management-page {
+    padding: 1rem 0.5rem;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .view-selector {
+    justify-content: center;
+  }
+  
+  .btn-create-user {
+    width: 100%;
+  }
+  
+  .users-table th,
+  .users-table td {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.85rem;
+  }
+  
+  .actions-cell {
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  
+  .btn-action,
+  .btn-approve,
+  .btn-reject {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .users-table th,
+  .users-table td {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.8rem;
+  }
+  
+  .modal-content {
+    padding: 1.5rem 1rem;
+  }
+  
+  .user-name-cell {
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

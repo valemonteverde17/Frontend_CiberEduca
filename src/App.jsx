@@ -20,6 +20,11 @@ import Rankings from './pages/Rankings';
 import Dashboard from './pages/admin/Dashboard';
 import UserManagement from './pages/admin/UserManagement';
 import ContentManagement from './pages/admin/ContentManagement';
+import Privacidad from './pages/legal/Privacidad';
+import Terminos from './pages/legal/Terminos';
+import Datos from './pages/legal/Datos';
+import Footer from './components/Footer';
+import AdminLayout from './components/AdminLayout';
 
 function App() {
   const { user } = useAuth();
@@ -32,20 +37,34 @@ function App() {
         <Route path="/login" element={user ? <Navigate to="/topics" /> : <Login />} />
         <Route path="/signup" element={user ? <Navigate to="/topics" /> : <SignUp />} />
         
+        {/* Rutas Legales - Públicas */}
+        <Route path="/privacy" element={<Privacidad />} />
+        <Route path="/privacidad" element={<Privacidad />} />
+        <Route path="/terms" element={<Terminos />} />
+        <Route path="/terminos" element={<Terminos />} />
+        <Route path="/cookies" element={<Datos />} />
+        <Route path="/datos" element={<Datos />} />
+        
         {/* Rutas Admin */}
         <Route path="/admin/dashboard" element={
           <ProtectedRoute role="admin">
-            <Dashboard />
+            <AdminLayout>
+              <Dashboard />
+            </AdminLayout>
           </ProtectedRoute>
         } />
         <Route path="/admin/users" element={
           <ProtectedRoute role="admin">
-            <UserManagement />
+            <AdminLayout>
+              <UserManagement />
+            </AdminLayout>
           </ProtectedRoute>
         } />
         <Route path="/admin/content" element={
           <ProtectedRoute role="admin">
-            <ContentManagement />
+            <AdminLayout>
+              <ContentManagement />
+            </AdminLayout>
           </ProtectedRoute>
         } />
 
@@ -110,6 +129,7 @@ function App() {
       </ProtectedRoute>
     } />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

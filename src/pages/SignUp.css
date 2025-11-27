@@ -4,7 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: clamp(1rem, 3vw, 2rem);
   position: relative;
   overflow: hidden;
 }
@@ -23,7 +23,7 @@
 
 .signup-box {
   background: white;
-  padding: 2.5rem 2rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 3vw, 2rem);
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   width: 100%;
@@ -37,25 +37,25 @@
 
 .signup-header {
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
 }
 
 .signup-icon {
-  font-size: 3rem;
-  margin-bottom: 0.8rem;
+  font-size: clamp(2.5rem, 5vw, 3rem);
+  margin-bottom: clamp(0.6rem, 2vw, 0.8rem);
   animation: pulse 2s ease-in-out infinite;
 }
 
 .signup-box h2 {
   color: #2b5858;
   margin: 0 0 0.3rem;
-  font-size: 1.8rem;
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
   font-weight: 700;
 }
 
 .signup-subtitle {
   color: #666;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   margin: 0;
 }
 
@@ -63,24 +63,24 @@
   background: #ffebee;
   border: 2px solid #f44336;
   color: #c62828;
-  padding: 0.9rem;
+  padding: clamp(0.75rem, 2vw, 0.9rem);
   border-radius: 12px;
-  margin-bottom: 1.2rem;
+  margin-bottom: clamp(1rem, 2vw, 1.2rem);
   font-weight: 600;
   animation: shake 0.5s;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
 }
 
 .success-message {
   background: #e8f5e9;
   border: 2px solid #4caf50;
   color: #2e7d32;
-  padding: 0.9rem;
+  padding: clamp(0.75rem, 2vw, 0.9rem);
   border-radius: 12px;
-  margin-bottom: 1.2rem;
+  margin-bottom: clamp(1rem, 2vw, 1.2rem);
   font-weight: 600;
   animation: slideDown 0.5s;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
 }
 
 @keyframes slideDown {
@@ -95,7 +95,7 @@
 }
 
 .input-group {
-  margin-bottom: 1.2rem;
+  margin-bottom: clamp(1rem, 2vw, 1.2rem);
   text-align: left;
 }
 
@@ -103,16 +103,16 @@
   display: block;
   color: #2b5858;
   font-weight: 600;
-  margin-bottom: 0.4rem;
-  font-size: 0.9rem;
+  margin-bottom: clamp(0.3rem, 1vw, 0.4rem);
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
 }
 
 .signup-input {
   width: 100%;
-  padding: 0.8rem 0.9rem;
+  padding: clamp(0.7rem, 2vw, 0.8rem) clamp(0.8rem, 2vw, 0.9rem);
   border: 2px solid #e0e0e0;
   border-radius: 12px;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
   transition: all 0.3s ease;
   font-family: inherit;
 }
@@ -139,8 +139,8 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.2rem;
-  padding: 0.4rem;
+  font-size: clamp(1rem, 3vw, 1.2rem);
+  padding: clamp(0.3rem, 1vw, 0.4rem);
   transition: transform 0.2s ease;
   z-index: 2;
 }
@@ -150,18 +150,18 @@
 }
 
 .password-requirements {
-  margin-top: 0.8rem;
-  padding: 0.8rem;
+  margin-top: clamp(0.6rem, 2vw, 0.8rem);
+  padding: clamp(0.6rem, 2vw, 0.8rem);
   background: #f8f9fa;
   border-radius: 10px;
   border: 2px solid #e0e0e0;
 }
 
 .requirements-title {
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
   font-weight: 600;
   color: #2b5858;
-  margin: 0 0 0.5rem;
+  margin: 0 0 clamp(0.4rem, 1vw, 0.5rem);
 }
 
 .requirements-list {
@@ -171,10 +171,10 @@
 }
 
 .requirement {
-  font-size: 0.85rem;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
   color: #999;
   transition: all 0.3s ease;
-  padding: 0.3rem 0;
+  padding: clamp(0.2rem, 1vw, 0.3rem) 0;
 }
 
 .requirement.met {
@@ -197,32 +197,32 @@
 
 .password-mismatch {
   color: #f44336;
-  font-size: 0.85rem;
-  margin: 0.5rem 0 0;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
+  margin: clamp(0.4rem, 1vw, 0.5rem) 0 0;
   font-weight: 600;
 }
 
 .password-match {
   color: #4caf50;
-  font-size: 0.85rem;
-  margin: 0.5rem 0 0;
+  font-size: clamp(0.75rem, 2vw, 0.85rem);
+  margin: clamp(0.4rem, 1vw, 0.5rem) 0 0;
   font-weight: 600;
   animation: checkmark 0.3s ease;
 }
 
 .signup-button {
   width: 100%;
-  padding: 0.9rem;
+  padding: clamp(0.75rem, 2vw, 0.9rem);
   background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%);
   border: none;
   border-radius: 12px;
   color: white;
   font-weight: 700;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
-  margin-top: 0.5rem;
+  margin-top: clamp(0.4rem, 1vw, 0.5rem);
 }
 
 .signup-button:hover:not(:disabled) {
@@ -237,16 +237,16 @@
 }
 
 .signup-footer {
-  margin-top: 1.5rem;
+  margin-top: clamp(1rem, 3vw, 1.5rem);
   text-align: center;
-  padding-top: 1.2rem;
+  padding-top: clamp(1rem, 2vw, 1.2rem);
   border-top: 2px solid #f0f0f0;
 }
 
 .signup-footer p {
   color: #666;
   margin: 0;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
 }
 
 .signup-footer a {
@@ -262,15 +262,28 @@
 }
 
 @media (max-width: 480px) {
+  .signup-page {
+    padding: 1rem 0.5rem;
+  }
+  
   .signup-box {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1.25rem;
+    max-width: 100%;
   }
 
   .signup-box h2 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
 
   .signup-icon {
     font-size: 2.5rem;
+  }
+  
+  .input-group {
+    margin-bottom: 0.9rem;
+  }
+  
+  .requirements-list {
+    gap: 0.3rem;
   }
 }

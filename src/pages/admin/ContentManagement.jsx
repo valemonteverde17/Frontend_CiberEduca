@@ -235,66 +235,68 @@ export default function ContentManagement() {
           <p>📭 No hay temas en esta vista</p>
         </div>
       ) : (
-        <table className="content-table">
-          <thead>
-            <tr>
-              <th>Tema</th>
-              <th>Creado Por</th>
-              <th>Estado</th>
-              <th>Fecha</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {topics.map(topic => (
-              <tr key={topic._id}>
-                <td className="topic-name-cell">
-                  <a 
-                    href={`/topics/${topic._id}`} 
-                    className="topic-link"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      navigate(`/topics/${topic._id}`);
-                    }}
-                  >
-                    {topic.topic_name}
-                  </a>
-                </td>
-                <td>{topic.created_by?.user_name || 'Desconocido'}</td>
-                <td>
-                  {view === 'all' ? (
-                    <select 
-                      className="status-selector"
-                      value={topic.status || 'draft'}
-                      onChange={(e) => handleStatusChange(topic._id, e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <option value="draft">📝 Borrador</option>
-                      <option value="pending_approval">⏳ Pendiente</option>
-                      <option value="approved">✅ Aprobado</option>
-                      <option value="editing">✏️ En Edición</option>
-                      <option value="rejected">❌ Rechazado</option>
-                    </select>
-                  ) : (
-                    <TopicStatusBadge status={topic.status || 'draft'} />
-                  )}
-                  {topic.edit_request_pending && (
-                    <span className="edit-request-indicator" title="Solicitud de edición pendiente">⏳</span>
-                  )}
-                </td>
-                <td>
-                  {view === 'trash' 
-                    ? new Date(topic.deleted_at).toLocaleDateString()
-                    : new Date(topic.createdAt).toLocaleDateString()
-                    }
-                </td>
-                <td className="actions-cell">
-                  {renderActions(topic)}
-                </td>
+        <div className="content-table-container">
+          <table className="content-table">
+            <thead>
+              <tr>
+                <th>Tema</th>
+                <th>Creado Por</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {topics.map(topic => (
+                <tr key={topic._id}>
+                  <td className="topic-name-cell">
+                    <a 
+                      href={`/topics/${topic._id}`} 
+                      className="topic-link"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        navigate(`/topics/${topic._id}`);
+                      }}
+                    >
+                      {topic.topic_name}
+                    </a>
+                  </td>
+                  <td>{topic.created_by?.user_name || 'Desconocido'}</td>
+                  <td>
+                    {view === 'all' ? (
+                      <select 
+                        className="status-selector"
+                        value={topic.status || 'draft'}
+                        onChange={(e) => handleStatusChange(topic._id, e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <option value="draft">📝 Borrador</option>
+                        <option value="pending_approval">⏳ Pendiente</option>
+                        <option value="approved">✅ Aprobado</option>
+                        <option value="editing">✏️ En Edición</option>
+                        <option value="rejected">❌ Rechazado</option>
+                      </select>
+                    ) : (
+                      <TopicStatusBadge status={topic.status || 'draft'} />
+                    )}
+                    {topic.edit_request_pending && (
+                      <span className="edit-request-indicator" title="Solicitud de edición pendiente">⏳</span>
+                    )}
+                  </td>
+                  <td>
+                    {view === 'trash' 
+                      ? new Date(topic.deleted_at).toLocaleDateString()
+                      : new Date(topic.createdAt).toLocaleDateString()
+                      }
+                  </td>
+                  <td className="actions-cell">
+                    {renderActions(topic)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
