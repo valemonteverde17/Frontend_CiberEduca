@@ -1,7 +1,7 @@
 .topic-detail-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #fff0b3 0%, #ffe680 100%);
-  padding: 2rem;
+  padding: clamp(1rem, 3vw, 2rem);
 }
 
 .loading-container,
@@ -22,13 +22,13 @@
   background: white;
   border: 2px solid #2b9997;
   color: #2b9997;
-  padding: 0.7rem 1.5rem;
+  padding: clamp(0.6rem, 1.5vw, 0.7rem) clamp(1rem, 3vw, 1.5rem);
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 2rem;
-  font-size: 1rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .back-button:hover {
@@ -40,9 +40,9 @@
 .topic-detail-card {
   background: white;
   border-radius: 24px;
-  padding: 2.5rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
   max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
@@ -52,8 +52,9 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  flex-wrap: wrap;
 }
 
 .topic-header-info {
@@ -69,14 +70,15 @@
 }
 
 .topic-detail-title {
-  font-size: 2.5rem;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
   color: #2b5858;
   margin: 0;
   font-weight: 700;
+  word-break: break-word;
 }
 
 .topic-detail-description {
-  font-size: 1.1rem;
+  font-size: clamp(1rem, 2.5vw, 1.1rem);
   color: #555;
   line-height: 1.8;
   margin: 0 0 0.5rem;
@@ -114,9 +116,9 @@
 .topic-header-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: clamp(0.6rem, 2vw, 0.8rem);
   align-items: stretch;
-  min-width: 200px;
+  min-width: min(200px, 100%);
 }
 
 .btn-submit-approval {
@@ -236,11 +238,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .quizzes-header h2 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
   color: #2b5858;
   margin: 0;
   font-weight: 700;
@@ -312,11 +316,12 @@
 }
 
 .quiz-question {
-  font-size: 1.3rem;
+  font-size: clamp(1.1rem, 3vw, 1.3rem);
   font-weight: 600;
   color: #2b5858;
-  margin-bottom: 1.5rem;
+  margin-bottom: clamp(1rem, 3vw, 1.5rem);
   line-height: 1.5;
+  word-break: break-word;
 }
 
 .quiz-options {
@@ -426,16 +431,18 @@
 
 .modal-content {
   background: white;
-  padding: 2.5rem;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
   border-radius: 24px;
   width: 90%;
   max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
 .modal-content h3 {
-  margin: 0 0 1.5rem;
-  font-size: 1.8rem;
+  margin: 0 0 clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
   color: #2b5858;
 }
 
@@ -502,12 +509,25 @@
 }
 
 @media (max-width: 768px) {
+  .topic-detail-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .topic-detail-card {
+    padding: 1.5rem;
+  }
+  
   .topic-header-section {
     flex-direction: column;
   }
+  
+  .topic-header-buttons {
+    width: 100%;
+    min-width: 100%;
+  }
 
   .topic-detail-title {
-    font-size: 2rem;
+    font-size: 1.75rem;
   }
 
   .quizzes-header {
@@ -523,18 +543,46 @@
   .quiz-sets-grid {
     grid-template-columns: 1fr;
   }
+  
+  .quiz-set-actions {
+    flex-direction: column;
+  }
+  
+  .btn-take-quiz,
+  .btn-view-quiz,
+  .btn-edit-quiz-set {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .topic-detail-card {
+    padding: 1.25rem;
+  }
+  
+  .topic-detail-title {
+    font-size: 1.5rem;
+  }
+  
+  .quiz-set-card {
+    padding: 1rem;
+  }
+  
+  .modal-content {
+    padding: 1.5rem;
+  }
 }
 
 .quiz-sets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: clamp(1rem, 3vw, 1.5rem);
+  margin-top: clamp(1rem, 3vw, 1.5rem);
 }
 
 .quiz-set-card {
   background: white;
-  padding: 1.5rem;
+  padding: clamp(1.25rem, 3vw, 1.5rem);
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
@@ -556,11 +604,12 @@
 }
 
 .quiz-set-card-header h3 {
-  font-size: 1.2rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.2rem);
   color: #2b5858;
   margin: 0;
   flex: 1;
   line-height: 1.4;
+  word-break: break-word;
 }
 
 .quiz-set-card-description {

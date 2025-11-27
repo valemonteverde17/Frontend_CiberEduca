@@ -1,0 +1,5 @@
+.admin-layout {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fff0b3 0%, #ffe680 100%);
+  padding-bottom: 2rem;
+}

@@ -1,7 +1,7 @@
 .profile-page {
   min-height: 100vh;
   background: #ffefb5;
-  padding: 2rem;
+  padding: clamp(1rem, 3vw, 2rem);
 }
 
 .profile-container {
@@ -12,40 +12,41 @@
 .profile-header {
   background: white;
   border-radius: 24px;
-  padding: 3rem;
-  margin-bottom: 2rem;
+  padding: clamp(2rem, 4vw, 3rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: clamp(1.5rem, 3vw, 2rem);
 }
 
 .profile-avatar {
-  width: 120px;
-  height: 120px;
+  width: clamp(80px, 15vw, 120px);
+  height: clamp(80px, 15vw, 120px);
   border-radius: 50%;
   background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 3rem;
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 700;
   color: white;
   box-shadow: 0 8px 24px rgba(43, 153, 151, 0.3);
+  flex-shrink: 0;
 }
 
 .profile-info h1 {
   margin: 0 0 0.5rem;
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
   color: #333;
 }
 
 .role-badge {
   display: inline-block;
-  padding: 0.5rem 1.2rem;
+  padding: clamp(0.4rem, 1vw, 0.5rem) clamp(1rem, 2vw, 1.2rem);
   border-radius: 20px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
 }
 
 .role-badge.docente {
@@ -67,8 +68,8 @@
 .profile-section {
   background: white;
   border-radius: 24px;
-  padding: 2rem;
-  margin-bottom: 2rem;
+  padding: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2rem);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
@@ -80,9 +81,9 @@
 }
 
 .profile-section h2 {
-  margin: 0 0 1.5rem;
+  margin: 0 0 clamp(1rem, 3vw, 1.5rem);
   color: #333;
-  font-size: 1.8rem;
+  font-size: clamp(1.3rem, 3.5vw, 1.8rem);
 }
 
 .btn-edit {
@@ -222,13 +223,13 @@
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
 }
 
 .stat-card {
   background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
-  padding: 2rem;
+  padding: clamp(1.5rem, 3vw, 2rem);
   border-radius: 16px;
   text-align: center;
   color: white;
@@ -242,18 +243,18 @@
 }
 
 .stat-icon {
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  margin-bottom: clamp(0.4rem, 1vw, 0.5rem);
 }
 
 .stat-value {
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 4vw, 2.5rem);
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: clamp(0.4rem, 1vw, 0.5rem);
 }
 
 .stat-label {
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   opacity: 0.9;
 }
 
@@ -370,12 +371,12 @@
 
 .teacher-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: clamp(0.75rem, 2vw, 1rem);
 }
 
 .action-btn {
-  padding: 1.2rem;
+  padding: clamp(1rem, 2vw, 1.2rem);
   background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   color: white;
   border: none;
@@ -383,7 +384,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 1rem;
+  font-size: clamp(0.9rem, 2vw, 1rem);
 }
 
 .action-btn:hover {
@@ -426,18 +427,30 @@
 }
 
 @media (max-width: 768px) {
+  .profile-page {
+    padding: 1rem 0.5rem;
+  }
+  
   .profile-header {
     flex-direction: column;
     text-align: center;
-    padding: 2rem;
+    padding: 1.5rem;
+    gap: 1rem;
   }
 
   .profile-info h1 {
-    font-size: 2rem;
+    font-size: 1.75rem;
+  }
+  
+  .profile-avatar {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
   }
 
   .stats-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
   .score-details {
@@ -451,5 +464,24 @@
 
   .teacher-actions {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-section {
+    padding: 1.25rem;
+  }
+  
+  .profile-section h2 {
+    font-size: 1.3rem;
+  }
+  
+  .stat-card {
+    padding: 1.25rem;
+  }
+  
+  .action-btn {
+    padding: 0.9rem;
+    font-size: 0.9rem;
   }
 }

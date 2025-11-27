@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import TermsAcceptance from '../components/TermsAcceptance';
 import './SignUp.css';
 
@@ -215,7 +215,7 @@ export default function SignUp() {
         </form>
 
         <div className="signup-footer">
-          <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a></p>
+          <p>¿Ya tienes cuenta? <Link to="/login">Inicia sesión aquí</Link></p>
         </div>
       </div>
     </div>

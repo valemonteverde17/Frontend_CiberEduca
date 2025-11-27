@@ -24,6 +24,7 @@ import Privacidad from './pages/legal/Privacidad';
 import Terminos from './pages/legal/Terminos';
 import Datos from './pages/legal/Datos';
 import Footer from './components/Footer';
+import AdminLayout from './components/AdminLayout';
 
 function App() {
   const { user } = useAuth();
@@ -47,17 +48,23 @@ function App() {
         {/* Rutas Admin */}
         <Route path="/admin/dashboard" element={
           <ProtectedRoute role="admin">
-            <Dashboard />
+            <AdminLayout>
+              <Dashboard />
+            </AdminLayout>
           </ProtectedRoute>
         } />
         <Route path="/admin/users" element={
           <ProtectedRoute role="admin">
-            <UserManagement />
+            <AdminLayout>
+              <UserManagement />
+            </AdminLayout>
           </ProtectedRoute>
         } />
         <Route path="/admin/content" element={
           <ProtectedRoute role="admin">
-            <ContentManagement />
+            <AdminLayout>
+              <ContentManagement />
+            </AdminLayout>
           </ProtectedRoute>
         } />
 

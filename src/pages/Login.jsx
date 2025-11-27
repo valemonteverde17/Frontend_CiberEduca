@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import './Login.css'; // Importa los estilos
@@ -108,7 +108,7 @@ export default function Login() {
         </form>
 
         <div className="login-footer">
-          <p>¿No tienes cuenta? <a href="/signup">Regístrate aquí</a></p>
+          <p>¿No tienes cuenta? <Link to="/signup">Regístrate aquí</Link></p>
         </div>
       </div>
     </div>
