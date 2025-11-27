@@ -20,6 +20,10 @@ import Rankings from './pages/Rankings';
 import Dashboard from './pages/admin/Dashboard';
 import UserManagement from './pages/admin/UserManagement';
 import ContentManagement from './pages/admin/ContentManagement';
+import Privacidad from './pages/legal/Privacidad';
+import Terminos from './pages/legal/Terminos';
+import Datos from './pages/legal/Datos';
+import Footer from './components/Footer';
 
 function App() {
   const { user } = useAuth();
@@ -31,6 +35,14 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={user ? <Navigate to="/topics" /> : <Login />} />
         <Route path="/signup" element={user ? <Navigate to="/topics" /> : <SignUp />} />
+        
+        {/* Rutas Legales - Públicas */}
+        <Route path="/privacy" element={<Privacidad />} />
+        <Route path="/privacidad" element={<Privacidad />} />
+        <Route path="/terms" element={<Terminos />} />
+        <Route path="/terminos" element={<Terminos />} />
+        <Route path="/cookies" element={<Datos />} />
+        <Route path="/datos" element={<Datos />} />
         
         {/* Rutas Admin */}
         <Route path="/admin/dashboard" element={
@@ -110,6 +122,7 @@ function App() {
       </ProtectedRoute>
     } />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

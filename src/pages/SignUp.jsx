@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import TermsAcceptance from '../components/TermsAcceptance';
 import './SignUp.css';
 
 export default function SignUp() {
@@ -12,6 +13,7 @@ export default function SignUp() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const navigate = useNavigate();
 
   const [passwordStrength, setPasswordStrength] = useState({
@@ -59,6 +61,11 @@ export default function SignUp() {
 
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden');
+      return;
+    }
+
+    if (!termsAccepted) {
+      setError('Debes aceptar los términos y condiciones para continuar');
       return;
     }
 
@@ -193,10 +200,15 @@ export default function SignUp() {
             )}
           </div>
 
+          <TermsAcceptance 
+            accepted={termsAccepted}
+            onAcceptChange={setTermsAccepted}
+          />
+
           <button 
             type="submit" 
             className="signup-button"
-            disabled={!isPasswordValid() || password !== confirmPassword || !user_name}
+            disabled={!isPasswordValid() || password !== confirmPassword || !user_name || !termsAccepted}
           >
             → Crear Cuenta
           </button>

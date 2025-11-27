@@ -266,7 +266,9 @@ export default function Profile() {
               </div>
               <div className="detail-item">
                 <span className="detail-label">Rol:</span>
-                <span className="detail-value">{user.role === 'docente' ? 'Docente' : 'Estudiante'}</span>
+                <span className="detail-value">
+                  {user.role === 'admin' ? 'Administrador' : user.role === 'docente' ? 'Docente' : 'Estudiante'}
+                </span>
               </div>
             </div>
           )}

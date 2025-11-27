@@ -1,6 +1,6 @@
 .profile-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #ffefb5;
   padding: 2rem;
 }
 
@@ -24,14 +24,14 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 3rem;
   font-weight: 700;
   color: white;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 24px rgba(43, 153, 151, 0.3);
 }
 
 .profile-info h1 {
@@ -86,7 +86,7 @@
 }
 
 .btn-edit {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   color: white;
   border: none;
   padding: 0.7rem 1.5rem;
@@ -98,7 +98,7 @@
 
 .btn-edit:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(43, 153, 151, 0.4);
 }
 
 .edit-form {
@@ -129,8 +129,8 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #2b9997;
+  box-shadow: 0 0 0 3px rgba(43, 153, 151, 0.1);
 }
 
 .form-group small {
@@ -207,7 +207,7 @@
   padding: 1rem;
   background: #f8f9fa;
   border-radius: 12px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #2b9997;
 }
 
 .detail-label {
@@ -227,18 +227,18 @@
 }
 
 .stat-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   padding: 2rem;
   border-radius: 16px;
   text-align: center;
   color: white;
-  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 24px rgba(43, 153, 151, 0.3);
   transition: all 0.3s ease;
 }
 
 .stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 12px 32px rgba(43, 153, 151, 0.4);
 }
 
 .stat-icon {
@@ -269,7 +269,7 @@
 }
 
 .btn-start {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -282,7 +282,7 @@
 
 .btn-start:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(43, 153, 151, 0.4);
 }
 
 .scores-list {
@@ -300,8 +300,8 @@
 }
 
 .score-card:hover {
-  border-color: #667eea;
-  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+  border-color: #2b9997;
+  box-shadow: 0 4px 16px rgba(43, 153, 151, 0.2);
   transform: translateX(4px);
 }
 
@@ -353,7 +353,7 @@
 .btn-rankings {
   width: 100%;
   padding: 1.2rem;
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  background: linear-gradient(135deg, #ff6b35 0%, #ff4500 100%);
   color: white;
   border: none;
   border-radius: 16px;
@@ -365,7 +365,7 @@
 
 .btn-rankings:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(245, 87, 108, 0.4);
+  box-shadow: 0 8px 24px rgba(255, 107, 53, 0.4);
 }
 
 .teacher-actions {
@@ -376,7 +376,7 @@
 
 .action-btn {
   padding: 1.2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2b9997 0%, #1a7573 100%);
   color: white;
   border: none;
   border-radius: 12px;
@@ -388,22 +388,22 @@
 
 .action-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(43, 153, 151, 0.4);
 }
 
 .action-btn.admin-btn {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  background: linear-gradient(135deg, #ffcd00 0%, #ffb700 100%);
   color: #333;
   font-weight: 700;
 }
 
 .action-btn.admin-btn:hover {
-  box-shadow: 0 6px 20px rgba(250, 112, 154, 0.4);
+  box-shadow: 0 6px 20px rgba(255, 205, 0, 0.4);
 }
 
 .stat-card.admin-stat {
-  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  border: 2px solid #fa709a;
+  background: linear-gradient(135deg, #fff4e0 0%, #ffe680 100%);
+  border: 2px solid #ffcd00;
 }
 
 .stat-card.admin-stat .stat-icon {
